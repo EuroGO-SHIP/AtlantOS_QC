@@ -6,6 +6,7 @@
 "use strict";
 
 const path = require('path');
+const fs = require("fs");
 const app_module_path = require('app-module-path');
 app_module_path.addPath(path.join(__dirname, 'src/js/modules'));  // change folder name to "node_modules" to avoid this?
 app_module_path.addPath(path.join(__dirname, 'src/js/renderer_modules'));
@@ -30,6 +31,9 @@ const server = require('server');
 const menu = require('menu');
 const menu_actions = require('menu_actions');
 var updater = require('updater');
+
+//used for initialize object @electron/remote
+require('@electron/remote/main').initialize();
 
 // https://github.com/electron/electron/issues/2479#issuecomment-130307655
 process.on('uncaughtException', function (error) {
@@ -66,6 +70,7 @@ if (is_dev) {
     // NOTE: I need to use the hashes to the url files for the final app
     //       because if an update is made it should use cache and reload
     //       the modified files
+    lg.warn('>> IS_DEV');
     app.commandLine.appendSwitch('disable-http-cache');
 }
 
@@ -86,13 +91,18 @@ if (!lock) {
 
     app.on('ready', function() {
         main_window = new BrowserWindow({
-            webPreferences: { nodeIntegration: true, }, // https://stackoverflow.com/a/55908510/4891717
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+                enableRemoteModule: true
+            }, // https://stackoverflow.com/a/55908510/4891717
             width: 1380,
             height: 820,
             icon: path.join(__dirname, 'src/img/icon.png'),
             title: 'AtlantOS Ocean Data QC!'  // if not the title ocean_data_qc is shown for a moment
             // backgroundColour: '#e8e8e7'              // TODO: try to give a desktop application color
         })
+        require('@electron/remote/main').enable(main_window.webContents);
         app.showExitPrompt = true
         main_window.on('close', (e) => {
             lg.info('-- ON CLOSE MAIN WINDOW');

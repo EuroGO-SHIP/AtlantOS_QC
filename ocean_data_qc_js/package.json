@@ -33,7 +33,7 @@
         "seawater",
         "bokeh"
     ],
-    "author": "IIM-CSIC <jcacabelos@iim.csic.es>",
+    "author": "IIM-CSIC <avelo@iim.csic.es>",
     "license": "CC0-1.0",
     "dependencies": {
         "app-module-path": "^2.2.0",
@@ -49,6 +49,7 @@
         "dotenv": "^6.1.0",
         "electron-is-dev": "^1.0.1",
         "electron-updater": "^4.0.4",
+        "@electron/remote": "^2.0.1",
         "file-url": "^2.0.2",
         "font-awesome": "^4.7.0",
         "jquery": "^3.3.4",
@@ -66,7 +67,7 @@
     },
     "devDependencies": {
         "devtron": "^1.4.0",
-        "electron": "=9.4.3",
+        "electron": "13.0.0",
         "electron-builder": "^22.7.0",
         "electron-debug": "^2.0.0"
     },

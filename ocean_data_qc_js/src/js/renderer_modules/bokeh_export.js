@@ -11,7 +11,7 @@ app_module_path.addPath(path.join(__dirname, '../modules'));
 app_module_path.addPath(path.join(__dirname, '../modals_renderer'));
 app_module_path.addPath(__dirname);
 
-const { dialog } = require('electron').remote;
+const { dialog } = require('@electron/remote');
 const fs = require('fs');
 const xlsx = require('xlsx');
 const csv_parse = require('csv-parse');  // it is included in "csv" nodejs package

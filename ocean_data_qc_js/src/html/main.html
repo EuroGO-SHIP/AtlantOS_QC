@@ -123,7 +123,8 @@
             <div class="card-header card-title text-white">Resources <div class="fa fa-bolt float-right"></div></div>
             <div class="card-body">
               <p><strong>AtlantOS Ocean Data QC: </strong><script>
-                const {app} = require('electron').remote;
+                const remote = require('@electron/remote');
+		            const { app } = remote;
                 document.write(app.getVersion());
                 </script></p>
               <p><strong>App Update: <span id="update_state" ></span></strong></p>

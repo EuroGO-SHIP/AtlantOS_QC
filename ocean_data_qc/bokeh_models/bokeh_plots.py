@@ -214,7 +214,7 @@ class BokehPlots(Environment):
             y='{}_{}'.format(self.tab, self.y),
             size=3,
             fill_color='yellow',
-            line_width=None,
+            #line_width=None,
             line_color='yellow',
             source=self.env.astk_src,
 

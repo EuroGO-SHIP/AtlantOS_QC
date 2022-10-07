@@ -618,7 +618,7 @@ class CruiseData(CruiseDataExport):
 
         if pd_precision > 15:
             pd_precision = 15
-        pd.set_option('precision', pd_precision)
+        pd.set_option('display.precision', pd_precision)
         return float_prec_dict
 
     def update_flag_values(self, column, new_flag_value, row_indices):

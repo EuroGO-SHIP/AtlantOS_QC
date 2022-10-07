@@ -485,7 +485,6 @@ module.exports = {
                     if (ensure_one === false) {
                         ensure_one = true;
                         lg.info('-- BOKEH PORT OPEN, SENDING SIGNAL TO LOAD THE IFRAME');
-
                         self.web_contents.send('load-bokeh-on-iframe')
                     }
                 }
