@@ -305,8 +305,8 @@ class BokehEvents(Environment):
             gp = gridplot(
                 children=children,
                 ncols=ly_settings['ncols'],
-                plot_width=ly_settings['plot_width'],     # if 350 then the points are blurred
-                plot_height=ly_settings['plot_height'],
+                width=ly_settings['width'],     # if 350 then the points are blurred
+                height=ly_settings['height'],
                 toolbar_location='left',  # TODO: separate the toolbars to set some tools active by default,
                                           #       like this the hover icon can be shown as well
             )

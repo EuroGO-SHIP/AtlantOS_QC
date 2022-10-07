@@ -52,8 +52,8 @@ class BokehMap(Environment):
         )
 
         self.env.wmts_map = Figure(
-            plot_height=240,
-            plot_width=200,
+            height=240,
+            width=200,
             output_backend=OUTPUT_BACKEND,
             tools='',
             toolbar_location='right',

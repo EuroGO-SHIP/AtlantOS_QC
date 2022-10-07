@@ -252,8 +252,8 @@ class BokehExport(Environment):
             'xmajor_label_text_font_size': p.xaxis[0].major_label_text_font_size,
             'ymajor_label_text_font_size': p.yaxis[0].major_label_text_font_size,
 
-            'plot_width': p.width,
-            'plot_height': p.height,
+            'width': p.width,
+            'height': p.height,
         })
 
     def restore_plot_sizes(self):
@@ -279,8 +279,8 @@ class BokehExport(Environment):
             bp.plot.xaxis[0].major_label_text_font_size = self.dflt_plot_attrs['xmajor_label_text_font_size']
             bp.plot.yaxis[0].major_label_text_font_size = self.dflt_plot_attrs['ymajor_label_text_font_size']
 
-            bp.plot.width = self.dflt_plot_attrs['plot_width']
-            bp.plot.height = self.dflt_plot_attrs['plot_height']
+            bp.plot.width = self.dflt_plot_attrs['width']
+            bp.plot.height = self.dflt_plot_attrs['height']
 
             # TODO: create constants for these attributes
             for c in bp.circles:

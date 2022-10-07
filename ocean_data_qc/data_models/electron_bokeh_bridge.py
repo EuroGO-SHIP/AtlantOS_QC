@@ -44,8 +44,8 @@ class ElectronBokehBridge(Environment):
     def _init_bridge_plot(self):
         lg.info('-- INIT BRIDGE PLOT')
         self.bridge_plot = figure(
-            plot_width=200,
-            plot_height=200,
+            width=200,
+            height=200,
         )
         self.bridge_plot.css_classes = ['bridge_plot']
         source = ColumnDataSource({

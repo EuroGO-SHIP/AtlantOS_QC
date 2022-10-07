@@ -43,7 +43,7 @@ def get_package_data():
     }
 
 requires = [
-    'bokeh ==2.3.3',
+    'bokeh <3.0.0',
     'pandas >=1.0.3',
     'seawater >=3.3.4',
     'more_itertools >=8.2.0',
@@ -67,11 +67,11 @@ if sys.platform == "win32":
 setup(
     name='ocean_data_qc',
     version='1.4.0',                                    # TODO: extract the version from package.json
-    description='WHP file managing',
+    description='Open source application for assisted primary quality control of hydrographic cruise data focused on carbon and ancillary parameters',
     long_description=open("README.md").read(),          # TODO: check if this is readable in this is publish in a future channel repository or
     long_description_content_type="text/markdown",      #       Python Package Index https://pypi.org/
     keywords="ocean data quality control seawater csv whp",
-    url='https://www.atlantos-h2020.eu/',
+    url='https://github.com/ocean-data-qc/ocean-data-qc',
     author='Anton Velo / Jesus Cacabelos',
     author_email='avelo@iim.csic.es',
     license='MIT',

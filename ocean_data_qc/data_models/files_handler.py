@@ -172,8 +172,8 @@ class FilesHandler(Environment):
                 if 'layout' in config:
                     ly = config.get('layout', False)
                     ly_settings['ncols'] = ly.get('plots_per_row', 3)
-                    ly_settings['plot_width'] = ly.get('plots_width', 400)
-                    ly_settings['plot_height'] = ly.get('plots_height', 400)
+                    ly_settings['width'] = ly.get('plots_width', 400)
+                    ly_settings['height'] = ly.get('plots_height', 400)
         return ly_settings if ly_settings != {} else False
 
     def _load_settings(self):
