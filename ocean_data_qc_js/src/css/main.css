@@ -138,13 +138,13 @@ h5 {
 /* LOGOS */
 
 img#ctd_logo {
-    margin: 1rem 5% 1rem 5%;
-    width: 16%;
+    /*margin: 1rem 5% 1rem 5%;*/
+    width: 5%;
 }
 
 img#atlantos_logo {
     margin: 0.7rem 5% 0.7rem 5%;
-    width: 60%;
+    width: 12%;
 }
 
 #logos_div img {

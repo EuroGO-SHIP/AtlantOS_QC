@@ -1,9 +1,9 @@
 {
     "name": "ocean-data-qc",
     "description": "AtlantOS Ocean Data Quality Control",
-    "homepage": "https://www.atlantos-h2020.eu/",
+    "homepage": "https://github.com/ocean-data-qc/ocean-data-qc",
     "main": "main.js",
-    "version": "1.4.0",
+    "version": "1.4.2",
     "scripts": {
         "start": "electron .",
         "start_offline": "electron . --offline",
