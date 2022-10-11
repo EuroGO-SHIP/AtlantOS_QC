@@ -187,7 +187,7 @@ class OctaveEquations(Environment):
             @col1 - the second column name to combine
         '''
         msg = msg
-        df = self.env.cruise_data.df
+        df = self.env.cruise_data.df.copy()
         COL1 = True
         if col1 not in df or (col1 in df and df[col1].isnull().all()):
             COL1 = False
