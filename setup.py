@@ -4,6 +4,9 @@ from setuptools import setup
 import sys
 import shutil
 
+#  TODO: update to the new way to build the setup with pyproject.toml
+#        https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+
 #  NOTE: Shebangs:
 #      * https://docs.python.org/3/using/windows.html#shebang-lines
 #      * https://github.com/pypa/pip/issues/4616
