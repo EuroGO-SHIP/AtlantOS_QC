@@ -237,11 +237,15 @@ module.exports = {
             return;
         }
 
+        var op = tools.file_to_path(self.octave_path)
         var full_str_version = '';
         const octave = spawn(
-            tools.file_to_path(self.octave_path),   // command >> is this working on mac an linux?
-            ['--eval', '"OCTAVE_VERSION"'],         // args
-            {'shell': true }                        // options
+            path.basename(op),                        // TODO: command >> is this working on mac an linux?
+            ['--eval', '"OCTAVE_VERSION"'],     // args
+            {                                   // options
+                'shell': true,
+                'cwd': path.dirname(op)
+            }
         );
         octave.stdout.on('data', (buffer) => {
             var version = buffer.toString('utf8');

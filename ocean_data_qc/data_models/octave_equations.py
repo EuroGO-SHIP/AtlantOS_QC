@@ -41,30 +41,46 @@ class OctaveEquations(Environment):
         self.oct_exe_path = False
         self.set_oct_exe_path()
 
+    def get_regular_oct_folder(self):
+        ''' Returns the regular folder of Octave in Windows
+            Valid for all the versions
+        '''
+        s = r'C:\Program Files\GNU Octave'
+        folder = ''
+        for d in os.listdir(s):
+            if d.startswith('Octave-'):
+                folder = os.path.join(s, d)
+        lg.info(f'GET REGULAR OCTAVE FOLDER: {folder}')
+        return folder
+
     def guess_oct_exe_path(self):
-        lg.info('-- GUESS OCT EXE PATH')
+        lg.info('-- GUESS OCT EXE PATH --')
         if sys.platform == 'win32':
-            base_octave = r'C:\Octave'
-            if os.path.isdir(base_octave):
-                try:
-                    odir = sorted(os.listdir(base_octave), reverse=True)
-                    for vdir in odir:
-                        possible_paths = [
-                            os.path.join(base_octave, vdir, 'mingw64', 'bin', 'octave-cli.exe'),
-                            os.path.join(base_octave, vdir, 'bin', 'octave-cli.exe'),
-                            os.path.join(base_octave, vdir, 'mingw32', 'bin', 'octave-cli.exe')
-                        ]
-                        if os.path.isfile(possible_paths[0]):
-                            self.oct_exe_path = possible_paths[0]
-                            break
-                        elif os.path.isfile(possible_paths[1]):
-                            self.oct_exe_path = possible_paths[1]
-                            break
-                        elif os.path.isfile(possible_paths[2]):
-                            self.oct_exe_path = possible_paths[2]
-                            break
-                except:
-                    pass
+            bases_octave = [
+                r'C:\Octave',
+                self.get_regular_oct_folder()
+            ]
+            for base_octave in bases_octave:
+                if os.path.isdir(base_octave):
+                    try:
+                        odir = sorted(os.listdir(base_octave), reverse=True)
+                        for vdir in odir:
+                            possible_paths = [
+                                os.path.join(base_octave, vdir, 'mingw64', 'bin', 'octave-cli.exe'),
+                                os.path.join(base_octave, vdir, 'bin', 'octave-cli.exe'),
+                                os.path.join(base_octave, vdir, 'mingw32', 'bin', 'octave-cli.exe')
+                            ]
+                            if os.path.isfile(possible_paths[0]):
+                                self.oct_exe_path = possible_paths[0]
+                                break
+                            elif os.path.isfile(possible_paths[1]):
+                                self.oct_exe_path = possible_paths[1]
+                                break
+                            elif os.path.isfile(possible_paths[2]):
+                                self.oct_exe_path = possible_paths[2]
+                                break
+                    except:
+                        pass
             if self.oct_exe_path is False:
                 if shutil.which('octave-cli.exe'):
                     self.oct_exe_path = shutil.which('octave-cli.exe')
@@ -92,7 +108,6 @@ class OctaveEquations(Environment):
                 * The octave path is set manually >> path in argument as well
         '''
         lg.info('-- SET OCT EXE PATH')
-        # lg.warning('>> MANUAL PATH: {}'.format(path))
 
         if path is not None:
             if sys.platform == 'win32':
@@ -107,6 +122,7 @@ class OctaveEquations(Environment):
                     self.oct_exe_path = path
 
         if self.oct_exe_path is not False:
+            lg.info(f'OCTAVE PATH: {path}') # escape spaces
             os.environ['OCTAVE_EXECUTABLE'] = self.oct_exe_path
             try:
                 oct2py_lib = importlib.import_module('oct2py')
