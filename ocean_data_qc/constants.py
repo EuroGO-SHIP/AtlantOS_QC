@@ -28,7 +28,7 @@ NA_REGEX = '^-999[9]?[\.0]*?$'
 
 # ---------------------- URLS ----------------------------- #
 
-ARGIS_TS = "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{Z}/{Y}/{X}/"
+ARGIS_TS = "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{Z}/{Y}/{X}/"
 LOCAL_TS = "http://127.0.0.1:8080/tiles/0/tiles/{Z}/{X}/{Y}/"
 
 # --------------------- COLORS ---------------------------- #
