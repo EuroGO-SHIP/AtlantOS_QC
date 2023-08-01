@@ -46,17 +46,17 @@ def get_package_data():
     }
 
 requires = [
-    'bokeh <3.0.0',
-    'pandas >=1.0.3',
+    'bokeh >=3.2.1',
+    'pandas >=2.0.1',
     'seawater >=3.3.4',
-    'more_itertools >=8.2.0',
-    'oct2py >=5.0.4',
-    'scipy >=1.4.1',  # oct2py needs it, though it is not a direct dependency
-    'tilecloud >=1.1.0',
+    'more_itertools >=10.0.0',
+    'oct2py >=5.6.0',
+    'scipy >=1.10.1',  # oct2py needs it, though it is not a direct dependency
+    'tilecloud >=1.10.0',
 
     # libraries related to export svg, png and pdf files
     # 'svglib >=0.9.2',
-    'reportlab >=3.5.42',
+    'reportlab >=4.0.4',
     # 'selenium >=3.141.0',
 ]
 
