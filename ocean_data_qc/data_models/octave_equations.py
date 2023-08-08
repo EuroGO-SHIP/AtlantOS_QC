@@ -22,91 +22,96 @@ from ocean_data_qc.env import Environment
 
 
 class OctaveEquations(Environment):
-    ''' This class is used for:
-            * check octave path
-            * set octave path manually
-            * equations that can be used by octave
-
-        NOTE: If one new method is added to this class, its string name should be
-              added to the ComputedParameter class as well. This is to prevent from adding
-              it to the local context (local_dict)
-    '''
     env = Environment
 
     def __init__(self):
         lg.info('-- INIT OCTAVE EXECUTABLE')
         self.env.oct_eq = self
-
         self.oc = None
         self.oct_exe_path = False
-        self.set_oct_exe_path()
+        self.guess_oct_exe_path()
 
-    def get_regular_oct_folder(self):
-        ''' Returns the regular folder of Octave in Windows
-            Valid for all the versions
-        '''
+    def _get_regular_oct_folder(self):
         s = r'C:\Program Files\GNU Octave'
-        folder = ''
         for d in os.listdir(s):
             if d.startswith('Octave-'):
                 folder = os.path.join(s, d)
-        lg.info(f'GET REGULAR OCTAVE FOLDER: {folder}')
-        return folder
+                lg.info(f'GET REGULAR OCTAVE FOLDER: {folder}')
+                return folder
+        return ''
 
     def guess_oct_exe_path(self):
         lg.info('-- GUESS OCT EXE PATH --')
         if sys.platform == 'win32':
-            bases_octave = [
-                r'C:\Octave',
-                self.get_regular_oct_folder()
-            ]
-            for base_octave in bases_octave:
-                if os.path.isdir(base_octave):
-                    try:
-                        odir = sorted(os.listdir(base_octave), reverse=True)
-                        for vdir in odir:
-                            possible_paths = [
-                                os.path.join(base_octave, vdir, 'mingw64', 'bin', 'octave-cli.exe'),
-                                os.path.join(base_octave, vdir, 'bin', 'octave-cli.exe'),
-                                os.path.join(base_octave, vdir, 'mingw32', 'bin', 'octave-cli.exe')
-                            ]
-                            if os.path.isfile(possible_paths[0]):
-                                self.oct_exe_path = possible_paths[0]
-                                break
-                            elif os.path.isfile(possible_paths[1]):
-                                self.oct_exe_path = possible_paths[1]
-                                break
-                            elif os.path.isfile(possible_paths[2]):
-                                self.oct_exe_path = possible_paths[2]
-                                break
-                    except:
-                        pass
-            if self.oct_exe_path is False:
-                if shutil.which('octave-cli.exe'):
-                    self.oct_exe_path = shutil.which('octave-cli.exe')
-        else:
-            self.oct_exe_path = shutil.which('octave-cli')
-            if not shutil.which('octave-cli'):
-                try:
-                    if os.path.isfile('/usr/local/bin/octave-cli'):
-                        self.oct_exe_path = '/usr/local/bin/octave-cli'
-                    elif os.path.isdir('/Applications'):
-                        for dname in os.listdir('/Applications'):
-                            if fnmatch.fnmatch(dname, 'Octave-*'):
-                                self.oct_exe_path = os.path.join('/Applications', dname, 'Contents/Resources/usr/bin/octave-cli')
-                except:
-                    pass
-        if self.oct_exe_path is not False:
+            self._find_octave_windows()
+        elif sys.platform == 'darwin':  # macOS
+            self._find_octave_mac()
+        else:  # Assuming Linux
+            self._find_octave_linux()
+
+        if self.oct_exe_path:
             # self.oct_exe_path = pathlib.Path(self.oct_exe_path).as_uri()
             return self.set_oct_exe_path()
         else:
-            return {'octave_path': False }
+            return {'octave_path': False}
+
+    def _find_octave_windows(self):
+        # First, check if octave-cli.exe is in PATH
+        path_in_path = shutil.which('octave-cli.exe')
+        if path_in_path:
+            self.oct_exe_path = path_in_path
+            return
+
+        # Check common directories
+        common_dirs = [
+            r'C:\Octave',
+            self._get_regular_oct_folder()
+        ]
+
+        for base_dir in common_dirs:
+            if os.path.isdir(base_dir):
+                for version_dir in sorted(os.listdir(base_dir), reverse=True):
+                    possible_paths = [
+                        os.path.join(base_dir, version_dir, 'mingw64', 'bin', 'octave-cli.exe'),
+                        os.path.join(base_dir, version_dir, 'bin', 'octave-cli.exe'),
+                        os.path.join(base_dir, version_dir, 'mingw32', 'bin', 'octave-cli.exe')
+                    ]
+                    for path in possible_paths:
+                        if os.path.isfile(path):
+                            self.oct_exe_path = path
+                            return
+
+    def _find_octave_mac(self):
+        # First, check if octave-cli is in PATH
+        path_in_path = shutil.which('octave-cli')
+        if path_in_path:
+            self.oct_exe_path = path_in_path
+            return
+
+        # Check /usr/local/bin/octave-cli
+        if os.path.isfile('/usr/local/bin/octave-cli'):
+            self.oct_exe_path = '/usr/local/bin/octave-cli'
+            return
+
+        # Check /Applications
+        if os.path.isdir('/Applications'):
+            for dname in os.listdir('/Applications'):
+                if fnmatch.fnmatch(dname, 'Octave-*'):
+                    potential_path = os.path.join('/Applications', dname, 'Contents/Resources/usr/bin/octave-cli')
+                    if os.path.isfile(potential_path):
+                        self.oct_exe_path = potential_path
+                        return
+
+    def _find_octave_linux(self):
+        # First, check if octave-cli is in PATH
+        path_in_path = shutil.which('octave-cli')
+        if path_in_path:
+            self.oct_exe_path = path_in_path
+            return
+
+        # Add other potential common paths or logic for Linux if needed
 
     def set_oct_exe_path(self, path=None):
-        ''' This method is run when
-                * The shared.json file already has a path set >> path in argument
-                * The octave path is set manually >> path in argument as well
-        '''
         lg.info('-- SET OCT EXE PATH')
 
         if path is not None:
@@ -121,18 +126,18 @@ class OctaveEquations(Environment):
                 else:
                     self.oct_exe_path = path
 
-        if self.oct_exe_path is not False:
-            lg.info(f'OCTAVE PATH: {path}') # escape spaces
+        if self.oct_exe_path:
+            lg.info(f'OCTAVE PATH: {path}')  # escape spaces
             os.environ['OCTAVE_EXECUTABLE'] = self.oct_exe_path
             try:
                 oct2py_lib = importlib.import_module('oct2py')
                 self.oc = oct2py_lib.octave
                 self.oc.addpath(os.path.join(OCEAN_DATA_QC_PY, 'octave'))
                 self.oc.addpath(os.path.join(OCEAN_DATA_QC_PY, 'octave', 'CANYON-B'))
-                return {'octave_path': self.oct_exe_path }
+                return {'octave_path': self.oct_exe_path}
             except Exception as e:
                 lg.error('>> oct2py LIBRARY COULD NOT BE IMPORTED, OCTAVE PATH WAS NOT SET CORRECTLY')
-        return {'octave_path': False }
+        return {'octave_path': False}
 
     def pressure_combined(self, CTDPRS, DEPTH, LATITUDE):
         pressure = -1 * CTDPRS
