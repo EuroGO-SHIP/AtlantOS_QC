@@ -12,7 +12,6 @@ const port_scanner = require('portscanner');
 const rmdir = require('rimraf');
 const url = require('url');
 const command_exists_sync = require('command-exists').sync;
-const is_dev = require('electron-is-dev');
 
 const {dialog} = require('electron');
 const {app} = require('electron');
@@ -601,7 +600,7 @@ module.exports = {
 
     set_file_to_open: function() {
         lg.info('-- SET FILE TO OPEN')
-        if (is_dev) {
+        if (!app.isPackaged) {
             var file_to_open = process.argv[2];  // the process.argv[1] is the ocean_data_qc_js folder
         } else {
             var file_to_open = process.argv[1];

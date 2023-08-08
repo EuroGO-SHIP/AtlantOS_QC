@@ -13,14 +13,13 @@ app_module_path.addPath(path.join(__dirname, 'src/js/renderer_modules'));
 
 const lg = require('logging');
 const loc = require('locations');
-const is_dev = require('electron-is-dev');
-if (!is_dev) {
+const {app} = require('electron');
+if (app.isPackaged) {
     // this is needed to load the .env file correctly with the dotenv library
     process.chdir(loc.ocean_data_qc_js);
 }
 require('dotenv').config()
 
-const {app} = require('electron');
 const {BrowserWindow} = require('electron');
 const {ipcMain} = require('electron');
 const {dialog} = require('electron');
@@ -48,7 +47,7 @@ try {
 
 // NOTE: These code can be removed when this issue is fixed
 //       https://stackoverflow.com/questions/54175042/python-3-7-anaconda-environment-import-ssl-dll-load-fail-error
-if (process.platform == 'win32' && !is_dev) {
+if (process.platform == 'win32' && app.isPackaged) {
     if (process.env.PATH.slice(-1) != ';') {
         process.env.PATH = process.env.PATH + ';'
     }
@@ -66,7 +65,7 @@ var main_window = null;      // global reference of the window object
 // SO solution: https://stackoverflow.com/a/57288472/4891717
 app.commandLine.appendSwitch('disable-site-isolation-trials');
 
-if (is_dev) {
+if (!app.isPackaged) {
     // NOTE: I need to use the hashes to the url files for the final app
     //       because if an update is made it should use cache and reload
     //       the modified files
@@ -135,7 +134,7 @@ if (!lock) {
                     });
                     server.go_to_welcome_window();
 
-                    if (!is_dev) {
+                    if (app.isPackaged) {
                         // Autoupdater (running on production)
                         web_contents.send('show-loader');  // TODO: is this OK here?
                         updater.init(web_contents);
@@ -270,4 +269,11 @@ ipcMain.on('check-json-custom-settings', function(event, args){
     });
 })
 
+const main_paths = {
+    app_path: app.getAppPath(),
+    user_data_path: app.getPath('userData')
+};
 
+ipcMain.on('get-main-paths', (event) => {
+    event.returnValue = main_paths;
+  });

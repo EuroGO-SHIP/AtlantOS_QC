@@ -6,18 +6,25 @@
 "use strict";
 
 const path = require('path');
-const electron = require('electron');
-const fs = require('fs');
+const electron = require('electron')
+const { ipcRenderer } = require('electron');
 
+var app_path = null;
+var user_data_path = null;
 
-var app = null;
-if (typeof(electron.remote) !== 'undefined') {
-    app = electron.remote.app;
+if (typeof window !== 'undefined') {
+    // renderer process
+    var main_paths = ipcRenderer.sendSync('get-main-paths');  // TODO: find an asynchronous way to do this
+    app_path = main_paths.app_path;
+    user_data_path = main_paths.user_data_path;
 } else {
-    app = electron.app
+    // main process
+    app_path = electron.app.getAppPath();
+    user_data_path = electron.app.getPath('userData');
 }
-const __ocean_data_qc_js = app.getAppPath();
-const __user_data = app.getPath('userData');
+
+const __ocean_data_qc_js = app_path;
+const __user_data = user_data_path;
 
 const locations = {
     // GENERAL FOLDERS

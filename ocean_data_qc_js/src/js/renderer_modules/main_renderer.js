@@ -14,7 +14,6 @@ app_module_path.addPath(__dirname);
 const { ipcRenderer } = require('electron');
 const rmdir = require('rimraf');
 const fs = require('fs');
-const is_dev = require('electron-is-dev');
 
 const loc = require('locations');
 const lg = require('logging');
@@ -70,7 +69,7 @@ $(document).ready(function() {
     });
 });
 
-if (is_dev) {
+if (process.env.NODE_ENV === 'development') {
     $('#update_state').text('Running on development').addClass('update_error');
 }
 

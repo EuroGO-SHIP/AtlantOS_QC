@@ -11,11 +11,10 @@ app_module_path.addPath(__dirname);
 
 const lg = require('logging');
 const { ipcRenderer } = require('electron');
-const is_dev = require('electron-is-dev');
 
 lg.info('>> UPDATE RENDERER.js')
 
-if (!is_dev) {
+if (process.env.NODE_ENV !== 'development') {
     $('#update_state').text('Checking for update...');
     $('#update_state').removeClass().addClass('update_working');
 }
