@@ -69,7 +69,7 @@ $(document).ready(function() {
     });
 });
 
-if (process.env.NODE_ENV === 'development') {
+if (!app.isPackaged) {
     $('#update_state').text('Running on development').addClass('update_error');
 }
 

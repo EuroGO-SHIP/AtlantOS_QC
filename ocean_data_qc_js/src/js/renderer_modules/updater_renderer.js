@@ -14,7 +14,7 @@ const { ipcRenderer } = require('electron');
 
 lg.info('>> UPDATE RENDERER.js')
 
-if (process.env.NODE_ENV !== 'development') {
+if (app.isPackaged) {
     $('#update_state').text('Checking for update...');
     $('#update_state').removeClass().addClass('update_working');
 }
