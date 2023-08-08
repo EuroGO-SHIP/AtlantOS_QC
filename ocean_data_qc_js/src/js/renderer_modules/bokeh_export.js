@@ -159,7 +159,7 @@ module.exports = {
         var tabs = iframe.find(".tabs_widget_col>div>div:not('.bk-tabs-header')");
 
         $.each(tabs, function(tab_index, tab_dom){
-            var canvas_dom = $(tab_dom).find('.bk-canvas');
+            var canvas_dom = $(tab_dom).find('canvas.bk');  // there are two canvas
             var images = []
             $.each(canvas_dom, function(canvas_key, canvas){
                 images.push(canvas.toDataURL("image/png", 1.0));
