@@ -29,7 +29,6 @@ class OctaveEquations(Environment):
         self.env.oct_eq = self
         self.oc = None
         self.oct_exe_path = False
-        self.guess_oct_exe_path()
 
     def _get_regular_oct_folder(self):
         s = r'C:\Program Files\GNU Octave'
@@ -63,16 +62,18 @@ class OctaveEquations(Environment):
         path_in_path = shutil.which('octave-cli.exe')
         if path_in_path:
             self.oct_exe_path = path_in_path
+            lg.info('-- OCTAVE IN PATH')
             return
 
         # Check common directories
         common_dirs = [
-            r'C:\Octave',
-            self._get_regular_oct_folder()
+            self._get_regular_oct_folder(),
+            r'C:\Octave'
         ]
 
         for base_dir in common_dirs:
             if os.path.isdir(base_dir):
+                lg.info(f'-- OCTAVE TRYING: {base_dir}')
                 for version_dir in sorted(os.listdir(base_dir), reverse=True):
                     possible_paths = [
                         os.path.join(base_dir, version_dir, 'mingw64', 'bin', 'octave-cli.exe'),
