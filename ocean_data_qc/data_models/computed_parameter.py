@@ -38,7 +38,7 @@ class ComputedParameter(Environment):
 
     def import_octave_equations(self):
         lg.info('>> OCTAVE PATH: {}'.format(self.env.oct_eq.oct_exe_path))
-        oc_output = sbp.getstatusoutput('{} --eval "OCTAVE_VERSION"'.format(self.env.oct_eq.oct_exe_path))
+        oc_output = sbp.getstatusoutput('"{}" --eval "OCTAVE_VERSION"'.format(self.env.oct_eq.oct_exe_path))
         if oc_output[0] == 0:
             lg.info('>> OCTAVE DETECTED FROM PYTHON, VERSION: {}'.format(
                 oc_output[1].split('=')[1].strip())
