@@ -33,14 +33,15 @@ class OctaveEquations(Environment):
 
     def _get_regular_oct_folder(self):
         s = r'C:\Program Files\GNU Octave'
-        try:
-            for d in os.listdir(s):
-                if d.startswith('Octave-'):
-                    folder = os.path.join(s, d)
-                    lg.info(f'GET REGULAR OCTAVE FOLDER: {folder}')
-                    return folder
-        except:
+        if not os.path.exists(s):  # Check if the directory exists
+            lg.warning(f"Directory {s} does not exist.")
             return ''
+        for d in os.listdir(s):
+            if d.startswith('Octave-'):
+                folder = os.path.join(s, d)
+                lg.info(f'GET REGULAR OCTAVE FOLDER: {folder}')
+                return folder
+        return ''
 
 
     def guess_oct_exe_path(self):
