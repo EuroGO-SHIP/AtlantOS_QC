@@ -1,6 +1,6 @@
 # AtlantOS QC (GLODAP QC1 tool) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2603121.svg)](https://doi.org/10.5281/zenodo.2603121)
 
-This software is an interactive tool for making the first Quality Control (1st QC, QC1) on Hydrographic Cruise Data. Built mainly in Python but using Node, JavaScript, HTML5 and related technologies. Can be run on multiple platforms.
+This software is an interactive tool for helping in first Quality Control (1st QC, QC1) of Hydrographic Cruise Data. Fully open source code built mainly in Python but using Node, JavaScript, HTML5 and related technologies. It can be run on most Unix, Windows and MacOS systems.
 
 ![demo](https://github.com/ocean-data-qc/ocean-data-qc/blob/master/ocean_data_qc_js/src/img/demo.gif?raw=true)
 
@@ -13,7 +13,7 @@ Version 1.0 was released under [![DOI](https://zenodo.org/badge/DOI/10.5281/zeno
 
 Since version 1.0 to 1.4.0, the application had no specific nor continuous funding for its development, having received partial support from [H2020-COMFORT](https://comfort.w.uib.no/) project and being also a contribution to WATER:iOS Interdisciplinary Thematic Platform [@WATER_IOS_CSIC](https://twitter.com/water_ios_csic)
 
-From 1.4.0 onwards is supported by **Euro GO-SHIP** (Grant #101094690), a EU-HORIZON project for _Developing a research infraestructure concept to support european hydrography_
+From 1.4.0 onwards is supported by [**Euro GO-SHIP**](https://eurogo-ship.eu/) (Grant #101094690), a EU-HORIZON project for _Developing a research infraestructure concept to support european hydrography_
 
 ## Installation
 
@@ -21,15 +21,17 @@ It's not essential for this software to run, but in order to take advantage of t
 
 ### Using built-in installers
 
-* Windows x64: [ocean-data-qc-setup-1.4.0.exe](https://github.com/ocean-data-qc/ocean-data-qc/releases/download/v1.4.0/ocean-data-qc-setup-1.4.0.exe)
-* macOS: [ocean-data-qc-1.4.0.dmg](https://github.com/ocean-data-qc/ocean-data-qc/releases/download/v1.4.0/ocean-data-qc-1.4.0.dmg)
-* GNU/linux deb (Ubuntu, Debian,...): [ocean-data-qc_1.4.0_amd64.deb](https://github.com/ocean-data-qc/ocean-data-qc/releases/download/v1.4.0/ocean-data-qc_1.4.0_amd64.deb)
-* GNU/Linux rpm (RedHat, SuSe, ...): [ocean-data-qc-1.4.0.x86_64.rpm](https://github.com/ocean-data-qc/ocean-data-qc/releases/download/v1.4.0/ocean-data-qc-1.4.0.x86_64.rpm)
-* GNU/Linux snap: [ocean-data-qc_1.4.0_amd64.snap](https://github.com/ocean-data-qc/ocean-data-qc/releases/download/v1.4.0/ocean-data-qc_1.4.0_amd64.snap)
-* GNU/Linux AppImage: [ocean-data-qc-1.4.0.AppImage](https://github.com/ocean-data-qc/ocean-data-qc/releases/download/v1.4.0/ocean-data-qc-1.4.0.AppImage)
+Releases (https://github.com/EuroGO-SHIP/AtlantOS_QC/releases):
+* Windows x64,  [ocean-data-qc-setup-1.5.0.exe](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC.Setup.1.5.0.exe)
+* macOS: [ocean-data-qc-1.5.0-arm64.dmg (Apple Silicon)](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC-1.5.0-arm64.dmg) | [ocean-data-qc-1.5.0.dmg](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC-1.5.0.dmg)
+* GNU/linux deb (Ubuntu, Debian,...): [ocean-data-qc_1.5.0_amd64.deb](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/ocean-data-qc_1.5.0_amd64.deb)
+* GNU/Linux rpm (RedHat, SuSe, ...): [ocean-data-qc-1.5.0.x86_64.rpm](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/ocean-data-qc-1.5.0.x86_64.rpm)
+* GNU/Linux snap: [ocean-data-qc_1.5.0_amd64.snap](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/ocean-data-qc_1.5.0_amd64.snap)
+* GNU/Linux AppImage: [ocean-data-qc-1.5.0.AppImage](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC-1.5.0.AppImage)
 
 Source code:
 * latest: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2603121.svg)](https://doi.org/10.5281/zenodo.2603121)
+* v1.5.0: [https://github.com/EuroGO-SHIP/AtlantOS_QC/archive/refs/tags/v1.5.0.tar.gz]
 * v1.4.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.4.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.4.0.tar.gz) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4532402.svg)](https://doi.org/10.5281/zenodo.4532402)
 * v1.3.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.3.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.3.0.tar.gz)
 * v1.2.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.2.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.2.0.tar.gz) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3470218.svg)](https://doi.org/10.5281/zenodo.3470218)
@@ -38,7 +40,7 @@ Source code:
 ### Manual Installation
 
 1. Download and install base dependencies:
-    1. Download and install [Python](https://www.python.org/download/releases/3.0/) >=3.8. Recommended downloader and instructions: [https://conda.io/miniconda.html](https://conda.io/miniconda.html)
+    1. Download and install [Python](https://www.python.org/download/releases/3.0/) >=3.11. Recommended downloader and instructions: [https://conda.io/miniconda.html](https://conda.io/miniconda.html)
 
     2. Download and install [yarn](https://yarnpkg.com/). Follow instructions from: https://yarnpkg.com/ (Alternatively  you can use [npm](https://www.npmjs.com/))
 
