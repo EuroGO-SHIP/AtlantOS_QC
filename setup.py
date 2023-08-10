@@ -69,12 +69,12 @@ if sys.platform == "win32":
 
 setup(
     name='ocean_data_qc',
-    version='1.4.0',                                    # TODO: extract the version from package.json
+    version='1.5.0',                                    # TODO: extract the version from package.json
     description='Open source application for assisted primary quality control of hydrographic cruise data focused on carbon and ancillary parameters',
     long_description=open("README.md").read(),          # TODO: check if this is readable in this is publish in a future channel repository or
     long_description_content_type="text/markdown",      #       Python Package Index https://pypi.org/
     keywords="ocean data quality control seawater csv whp",
-    url='https://github.com/ocean-data-qc/ocean-data-qc',
+    url='https://github.com/EuroGO-SHIP/AtlantOS_QC',
     author='Anton Velo / Jesus Cacabelos',
     author_email='avelo@iim.csic.es',
     license='MIT',

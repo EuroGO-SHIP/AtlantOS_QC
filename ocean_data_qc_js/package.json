@@ -3,7 +3,7 @@
     "description": "AtlantOS Ocean Data Quality Control",
     "homepage": "https://github.com/ocean-data-qc/ocean-data-qc",
     "main": "main.js",
-    "version": "1.4.2",
+    "version": "1.5.0",
     "scripts": {
         "start": "electron .",
         "start_offline": "electron . --offline",
