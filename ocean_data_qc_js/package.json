@@ -68,7 +68,7 @@
     "devDependencies": {
         "devtron": "^1.4.0",
         "electron": "^25.3.2",
-        "electron-builder": "^22.14.13",
+        "electron-builder": "^=23.0.2",
         "electron-debug": "^2.2.0"
     },
     "build": {
