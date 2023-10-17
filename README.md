@@ -1,4 +1,4 @@
-# AtlantOS QC (GLODAP QC1 tool) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2603121.svg)](https://doi.org/10.5281/zenodo.2603121)
+# AtlantOS QC (GLODAP QC1 tool) [![DOI](https://zenodo.org/badge/549480947.svg)](https://zenodo.org/doi/10.5281/zenodo.10015794)
 
 This software is an interactive tool for helping in first Quality Control (1st QC, QC1) of Hydrographic Cruise Data. Fully open source code built mainly in Python but using Node, JavaScript, HTML5 and related technologies. It can be run on most Unix, Windows and MacOS systems.
 
@@ -13,7 +13,7 @@ Version 1.0 was released under [![DOI](https://zenodo.org/badge/DOI/10.5281/zeno
 
 Since version 1.0 to 1.4.0, the application had no specific nor continuous funding for its development, having received partial support from [H2020-COMFORT](https://comfort.w.uib.no/) project and being also a contribution to WATER:iOS Interdisciplinary Thematic Platform [@WATER_IOS_CSIC](https://twitter.com/water_ios_csic)
 
-From 1.4.0 onwards is supported by [**Euro GO-SHIP**](https://eurogo-ship.eu/) (Grant #101094690), a EU-HORIZON project for _Developing a research infraestructure concept to support european hydrography_
+From 1.5.0 onwards is supported by [**Euro GO-SHIP**](https://eurogo-ship.eu/) (Grant #101094690), a EU-HORIZON project for _Developing a research infraestructure concept to support european hydrography_ [![DOI](https://zenodo.org/badge/549480947.svg)](https://zenodo.org/doi/10.5281/zenodo.10015794)
 
 ## Installation
 
