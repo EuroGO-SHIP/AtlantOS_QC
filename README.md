@@ -30,8 +30,8 @@ Releases (https://github.com/EuroGO-SHIP/AtlantOS_QC/releases):
 * GNU/Linux AppImage: [ocean-data-qc-1.5.0.AppImage](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC-1.5.0.AppImage)
 
 Source code:
-* latest: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2603121.svg)](https://doi.org/10.5281/zenodo.2603121)
-* v1.5.0: [https://github.com/EuroGO-SHIP/AtlantOS_QC/archive/refs/tags/v1.5.0.tar.gz]
+* latest: [![DOI](https://zenodo.org/badge/549480947.svg)](https://zenodo.org/doi/10.5281/zenodo.10015794)
+* v1.5.0: [https://github.com/EuroGO-SHIP/AtlantOS_QC/archive/refs/tags/v1.5.0.tar.gz] [![DOI](https://zenodo.org/badge/549480947.svg)](https://zenodo.org/doi/10.5281/zenodo.10015794)
 * v1.4.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.4.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.4.0.tar.gz) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4532402.svg)](https://doi.org/10.5281/zenodo.4532402)
 * v1.3.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.3.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.3.0.tar.gz)
 * v1.2.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.2.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.2.0.tar.gz) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3470218.svg)](https://doi.org/10.5281/zenodo.3470218)
