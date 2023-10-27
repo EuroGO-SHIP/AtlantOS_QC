@@ -52,16 +52,29 @@ $(window).keydown(function(event){
 
 window.onmessage = function(e){
     if (typeof(e.data.signal) != "undefined") {
+        console.log('THE SIGNAL ARRIVED: ' + e.data.signal)
         if (e.data.signal == 'call-python-promise' || e.data.signal == 'update-bridge-text-value') {
-                // this updates dummy text field value and triggers the click event of the bridge_button
+            // this updates dummy text field value and triggers the click event of the bridge_button
 
-                // NOTE: This cannot be replaced defining the onchange event of the dummy text, imagine that
-                //       you want to run the same action twice, there would'n be change on the value to trigger the python method
+            // NOTE: This cannot be replaced defining the onchange event of the dummy text, imagine that
+            //       you want to run the same action twice, there wouldn't be change on the value to trigger
+            //       the python method
 
-                var input_bridge_text = get_input_bridge_text();
-                input_bridge_text.value = JSON.stringify(e.data.message_data);
-                var button = $('.bridge_button>div>button')
-                button.click();
+            var input_bridge_text = get_input_bridge_text();
+            input_bridge_text.value = JSON.stringify(e.data.message_data);
+
+            var bridge_row_host = $('.bridge_row');
+            var bridge_row_root = bridge_row_host.get(0).shadowRoot;
+
+            var bk_column_host = $(bridge_row_root).find('.bk-Column');
+            var bk_column_root = bk_column_host.get(0).shadowRoot;
+
+            // var bridge_button_host = $(bridge_row_root).find('.bridge_button>div>button')
+            var bridge_button_host = $(bk_column_root).find('.bridge_button');
+            var bridge_button_root = bridge_button_host.get(0).shadowRoot;
+            var button = $(bridge_button_root).find('div>button');
+            button.click();
+
         } else if (e.data.signal == 'on-ready') {
             console.log('ON READY');
 
