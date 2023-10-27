@@ -112,14 +112,17 @@ class BokehDataTable(Environment):
             value=[''] * len(self.params),
             flag=[''] * len(self.params),
         ))
+        lg.info(f'TABLE DF: {self.table_df}')
+
+        self.table_df.to_pickle('C:/Users/Chesu/Documents/Personal Documents/Git Projects/atlantos/tests/jupyter_notebooks/pickle/table_df.pkl')
         table_cds = ColumnDataSource(self.table_df)
         self.data_table = DataTable(
             width=190,
             height=225,
-            source=table_cds,
+            # source=table_cds,
             columns=columns,
             editable=True,                  # TODO: check if there is a better way than https://stackoverflow.com/a/49424647/4891717
-            autosize_mode='fit_columns',              # avoids horizontal scrolls bar
+            # autosize_mode='fit_columns',              # avoids horizontal scrolls bar >> https://github.com/bokeh/bokeh/issues/12948
             index_position=None,            # hides index column
             selectable=True,                # this is needed to edit cells
 
