@@ -5,9 +5,10 @@
 #########################################################################
 
 from bokeh.util.logconfig import bokeh_logger as lg
-from bokeh.models.widgets.buttons import Button
+from bokeh.models.widgets.buttons import Toggle
 from bokeh.models.widgets.markups import Div
 from bokeh.models.widgets import Select
+from bokeh.models.ui.icons import TablerIcon
 from bokeh.layouts import row, column
 import numpy as np
 
@@ -20,6 +21,19 @@ class BokehFlags(Environment):
     ''' Class to manage Flag Controls and its Events
     '''
     env = Environment
+
+    css_hide_bt_decorators = '''
+        .bk-btn, .bk-btn:hover {{
+            color: {};
+            border: 0px;
+            background-color: transparent;
+            outline: 0;
+        }}
+        .bk-btn:active, .bk-active.bk-btn {{
+            box-shadow: none;
+            -webkit-box-shadow: none;
+        }}
+    '''
 
     @property
     def all_flags_list(self):
@@ -83,40 +97,43 @@ class BokehFlags(Environment):
 
     def  _init_flags_control_header(self):
         lg.info('-- FLAGS CONTROL HEADER')
-        self.all_flags_vb_bt = Button(
+        self.all_flags_vb_bt = Toggle(
             name='all_flags_bt',
+            icon=TablerIcon('eye', size='1.2em'),
             label='',
+            active=False,
             width=30,
-            css_classes=['eye_bt'],
+            stylesheets=[self.css_hide_bt_decorators.format('black')]
         )
 
-        def all_flags_vb_bt_callback():
+        def all_flags_vb_bt_callback(attr, old, new):
             lg.info('-- ALL FLAGS VISIBLE CALLBACK')
             self.env.bk_bridge.call_js({
                 'object': 'tools',
                 'function': 'show_wait_cursor',
             })
-            all_flags_bt = self.env.doc.select_one(dict(
+
+            all_flags_vb_bt = self.env.doc.select_one(dict(
                 name='all_flags_bt'
             ))
-            eye_slash_bt = True if 'eye_slash_bt' in all_flags_bt.css_classes else False
-            if eye_slash_bt:
-                self.env.doc.set_select(
-                    selector=dict(tags=['vb_bt']),
-                    updates=dict(css_classes=['eye_bt'])
-                )
-            else:
-                self.env.doc.set_select(
-                    selector=dict(tags=['vb_bt']),
-                    updates=dict(css_classes=['eye_slash_bt'])
-                )
 
             new_visible_flags = []
-            if 'eye_bt' in all_flags_bt.css_classes:
-                all_flags_bt.css_classes = ['eye_slash_bt']
+            if new:
+                all_flags_vb_bt.icon.icon_name = 'eye-off'
             else:
+                all_flags_vb_bt.icon.icon_name = 'eye'
                 new_visible_flags = self.all_flags_list
-                all_flags_bt.css_classes = ['eye_bt']
+
+            self.env.bk_bridge.call_js({
+                'object': 'tools',
+                'function': 'show_wait_cursor',
+            })
+
+            # TODO: this should be done with set_select(), but I could not find the way to do it
+            flag_bts = self.env.doc.select(selector=dict(tags=['vb_bt']))
+            for b in flag_bts:
+                b.icon.icon_name = all_flags_vb_bt.icon.icon_name
+
             lg.info('>> NEW VISIBLE FLAGS: {}'.format(new_visible_flags))
             self._update_visible_flags(new_visible_flags)
             self.env.bk_bridge.call_js({
@@ -124,8 +141,7 @@ class BokehFlags(Environment):
                 'function': 'show_default_cursor',
             })
 
-
-        self.all_flags_vb_bt.on_click(all_flags_vb_bt_callback)
+        self.all_flags_vb_bt.on_change('active', all_flags_vb_bt_callback)
 
         # TODO: replace this div with the flag selection dropdown
         #       or maybe there would be too many control on one place
@@ -160,37 +176,47 @@ class BokehFlags(Environment):
 
         for flag_index, str_value in self.env.all_flags.items():
 
-            def change_flag_vb(flag_index=flag_index):
+            def change_flag_vb(attr, old, new, flag_index=flag_index):
+                lg.info('-- CHANGE_FLAG_VB')
+                # lg.info(f'FLAG INDEX: {flag_index}')
+
                 self.env.bk_bridge.call_js({
                     'object': 'tools',
                     'function': 'show_wait_cursor',
                 })
+
                 vb_bt_to_change = self.env.doc.select_one(dict(
                     name='flag_vb_bt_{}'.format(flag_index)
                 ))
                 lg.info('>> CHANGING VISIBILITY: {}'.format('flag_vb_bt_{}'.format(flag_index)))
 
                 new_visible_flags = self.env.visible_flags.copy()
-                if 'eye_bt' in vb_bt_to_change.css_classes:
+
+                if new:
                     new_visible_flags.remove(flag_index)
-                    vb_bt_to_change.css_classes = ['eye_slash_bt']
+                    vb_bt_to_change.icon.icon_name = 'eye-off'
                 else:
                     new_visible_flags.append(flag_index)
-                    vb_bt_to_change.css_classes = ['eye_bt']
+                    vb_bt_to_change.icon.icon_name = 'eye'
+
                 self._update_visible_flags(new_visible_flags)
                 self.env.bk_bridge.call_js({
                     'object': 'tools',
                     'function': 'show_default_cursor',
                 })
 
-            vb_bt = Button(
+
+            vb_bt = Toggle(
                 name='flag_vb_bt_{}'.format(flag_index),
+                icon=TablerIcon('eye', size='1.2em'),
                 label='',
+                active=False,
                 width=30,
                 tags=['vb_bt'],
-                css_classes=['eye_bt'],
+                stylesheets=[self.css_hide_bt_decorators.format('black')]
             )
-            vb_bt.on_click(change_flag_vb)
+
+            vb_bt.on_change('active', change_flag_vb)
 
             edit_flag_bt = self._init_edit_bt(flag_index)
 
@@ -201,7 +227,7 @@ class BokehFlags(Environment):
                 height=25,
                 tags=['fg_str_div'],
                 css_classes=['fg_str_div'],
-                style={
+                styles={
                     'color': CIRCLE_COLORS[flag_index],
                     'font-weight': 'bold',
                 }
@@ -224,20 +250,22 @@ class BokehFlags(Environment):
         )
 
     def _init_edit_bt(self, flag_index):
-        edit_flag_bt = Button(
+        edit_flag_bt = Toggle(
             name='edit_flag_bt_{}'.format(flag_index),
+            icon=TablerIcon('flag-filled', size='1.2em'),
             label='',
+            active=False,
             width=30,
             tags=['edit_flag_bt'],
-            css_classes=['edit_flag_bt']
+            stylesheets=[self.css_hide_bt_decorators.format(CIRCLE_COLORS[flag_index])]
         )
-        def update_flag_value_edit_bt(flag_index=flag_index):
+        def update_flag_value_edit_bt(attr, old, new, flag_index=flag_index):
             self.update_flag_value(
                 flag_value=flag_index,
                 flag_to_update=None,
                 row_indexes=self.env.selection
             )
-        edit_flag_bt.on_click(update_flag_value_edit_bt)
+        edit_flag_bt.on_change('active', update_flag_value_edit_bt)
         return edit_flag_bt
 
     def update_flag_value(self, flag_value=None, flag_to_update=None, row_indexes=[]):
@@ -322,9 +350,9 @@ class BokehFlags(Environment):
             name='all_flags_bt'
         ))
         if to_visible_flags == []:
-            all_flags_bt.css_classes = ['eye_slash_bt']
+            all_flags_bt.icon.icon_name = 'eye-off'
         else:
-            all_flags_bt.css_classes = ['eye_bt']
+            all_flags_bt.icon.icon_name = 'eye'
 
         self.env.visible_flags = to_visible_flags.copy()
         self.env.bk_sources._upd_prof_srcs(force_selection=True)
@@ -352,4 +380,4 @@ class BokehFlags(Environment):
             all_flags_bt = self.env.doc.select_one(dict(
                 name='all_flags_bt'
             ))
-            all_flags_bt.css_classes = ['eye_bt']
+            all_flags_bt.icon.icon_name = 'eye'
