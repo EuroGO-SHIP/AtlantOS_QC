@@ -46,13 +46,13 @@ def get_package_data():
     }
 
 requires = [
-    'bokeh <3.0.0',
-    'pandas >=2.0.1',
+    'bokeh >=3.0.0',
+    # 'pandas >=2.0.1',  # bokeh 3.0.0 requires pandas
     'seawater >=3.3.4',
     'more_itertools >=10.0.0',
     'oct2py >=5.6.0',
     'scipy >=1.10.1',  # oct2py needs it, though it is not a direct dependency
-    'tilecloud >=1.10.0',
+    'tilecloud >=1.1.0',  # 'tilecloud >=1.10.0', >> latest version does not work on python 3.11.5
 
     # libraries related to export svg, png and pdf files
     # 'svglib >=0.9.2',
@@ -70,6 +70,7 @@ if sys.platform == "win32":
 setup(
     name='ocean_data_qc',
     version='1.5.0',                                    # TODO: extract the version from package.json
+    python_requires='>=3.9',
     description='Open source application for assisted primary quality control of hydrographic cruise data focused on carbon and ancillary parameters',
     long_description=open("README.md").read(),          # TODO: check if this is readable in this is publish in a future channel repository or
     long_description_content_type="text/markdown",      #       Python Package Index https://pypi.org/
