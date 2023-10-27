@@ -108,9 +108,9 @@ class BokehSources(Environment):
             flag_views = {}
             for key in list(self.env.all_flags.keys()):
                 if key in flags:
-                    view = CDSView(source=self.env.source, filters=[IndexFilter(flags[key])])
+                    view = CDSView(filter=IndexFilter(flags[key]))
                 else:  # there is no values
-                    view = CDSView(source=self.env.source, filters=[IndexFilter([])])
+                    view = CDSView(filter=IndexFilter([]))
                 flag_views[key] = view
             self.env.flag_views[tab] = flag_views
 

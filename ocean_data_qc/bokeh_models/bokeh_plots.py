@@ -7,6 +7,7 @@
 import numpy as np
 from copy import deepcopy
 from os import path
+from PIL import Image
 from bokeh.plotting import figure
 from bokeh.models import CustomAction
 from bokeh.models.annotations import PolyAnnotation
@@ -16,7 +17,7 @@ from bokeh.events import Reset, DoubleTap
 from bokeh.models.renderers import GlyphRenderer
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.glyphs import Line
-from bokeh.models.markers import Circle, Asterisk
+from bokeh.models import Circle
 from bokeh.palettes import Reds3
 from bokeh.models.tools import (
     PanTool, BoxZoomTool, BoxSelectTool, WheelZoomTool,
@@ -271,7 +272,7 @@ class BokehPlots(Environment):
         reset = ResetTool()
         self.lasso_select = LassoSelectTool(
             renderers=self.circles,          # default = all available renderers
-            select_every_mousemove=False,    # to enhance performance
+            continuous=False,    # to enhance performance
         )
 
         self.lasso_select.overlay.line_alpha=0.9
@@ -326,8 +327,8 @@ class BokehPlots(Environment):
             }, '*');                        // to main_renderer.js
         """
         deselect_tool = CustomAction(  # I took this from ResetTool that inherits from CustomAction
-            icon=path.join(IMG, 'deselect.png'),
+            icon=Image.open(path.join(IMG, 'deselect.png')),
             callback=CustomJS(code=js_code, args=dict(source=self.env.source, reset_selection=self.env.reset_selection)),
-            action_tooltip='Reset Selection'
+            description='Reset Selection'
         )
         self.plot.add_tools(deselect_tool)  # reset is needed?

@@ -8,9 +8,9 @@ from bokeh.util.logconfig import bokeh_logger as lg
 from bokeh.models.widgets.buttons import Button
 from bokeh.models.renderers import GlyphRenderer
 from bokeh.models.widgets.markups import Div
-from bokeh.models.widgets import Slider, CheckboxGroup, Select
+from bokeh.models.widgets import Slider, Switch, Select
 from bokeh.layouts import gridplot
-from bokeh.models.widgets.panels import Panel, Tabs
+from bokeh.models import TabPanel, Tabs
 
 from ocean_data_qc.env import Environment
 from ocean_data_qc.constants import *
@@ -125,20 +125,23 @@ class BokehEvents(Environment):
     def _init_cb_prof_invsbl_points(self):
         ''' Plot the profiles with the visible points or with the invisible as well
         '''
-        def on_click_cb_prof_invsbl_points(active_list):
-            if active_list == [0]:
+        def on_click_cb_prof_invsbl_points(attr, old, new):
+            lg.info(f'ATTR: {attr}')
+            lg.info(f'old: {old}')
+            lg.info(f'new: {new}')
+            if new:
                 self.env.plot_prof_invsbl_points = True
             else:
                 self.env.plot_prof_invsbl_points = False
             self.env.bk_sources._upd_prof_srcs()
 
-        self.cb_prof_invsbl_points = CheckboxGroup(
+        self.cb_prof_invsbl_points = Switch(
             width=200, height=10,
-            labels=['Fixed profiles'],  # Plot invisible points on profiles
-            active=[],
+            # labels=['Fixed profiles'],  # Plot invisible points on profiles
+            active=False,
             css_classes=['fixed_profiles_cb', 'bokeh_hidden']
         )
-        self.cb_prof_invsbl_points.on_click(on_click_cb_prof_invsbl_points)
+        self.cb_prof_invsbl_points.on_change('active', on_click_cb_prof_invsbl_points)
 
     def _init_profile_nav(self):
         def next_profile():
@@ -239,10 +242,11 @@ class BokehEvents(Environment):
             self._check_profile_limits()
 
     def _init_nearby_prof_cb(self):
-        def on_click_nearby_prof(active_list):
+        def on_click_nearby_prof(attr, old, new):
             lg.info('-- ONCLICK NEARBY PROF')
+
             lg.info('>> SELECTED STT: {}'.format(self.env.stt_to_select))
-            if 0 in active_list:
+            if new:
                 self.env.plot_nearby_prof = True
                 if self.env.stt_to_select is not None:
                     self.set_cur_nearby_prof()
@@ -258,13 +262,13 @@ class BokehEvents(Environment):
                 self.env.cur_nearby_prof = None
                 self.env.bk_sources._upd_prof_srcs(force_selection=True)
 
-        self.nearby_prof_cb = CheckboxGroup(
+        self.nearby_prof_cb = Switch(
             width=200, height=20,
-            labels=['Show nearby station'],
-            active=[],
+            # labels=['Show nearby station'],  # TODO: how to add a label to the Switch?
+            active=False,
             css_classes=['show_nearby_station_cb', 'bokeh_hidden']
         )
-        self.nearby_prof_cb.on_click(on_click_nearby_prof)
+        self.nearby_prof_cb.on_change('active', on_click_nearby_prof)
 
     def set_cur_nearby_prof(self):
         ''' Stores in self.env.cur_nearby_prof the default extra station.
@@ -310,14 +314,14 @@ class BokehEvents(Environment):
                 toolbar_location='left',  # TODO: separate the toolbars to set some tools active by default,
                                           #       like this the hover icon can be shown as well
             )
-            name = 'panel_{}'.format(tab.lower())
-            panel_list.append(Panel(
+            panel_list.append(TabPanel(
                 name='panel_{}'.format(tab.lower()),
                 child=gp,
                 title=tab,
             ))  # TODO: closable=True
 
         lg.info('>> TABS WIDGET: {}'.format(self.env.tabs_widget))
+        lg.info('>> PANEL LIST: {}'.format(panel_list))
         if self.env.tabs_widget is None:
             self.env.tabs_widget = Tabs(
                 name='tabs_widget',

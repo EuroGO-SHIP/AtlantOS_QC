@@ -4,9 +4,9 @@
 #    AUTHORS and LICENSE files at the root folder of this application   #
 #########################################################################
 
-from bokeh.models import ColumnDataSource, Range1d, Scatter, CustomJSHover
+from bokeh.models import Range1d, Scatter, CustomJSHover
 from bokeh.models.tiles import WMTSTileSource
-from bokeh.plotting import Figure
+from bokeh.plotting import figure
 from bokeh.models.tools import (
     PanTool, BoxZoomTool, BoxSelectTool, WheelZoomTool,
     LassoSelectTool, CrosshairTool, TapTool, SaveTool,
@@ -51,7 +51,7 @@ class BokehMap(Environment):
             # range_padding_units='absolute',
         )
 
-        self.env.wmts_map = Figure(
+        self.env.wmts_map = figure(
             height=240,
             width=200,
             output_backend=OUTPUT_BACKEND,
@@ -102,7 +102,7 @@ class BokehMap(Environment):
         save = SaveTool()
 
         lasso_select = LassoSelectTool(
-            select_every_mousemove=False,            # enhance performance
+            continuous=False,            # enhance performance
         )
 
         code = """

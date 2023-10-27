@@ -169,9 +169,9 @@ class BokehPlotsHandler(Environment):
         for tab in tabs_to_update:
             for key in list(self.env.all_flags.keys()):
                 if key in flags:
-                    self.env.flag_views[tab][key].filters = [IndexFilter(flags[key])]
+                    self.env.flag_views[tab][key].filter = IndexFilter(flags[key])
                 else:  # there is no values for the current flag
-                    self.env.flag_views[tab][key].filters = [IndexFilter([])]
+                    self.env.flag_views[tab][key].filter = IndexFilter([])
         # lg.info('>> SELF.ENV.FLAG_VIEWS: {}'.format(self.env.flag_views))
 
     def deselect_tool(self):
