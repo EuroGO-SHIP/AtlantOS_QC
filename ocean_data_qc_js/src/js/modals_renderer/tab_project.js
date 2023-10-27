@@ -51,6 +51,7 @@ module.exports = {
 
     init_files: function() {
         var self = this;
+        lg.info('-- INIT FILES');
 
         // TMP FOLDER
         fs.mkdir(loc.proj_files, function(err) {
@@ -70,6 +71,7 @@ module.exports = {
     */
     cp_original_csv: function() {
         var self = this;
+        lg.info('-- CP ORIGINAL CSV')
         if (['xlsx', 'ods'].includes(self.file_type)) {
             self.cp_original_csv_from_excel();
         } else{
@@ -144,6 +146,7 @@ module.exports = {
     /** Copy custom_settings.json into settings.json in the project temp folder */
     cp_custom_json: function() {
         var self = this;
+        lg.info('-- CP CUSTOM JSON')
         var cs_rs = fs.createReadStream(path.join(loc.custom_settings));
         var cs_ws = fs.createWriteStream(path.join(loc.proj_settings));
         cs_rs.on('error', function() {
@@ -154,10 +157,25 @@ module.exports = {
         })
         var cs_p = cs_rs.pipe(cs_ws);
         cs_p.on('close', function(){
+            var ms = 0
             var _checkBokehSate = setInterval(function() {
                 if ($('body').data('bokeh_state') == 'ready' && $('body').data('oct_state') == 'checked') {
                     clearInterval(_checkBokehSate);
                     self.init_form();
+                } else {
+                    ms += 100;
+                    if ($('body').data('oct_state') == 'checking') {
+                        if (ms == 10000) {
+                            tools.showModal('ERROR', 'Guessing the Octave path is taking a long time');
+                            clearInterval(_checkBokehSate);
+                        }
+                    }
+                    if ($('body').data('bokeh_state') == 'not-ready') {
+                        if (ms == 20000) {
+                            tools.showModal('ERROR', 'Loading bokeh is taking a long time. Try to open the file again when it is loaded.');
+                            clearInterval(_checkBokehSate);
+                        }
+                    }
                 }
             }, 100);
         });
@@ -165,6 +183,7 @@ module.exports = {
 
     init_form: function() {
         var self = this;
+        lg.info('-- INIT FORM')
         var call_params = {
             'object': 'cruise.data.handler',
             'method': 'get_cruise_data_columns',
