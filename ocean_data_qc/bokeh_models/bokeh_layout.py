@@ -74,8 +74,17 @@ class BokehLayout(Environment):
             self.env.flagger_select,
             self.env.flags_control_col,
 
-            be.cb_prof_invsbl_points,
-            be.nearby_prof_cb,
+            # NOTE: Switch object does not have labels, I need to add it manually
+            row(children=[
+                be.cb_prof_invsbl_points,
+                Div(text='Fixed profiles')
+            ], max_width=100),
+
+            row(children=[
+                be.nearby_prof_cb,
+                Div(text='Show nearby station')
+            ], max_width=100),
+
             prof_nav,
 
             Div(width=200, height=15, text='<u><b>Selected Samples</b></u>'),
