@@ -27,6 +27,7 @@ class BokehFlags(Environment):
             border: 0px;
             background-color: transparent;
             outline: 0;
+            padding: 0px;
         }}
         .bk-btn:active, .bk-active.bk-btn {{
             box-shadow: none;
