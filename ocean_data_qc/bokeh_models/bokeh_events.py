@@ -313,6 +313,7 @@ class BokehEvents(Environment):
                 height=ly_settings['height'],
                 toolbar_location='left',  # TODO: separate the toolbars to set some tools active by default,
                                           #       like this the hover icon can be shown as well
+                toolbar_options=dict(logo=None)
             )
             panel_list.append(TabPanel(
                 name='panel_{}'.format(tab.lower()),
