@@ -282,6 +282,23 @@ html, body, .bokeh_iframe {
     margin: 10% auto;
 }
 
+.log_python {
+    color: black;
+    border: 3px solid #337ab7;
+    width: 80%;
+    height: 200px;
+    margin: 10% auto;
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    padding: 10px;
+}
+
+.log_python p {
+    margin: 0px;
+    padding: 0px;
+}
+
 .mini_loader {
     border: 4px solid #f3f3f3;
     border-radius: 50%;

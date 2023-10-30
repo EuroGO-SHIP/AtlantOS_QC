@@ -10,7 +10,10 @@ const app_module_path = require('app-module-path');
 
 const bokeh_calls = require('./bokeh_calls');
 const popper = require('popper.js');
-const { clipboard } = require('electron')
+const { clipboard } = require('electron');
+
+const tail_file = require('@logdna/tail-file')
+const split2 = require('split2') // A common and efficient line splitter
 
 const lg = require('logging');
 const loc = require('locations');
@@ -365,6 +368,22 @@ module.exports = {
     show_loader: function() {
         $('.welcome_container').fadeOut('slow', function() {
             $('.loader_container').fadeIn('slow');
+
+            const tail = new tail_file(loc.log_python, {encoding: 'utf8'})
+            tail.on('tail_error', (err) => {
+                console.error('tail_file had an error!', err)
+                throw err
+            }).start().catch((err) => {
+                console.error('Cannot start.  Does the file exist?', err)
+                throw err
+            })
+
+            tail.pipe(split2()).on('data', (line) => {
+                var p = $('<p>', {
+                    text: line.slice(1, -1)
+                })
+                $('#log_python').prepend(p); // to remove the quotes
+            })
         });
     },
 
