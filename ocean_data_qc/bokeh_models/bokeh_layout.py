@@ -5,7 +5,7 @@
 #########################################################################
 
 from bokeh.util.logconfig import bokeh_logger as lg
-from bokeh.layouts import layout, column, row
+from bokeh.layouts import column, row
 from bokeh.models.layouts import Spacer
 from bokeh.models.widgets.markups import Div
 
@@ -59,14 +59,6 @@ class BokehLayout(Environment):
         # ---------------------- CONTROLS ------------------------- #
 
         be = self.env.bk_events
-        prof_nav = row(
-            children=[
-                be.previous_prof_bt,
-                be.nearby_prof_select,
-                be.next_prof_bt,
-            ],
-            css_classes=['prof_nav']
-        )
 
         sidebar_col = self.env.doc.select_one({'name': 'sidebar_col'})
         sidebar_col.children.clear()
@@ -75,17 +67,33 @@ class BokehLayout(Environment):
             self.env.flags_control_col,
 
             # NOTE: Switch object does not have labels, I need to add it manually
-            row(children=[
-                be.cb_prof_invsbl_points,
-                Div(text='Fixed profiles')
-            ], max_width=100),
+            row(
+                children=[
+                    be.cb_prof_invsbl_points,
+                    Div(text='Fixed profiles')
+                ],
+                max_width=150,
+                margin=(7, 0, 0, 0)
+            ),
 
-            row(children=[
-                be.nearby_prof_cb,
-                Div(text='Show nearby station')
-            ], max_width=100),
+            row(
+                children=[
+                    be.nearby_prof_cb,
+                    Div(text='Show nearby station')
+                ],
+                max_width=150,
+                margin=(7, 0, 0, 0)
+            ),
 
-            prof_nav,
+            row(
+                children=[
+                    be.previous_prof_bt,
+                    be.nearby_prof_select,
+                    be.next_prof_bt,
+                ],
+                margin=(7, 0, 0, 0),
+                css_classes=['prof_nav']
+            ),
 
             Div(width=200, height=15, text='<u><b>Selected Samples</b></u>'),
             sample_control,

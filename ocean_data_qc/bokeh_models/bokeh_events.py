@@ -136,7 +136,7 @@ class BokehEvents(Environment):
             self.env.bk_sources._upd_prof_srcs()
 
         self.cb_prof_invsbl_points = Switch(
-            width=200, height=10,
+            width=35, height=10,
             # labels=['Fixed profiles'],  # Plot invisible points on profiles
             active=False,
             css_classes=['fixed_profiles_cb', 'bokeh_hidden']
@@ -263,7 +263,7 @@ class BokehEvents(Environment):
                 self.env.bk_sources._upd_prof_srcs(force_selection=True)
 
         self.nearby_prof_cb = Switch(
-            width=200, height=20,
+            width=35, height=20,
             # labels=['Show nearby station'],  # TODO: how to add a label to the Switch?
             active=False,
             css_classes=['show_nearby_station_cb', 'bokeh_hidden']
