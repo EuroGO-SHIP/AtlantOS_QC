@@ -103,7 +103,8 @@ class BokehFlags(Environment):
             label='',
             active=False,
             width=30,
-            stylesheets=[self.css_hide_bt_decorators.format('black')]
+            stylesheets=[self.css_hide_bt_decorators.format('black')],
+            margin=0
         )
 
         def all_flags_vb_bt_callback(attr, old, new):
@@ -151,6 +152,7 @@ class BokehFlags(Environment):
             text='All the flags',
             width=100,
             height=25,
+            margin=0,
             css_classes=['flag_controls_title'],
         )
 
@@ -212,6 +214,7 @@ class BokehFlags(Environment):
                 label='',
                 active=False,
                 width=30,
+                margin=0,
                 tags=['vb_bt'],
                 stylesheets=[self.css_hide_bt_decorators.format('black')]
             )
@@ -225,6 +228,7 @@ class BokehFlags(Environment):
                 text='{}'.format(str_value),
                 width=100,
                 height=25,
+                margin=0,
                 tags=['fg_str_div'],
                 css_classes=['fg_str_div'],
                 styles={
@@ -238,6 +242,7 @@ class BokehFlags(Environment):
                 children=[vb_bt, edit_flag_bt, fg_str_div],
                 width=200,
                 height=25,
+                margin=0,
             )
 
             # self.env.flag_vb_bts.append(vb_bt)
@@ -255,6 +260,7 @@ class BokehFlags(Environment):
             icon=TablerIcon('flag-filled', size='1.2em'),
             label='',
             width=30,
+            margin=0,
             tags=['edit_flag_bt'],
             stylesheets=[self.css_hide_bt_decorators.format(CIRCLE_COLORS[flag_index])]
         )

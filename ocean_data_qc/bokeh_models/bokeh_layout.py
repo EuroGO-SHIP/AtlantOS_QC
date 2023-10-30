@@ -73,7 +73,6 @@ class BokehLayout(Environment):
                     Div(text='Fixed profiles')
                 ],
                 max_width=150,
-                margin=(7, 0, 0, 0)
             ),
 
             row(
@@ -82,7 +81,6 @@ class BokehLayout(Environment):
                     Div(text='Show nearby station')
                 ],
                 max_width=150,
-                margin=(7, 0, 0, 0)
             ),
 
             row(
@@ -91,7 +89,6 @@ class BokehLayout(Environment):
                     be.nearby_prof_select,
                     be.next_prof_bt,
                 ],
-                margin=(7, 0, 0, 0),
                 css_classes=['prof_nav']
             ),
 
