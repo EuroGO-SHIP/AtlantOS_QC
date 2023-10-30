@@ -371,18 +371,18 @@ module.exports = {
 
             const tail = new tail_file(loc.log_python, {encoding: 'utf8'})
             tail.on('tail_error', (err) => {
-                console.error('tail_file had an error!', err)
-                throw err
+                console.error('tail_file had an error!', err);
+                throw err;
             }).start().catch((err) => {
-                console.error('Cannot start.  Does the file exist?', err)
-                throw err
+                console.error('Cannot start. Does the file exist?', err);
+                throw err;
             })
 
             tail.pipe(split2()).on('data', (line) => {
                 var p = $('<p>', {
-                    text: line.slice(1, -1)
+                    text: line.slice(1, -1)   // to remove the quotes
                 })
-                $('#log_python').prepend(p); // to remove the quotes
+                $('#log_python').prepend(p);
             })
         });
     },
@@ -390,6 +390,7 @@ module.exports = {
     hide_loader: function() {
         $('.loader_container').fadeOut('slow', function() {
             $('#bokeh_iframe').fadeIn('slow');
+            $('#log_python').html('');
         });
     },
 
