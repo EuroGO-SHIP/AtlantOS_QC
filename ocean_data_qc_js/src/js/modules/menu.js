@@ -86,9 +86,9 @@ module.exports = {
             role: 'help',
             submenu: [
                 {
-                    label: 'Learn More About Atlantos',
+                    label: 'Learn More About EuroGo-SHIP',
                     click: function () {
-                        electron.shell.openExternal('https://www.atlantos-h2020.eu/')
+                        electron.shell.openExternal('https://eurogo-ship.eu/')
                     }
                 },
                 {
