@@ -114,7 +114,6 @@ class BokehDataTable(Environment):
         ))
         lg.info(f'TABLE DF: {self.table_df}')
 
-        self.table_df.to_pickle('C:/Users/Chesu/Documents/Personal Documents/Git Projects/atlantos/tests/jupyter_notebooks/pickle/table_df.pkl')
         table_cds = ColumnDataSource(self.table_df)
         self.data_table = DataTable(
             width=190,
