@@ -46,7 +46,7 @@ def get_package_data():
     }
 
 requires = [
-    'bokeh >=3.0.0',
+    'bokeh ==3.3.3',
     # 'pandas >=2.0.1',  # bokeh 3.0.0 requires pandas
     'seawater >=3.3.4',
     'more_itertools >=10.0.0',
@@ -69,8 +69,8 @@ if sys.platform == "win32":
 
 setup(
     name='ocean_data_qc',
-    version='1.5.0',                                    # TODO: extract the version from package.json
-    python_requires='>=3.9',
+    version='1.5.1',                                    # TODO: extract the version from package.json
+    python_requires='>=3.11',
     description='Open source application for assisted primary quality control of hydrographic cruise data focused on carbon and ancillary parameters',
     long_description=open("README.md").read(),          # TODO: check if this is readable in this is publish in a future channel repository or
     long_description_content_type="text/markdown",      #       Python Package Index https://pypi.org/

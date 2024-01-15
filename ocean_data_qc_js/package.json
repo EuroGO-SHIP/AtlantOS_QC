@@ -3,7 +3,7 @@
     "description": "AtlantOS Ocean Data Quality Control",
     "homepage": "https://github.com/EuroGO-SHIP/AtlantOS_QC",
     "main": "main.js",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "scripts": {
         "start": "electron .",
         "start_offline": "electron . --offline",
@@ -21,9 +21,9 @@
         "provider": "github"
     },
     "engines": {
-        "node": ">=12.4.0",
-        "npm": ">=6.11.2",
-        "yarn": ">=1.17.3"
+        "node": ">=18.19.0",
+        "npm": ">=10.3.0",
+        "yarn": ">=1.22.19"
     },
     "keywords": [
         "atlantos",
@@ -69,8 +69,8 @@
     },
     "devDependencies": {
         "devtron": "^1.4.0",
-        "electron": "^25.3.2",
-        "electron-builder": "^=23.0.2",
+        "electron": "^28.0.0",
+        "electron-builder": "^=24.9.1",
         "electron-debug": "^2.2.0"
     },
     "build": {
