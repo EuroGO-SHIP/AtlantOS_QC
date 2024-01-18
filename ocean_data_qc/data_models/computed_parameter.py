@@ -17,6 +17,7 @@ import seawater as sw
 import types
 import subprocess as sbp
 from importlib import import_module
+import time
 
 
 class ComputedParameter(Environment):
@@ -75,6 +76,7 @@ class ComputedParameter(Environment):
 
         for cp in self.proj_settings_cps:  # NOTE: list of dicts, I need to iterate over all the items to get the cp to add
             if cp['param_name'] == val:
+                start_time = time.time()
                 prec = int(cp['precision'])
                 new_cp = {
                     'eq': cp['equation'],
@@ -82,6 +84,7 @@ class ComputedParameter(Environment):
                     'precision': prec,
                 }
                 result = self.compute_equation(new_cp)
+                end_time = time.time()
                 if result.get('success', False):
                     self.cruise_data.cols[val] = {
                         'external_name': [],
@@ -93,7 +96,7 @@ class ComputedParameter(Environment):
                     }
                     if prevent_save is False:
                         self.cruise_data.save_col_attribs()
-                    lg.info('>> CP <<{}>> ADDED'.format(val))
+                    lg.info(f'>> CP <<{val}>> ADDED in {end_time - start_time:.3f} seconds')
                 else:
                     msg = ''
                     if 'error' in result:
