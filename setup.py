@@ -48,6 +48,7 @@ def get_package_data():
 requires = [
     'bokeh ==3.3.3',
     # 'pandas >=2.0.1',  # bokeh 3.0.0 requires pandas
+    'PyCO2SYS >=1.8.0',
     'seawater >=3.3.4',
     'more_itertools >=10.0.0',
     'oct2py >=5.6.0',

@@ -15,6 +15,7 @@ import numpy as np
 import seawater as sw
 import importlib
 from scipy import stats
+import PyCO2SYS as co2
 
 from bokeh.util.logconfig import bokeh_logger as lg
 from ocean_data_qc.constants import *
@@ -271,13 +272,37 @@ class OctaveEquations(Environment):
         ret = self.oc.aou_gg(np.transpose(np.vstack((SAL, THETA, OXY))))
         return ret
 
+    #def tcarbn_from_alkali_phsws25p0(self, ALKALI, PH_SWS, SAL, SILCAT, PHSPHT):
+    #    ret = self.oc.tcarbn_from_alkali_phsws25p0(np.transpose(np.vstack((ALKALI, PH_SWS, SAL, SILCAT, PHSPHT))))
+    #    return ret
     def tcarbn_from_alkali_phsws25p0(self, ALKALI, PH_SWS, SAL, SILCAT, PHSPHT):
-        ret = self.oc.tcarbn_from_alkali_phsws25p0(np.transpose(np.vstack((ALKALI, PH_SWS, SAL, SILCAT, PHSPHT))))
-        return ret
+        ret = co2.sys(par1=ALKALI, 
+                         par2=PH_SWS, 
+                         par1_type=1, 
+                         par2_type=3,
+                         opt_pH_scale=2,
+                         salinity=SAL, 
+                         temperature=25,  # Assuming a constant temperature
+                         pressure=0,  # Assuming surface pressure
+                         total_silicate=SILCAT, 
+                         total_phosphate=PHSPHT)['dic']
+        return ret       
 
     def tcarbn_from_alkali_phts25p0(self, ALKALI, PH_TOT, SAL, SILCAT, PHSPHT):
-        ret = self.oc.tcarbn_from_alkali_phts25p0(np.transpose(np.vstack((ALKALI, PH_TOT, SAL, SILCAT, PHSPHT))))
-        return ret
+        ret = co2.sys(par1=ALKALI, 
+                         par2=PH_TOT, 
+                         par1_type=1, 
+                         par2_type=3,
+                         opt_pH_scale=1,
+                         salinity=SAL, 
+                         temperature=25,  # Assuming a constant temperature
+                         pressure=0,  # Assuming surface pressure
+                         total_silicate=SILCAT, 
+                         total_phosphate=PHSPHT)['dic']
+        return ret  
+    #def tcarbn_from_alkali_phts25p0(self, ALKALI, PH_TOT, SAL, SILCAT, PHSPHT):
+    #    ret = self.oc.tcarbn_from_alkali_phts25p0(np.transpose(np.vstack((ALKALI, PH_TOT, SAL, SILCAT, PHSPHT))))
+    #    return ret
 
     def phts25p0_from_alkali_tcarbn(self, ALKALI, TCARBN, SAL, SILCAT, PHSPHT):
         ret = self.oc.phts25p0_from_alkali_tcarbn(np.transpose(np.vstack((ALKALI, TCARBN, SAL, SILCAT, PHSPHT))))
