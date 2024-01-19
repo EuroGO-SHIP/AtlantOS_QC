@@ -318,9 +318,9 @@ class OctaveEquations(Environment):
         return extra_params.alkali_nng2_vel13(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY)
 
     def alkali_nngv2_bro19(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY):
-        ret = np.transpose(self.oc.alkali_nngv2_bro19(
-            np.vstack((LATITUDE, np.cos(np.deg2rad(LONGITUDE)), np.sin(np.deg2rad(LONGITUDE)), -1 * DPTH, THETA, SAL, PHSPHT, NITRAT, SILCAT, OXY))))
-        return ret
+        #ret = np.transpose(self.oc.alkali_nngv2_bro19(
+        #    np.vstack((LATITUDE, np.cos(np.deg2rad(LONGITUDE)), np.sin(np.deg2rad(LONGITUDE)), -1 * DPTH, THETA, SAL, PHSPHT, NITRAT, SILCAT, OXY))))
+        return extra_params.alkali_nngv2_bro19(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY)
 
     def tcarbn_nngv2ldeo_bro20(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, YEAR):
         ret = np.transpose(self.oc.tcarbn_nngv2ldeo_bro20(
