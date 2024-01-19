@@ -20,7 +20,11 @@ import PyCO2SYS as co2
 from bokeh.util.logconfig import bokeh_logger as lg
 from ocean_data_qc.constants import *
 from ocean_data_qc.env import Environment
+from ocean_data_qc.data_models.extra.pycanyonb import PyCANYONB
+from ocean_data_qc.data_models.extra.extra_params import ExtraParams
 
+pycanyonb = PyCANYONB()
+extra_params = ExtraParams()
 
 class OctaveEquations(Environment):
     env = Environment
@@ -269,8 +273,8 @@ class OctaveEquations(Environment):
         return ret
 
     def aou_gg(self, SAL, THETA, OXY):
-        ret = self.oc.aou_gg(np.transpose(np.vstack((SAL, THETA, OXY))))
-        return ret
+        #ret = self.oc.aou_gg(np.transpose(np.vstack((SAL, THETA, OXY))))
+        return extra_params.aou_gg(SAL, THETA, OXY)
 
     #def tcarbn_from_alkali_phsws25p0(self, ALKALI, PH_SWS, SAL, SILCAT, PHSPHT):
     #    ret = self.oc.tcarbn_from_alkali_phsws25p0(np.transpose(np.vstack((ALKALI, PH_SWS, SAL, SILCAT, PHSPHT))))
@@ -287,7 +291,10 @@ class OctaveEquations(Environment):
                          total_silicate=SILCAT, 
                          total_phosphate=PHSPHT)['dic']
         return ret       
-
+    
+    #def tcarbn_from_alkali_phts25p0(self, ALKALI, PH_TOT, SAL, SILCAT, PHSPHT):
+    #    ret = self.oc.tcarbn_from_alkali_phts25p0(np.transpose(np.vstack((ALKALI, PH_TOT, SAL, SILCAT, PHSPHT))))
+    #    return ret
     def tcarbn_from_alkali_phts25p0(self, ALKALI, PH_TOT, SAL, SILCAT, PHSPHT):
         ret = co2.sys(par1=ALKALI, 
                          par2=PH_TOT, 
@@ -299,19 +306,16 @@ class OctaveEquations(Environment):
                          pressure=0,  # Assuming surface pressure
                          total_silicate=SILCAT, 
                          total_phosphate=PHSPHT)['dic']
-        return ret  
-    #def tcarbn_from_alkali_phts25p0(self, ALKALI, PH_TOT, SAL, SILCAT, PHSPHT):
-    #    ret = self.oc.tcarbn_from_alkali_phts25p0(np.transpose(np.vstack((ALKALI, PH_TOT, SAL, SILCAT, PHSPHT))))
-    #    return ret
+        return ret
 
     def phts25p0_from_alkali_tcarbn(self, ALKALI, TCARBN, SAL, SILCAT, PHSPHT):
         ret = self.oc.phts25p0_from_alkali_tcarbn(np.transpose(np.vstack((ALKALI, TCARBN, SAL, SILCAT, PHSPHT))))
         return ret
 
     def alkali_nng2_vel13(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY):
-        ret = np.transpose(self.oc.alkali_nng2_vel13(
-            np.vstack((LONGITUDE, LATITUDE, -1 * DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY))))
-        return ret
+        #ret = np.transpose(self.oc.alkali_nng2_vel13(
+        #    np.vstack((LONGITUDE, LATITUDE, -1 * DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY))))
+        return extra_params.alkali_nng2_vel13(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY)
 
     def alkali_nngv2_bro19(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY):
         ret = np.transpose(self.oc.alkali_nngv2_bro19(
@@ -324,19 +328,25 @@ class OctaveEquations(Environment):
         return ret
 
     def nitrat_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        return self.oc.nitrat_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        #return self.oc.nitrat_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        return pycanyonb.nitrat_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
 
     def phspht_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        return self.oc.phspht_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        #return self.oc.phspht_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        return pycanyonb.phspht_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
 
     def silcat_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        return self.oc.silcat_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        #return self.oc.silcat_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        return pycanyonb.silcat_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
 
     def alkali_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        return self.oc.alkali_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
-
+        #return self.oc.alkali_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        return pycanyonb.alkali_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
+    
     def tcarbn_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        return self.oc.tcarbn_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        #return self.oc.tcarbn_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        return pycanyonb.tcarbn_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
 
     def phts25p0_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        return self.oc.phts25p0_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        #return self.oc.phts25p0_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
+        return pycanyonb.phts25p0_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
