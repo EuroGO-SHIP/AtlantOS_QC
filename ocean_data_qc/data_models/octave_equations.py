@@ -16,6 +16,7 @@ import seawater as sw
 import importlib
 from scipy import stats
 import PyCO2SYS as co2
+import time
 
 from bokeh.util.logconfig import bokeh_logger as lg
 from ocean_data_qc.constants import *
@@ -36,12 +37,13 @@ class OctaveEquations(Environment):
         self.oct_exe_path = False
 
     def _get_regular_oct_folder(self):
+        start_time = time.time()
         s = r'C:\Program Files\GNU Octave'
         try:
             for d in os.listdir(s):
                 if d.startswith('Octave-'):
                     folder = os.path.join(s, d)
-                    lg.info(f'GET REGULAR OCTAVE FOLDER: {folder}')
+                    lg.info(f'GET REGULAR OCTAVE FOLDER: {folder} -- {time.time() - start_time:.3f}s')
                     return folder
         except:
             return ''
@@ -63,6 +65,7 @@ class OctaveEquations(Environment):
             return {'octave_path': False}
 
     def _find_octave_windows(self):
+        start_time = time.time()
         # First, check if octave-cli.exe is in PATH
         path_in_path = shutil.which('octave-cli.exe')
         if path_in_path:
@@ -88,18 +91,22 @@ class OctaveEquations(Environment):
                     for path in possible_paths:
                         if os.path.isfile(path):
                             self.oct_exe_path = path
+                            lg.info(f'took {time.time() - start_time:.3f}s')
                             return
 
     def _find_octave_mac(self):
+        start_time = time.time()
         # First, check if octave-cli is in PATH
         path_in_path = shutil.which('octave-cli')
         if path_in_path:
             self.oct_exe_path = path_in_path
+            lg.info(f'took {time.time() - start_time:.3f}s')
             return
 
         # Check /usr/local/bin/octave-cli
         if os.path.isfile('/usr/local/bin/octave-cli'):
             self.oct_exe_path = '/usr/local/bin/octave-cli'
+            lg.info(f'took {time.time() - start_time:.3f}s')
             return
 
         # Check /Applications
@@ -109,18 +116,22 @@ class OctaveEquations(Environment):
                     potential_path = os.path.join('/Applications', dname, 'Contents/Resources/usr/bin/octave-cli')
                     if os.path.isfile(potential_path):
                         self.oct_exe_path = potential_path
+                        lg.info(f'took {time.time() - start_time:.3f}s')
                         return
 
     def _find_octave_linux(self):
+        start_time = time.time()
         # First, check if octave-cli is in PATH
         path_in_path = shutil.which('octave-cli')
         if path_in_path:
             self.oct_exe_path = path_in_path
+            lg.info(f'took {time.time() - start_time:.3f}s')
             return
 
         # Add other potential common paths or logic for Linux if needed
 
     def set_oct_exe_path(self, path=None):
+        start_time = time.time()
         lg.info('-- SET OCT EXE PATH')
 
         if path is not None:
@@ -146,6 +157,7 @@ class OctaveEquations(Environment):
                 return {'octave_path': self.oct_exe_path}
             except Exception as e:
                 lg.error('>> oct2py LIBRARY COULD NOT BE IMPORTED, OCTAVE PATH WAS NOT SET CORRECTLY')
+        lg.info(f'took {time.time() - start_time:.3f}s')
         return {'octave_path': False}
 
     def pressure_combined(self, CTDPRS, DEPTH, LATITUDE):
@@ -292,10 +304,8 @@ class OctaveEquations(Environment):
                          total_phosphate=PHSPHT)['dic']
         return ret       
     
-    #def tcarbn_from_alkali_phts25p0(self, ALKALI, PH_TOT, SAL, SILCAT, PHSPHT):
-    #    ret = self.oc.tcarbn_from_alkali_phts25p0(np.transpose(np.vstack((ALKALI, PH_TOT, SAL, SILCAT, PHSPHT))))
-    #    return ret
     def tcarbn_from_alkali_phts25p0(self, ALKALI, PH_TOT, SAL, SILCAT, PHSPHT):
+        #ret = self.oc.tcarbn_from_alkali_phts25p0(np.transpose(np.vstack((ALKALI, PH_TOT, SAL, SILCAT, PHSPHT))))
         ret = co2.sys(par1=ALKALI, 
                          par2=PH_TOT, 
                          par1_type=1, 
@@ -309,7 +319,17 @@ class OctaveEquations(Environment):
         return ret
 
     def phts25p0_from_alkali_tcarbn(self, ALKALI, TCARBN, SAL, SILCAT, PHSPHT):
-        ret = self.oc.phts25p0_from_alkali_tcarbn(np.transpose(np.vstack((ALKALI, TCARBN, SAL, SILCAT, PHSPHT))))
+        #ret = self.oc.phts25p0_from_alkali_tcarbn(np.transpose(np.vstack((ALKALI, TCARBN, SAL, SILCAT, PHSPHT))))
+        ret = co2.sys(par1=ALKALI, 
+                    par2=TCARBN, 
+                    par1_type=1, 
+                    par2_type=2,
+                    opt_pH_scale=1,
+                    salinity=SAL, 
+                    temperature=25,  # Assuming a constant temperature
+                    pressure=0,  # Assuming surface pressure
+                    total_silicate=SILCAT, 
+                    total_phosphate=PHSPHT)['pH']
         return ret
 
     def alkali_nng2_vel13(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY):
@@ -323,9 +343,9 @@ class OctaveEquations(Environment):
         return extra_params.alkali_nngv2_bro19(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY)
 
     def tcarbn_nngv2ldeo_bro20(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, YEAR):
-        ret = np.transpose(self.oc.tcarbn_nngv2ldeo_bro20(
-            np.vstack((LATITUDE, np.cos(np.deg2rad(LONGITUDE)), np.sin(np.deg2rad(LONGITUDE)), -1 * DPTH, THETA, SAL, PHSPHT, NITRAT, SILCAT, OXY, YEAR))))
-        return ret
+        #ret = np.transpose(self.oc.tcarbn_nngv2ldeo_bro20(
+        #    np.vstack((LATITUDE, np.cos(np.deg2rad(LONGITUDE)), np.sin(np.deg2rad(LONGITUDE)), -1 * DPTH, THETA, SAL, PHSPHT, NITRAT, SILCAT, OXY, YEAR))))
+        return extra_params.tcarbn_nngv2ldeo_bro20(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, YEAR)
 
     def nitrat_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
         #return self.oc.nitrat_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
