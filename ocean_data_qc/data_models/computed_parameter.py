@@ -47,10 +47,12 @@ class ComputedParameter(Environment):
             lg.info('>> OCTAVE DETECTED FROM PYTHON, VERSION: {}'.format(
                 oc_output[1].split('=')[1].strip())
             )
-            self.equations = self.env.oct_eq  # remove methods that are not equations
+            #self.equations = self.env.oct_eq  # remove methods that are not equations
         else:
             lg.warning('>> OCTAVE UNDETECTED')
-            self.equations = None
+            #self.equations = None
+        self.equations = self.env.oct_eq # Keep equations even if octave is not detected, as most have been migrated to python 
+        lg.info(f'import_octave_equations took {time.time() - start_time:.3f}s')
 
     @property
     def proj_settings_cps(self):
