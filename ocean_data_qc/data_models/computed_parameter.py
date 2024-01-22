@@ -4,21 +4,21 @@
 #    AUTHORS and LICENSE files at the root folder of this application   #
 #########################################################################
 
-from bokeh.util.logconfig import bokeh_logger as lg
-from ocean_data_qc.constants import *
-from ocean_data_qc.data_models.exceptions import ValidationError
-from ocean_data_qc.env import Environment
-
 import json
-from os import path, environ, getenv
+import os #from os import path, environ, getenv
 import re
 from math import *
-import seawater as sw
 import types
 import subprocess as sbp
 from importlib import import_module
 import time
+import traceback
+import seawater as sw
 
+from bokeh.util.logconfig import bokeh_logger as lg
+from ocean_data_qc.constants import *
+from ocean_data_qc.data_models.exceptions import ValidationError
+from ocean_data_qc.env import Environment
 
 class ComputedParameter(Environment):
     env = Environment
@@ -31,6 +31,8 @@ class ComputedParameter(Environment):
             self.cruise_data = cruise_data
         else:
             self.cruise_data = self.env.cruise_data
+        self._proj_settings_cps = None
+        self._proj_settings_last_mod = None
 
         # NOTE: check octave availability again here because if we check shared_data maybe
         #       the value is not updated due to asyncronous matters
@@ -38,6 +40,7 @@ class ComputedParameter(Environment):
         self.import_octave_equations()
 
     def import_octave_equations(self):
+        start_time = time.time()
         lg.info('>> OCTAVE PATH: {}'.format(self.env.oct_eq.oct_exe_path))
         oc_output = sbp.getstatusoutput('"{}" --eval "OCTAVE_VERSION"'.format(self.env.oct_eq.oct_exe_path))
         if oc_output[0] == 0:
@@ -51,13 +54,20 @@ class ComputedParameter(Environment):
 
     @property
     def proj_settings_cps(self):
-        # TODO: this is executed many time when the app load a file, avoid multiple file reading to improve efficiency
+        start_time = time.time()
         try:
+            last_mod_ps = os.path.getmtime(PROJ_SETTINGS)
+            if self._proj_settings_cps is not None and last_mod_ps == self._proj_settings_last_mod:
+                # lg.info(f'proj_settings_cps took {time.time() - start_time:.3f}s (cached)')
+                return self._proj_settings_cps
             proj_settings = json.load(open(PROJ_SETTINGS))
-            return proj_settings['computed_params'] if 'computed_params' in proj_settings else {}
+            self._proj_settings_cps = proj_settings['computed_params'] if 'computed_params' in proj_settings else {}
+            self._proj_settings_last_mod = last_mod_ps
+            lg.info(f'proj_settings_cps took {time.time() - start_time:.3f}s')
+            return self._proj_settings_cps 
         except Exception:
             raise ValidationError(
-                'Project JSON settings file could be opened to process the calculated parameters',
+                f'Project settings file ({PROJ_SETTINGS}) could not be opened to get the calculated parameters info',
                 rollback='cd'  # TODO: only if we are loading the files in the initialization
             )
 
@@ -84,7 +94,6 @@ class ComputedParameter(Environment):
                     'precision': prec,
                 }
                 result = self.compute_equation(new_cp)
-                end_time = time.time()
                 if result.get('success', False):
                     self.cruise_data.cols[val] = {
                         'external_name': [],
@@ -96,16 +105,14 @@ class ComputedParameter(Environment):
                     }
                     if prevent_save is False:
                         self.cruise_data.save_col_attribs()
-                    lg.info(f'>> CP <<{val}>> ADDED in {end_time - start_time:.3f} seconds')
+                    lg.info(f'>> CP <<{val}>> ADDED in {time.time() - start_time:.3f} seconds')
                 else:
                     msg = ''
                     if 'error' in result:
                         msg = result.get('error', '')  # TODO: remove "\n" fro here?
                     elif 'msg' in result:
                         msg = result.get('msg', '')
-                    lg.warning('>> CP <<{}>> COULD NOT BE COMPUTED: {}'.format(
-                        cp['param_name'], msg
-                    ))
+                    lg.warning(f'>> CP <<{cp["param_name"]}>> COULD NOT BE COMPUTED: {msg} -  took {time.time() - start_time:.3f} seconds')
                 return result
 
     def compute_equation(self, args):
@@ -113,6 +120,7 @@ class ComputedParameter(Environment):
             prec = int(args.get('precision', 5))
         except Exception:
             lg.error('Precision value could not be cast to integer value')
+            prec = 5
         (eq, computed_param_name, precision) = (
             args.get('eq', ''),
             args.get('computed_param_name', 'AUX'),
@@ -165,7 +173,7 @@ class ComputedParameter(Environment):
                 global_dict=self.sandbox_vars
             )
         except Exception as e:
-            # lg.warning('>> THE CP {} COULD NOT BE CALCULATED: {}'.format(computed_param_name, e))
+            lg.warning(f'>> THE CP {computed_param_name} COULD NOT BE CALCULATED: {e} {traceback.format_exc()}')
             return {
                 'success': False,
                 'msg': 'The equation could not be computed: {}'.format(eq),
