@@ -168,7 +168,7 @@ class ExtraParams():
 
         return y1.T 
 
-    def tcarbn_nngv2ldeo_bro20(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, YEAR):
+    def tcarbn_nngv2ldeo_bro20(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, DATE):
         '''
         Example of use of the neural networks:
 
@@ -201,7 +201,8 @@ class ExtraParams():
         PHSPHT = self.to_numpy_array(PHSPHT)
         SILCAT = self.to_numpy_array(SILCAT)
         OXY = self.to_numpy_array(OXY)
-        YEAR = self.to_numpy_array(YEAR)
+        DATE = self.to_numpy_array(YEAR)
+        YEAR = DATE // 10000 # YYYYMMSS -> YYYY
 
         cosLON = np.cos(np.deg2rad(LONGITUDE))
         sinLON = np.sin(np.deg2rad(LONGITUDE))
@@ -225,7 +226,7 @@ class ExtraParams():
         y1_step1.ymin = -1
         y1_step1.gain = 0.00101409593347531
         y1_step1.xoffset = 679
-        
+
         # Neural network computation
         # MapMinmax Apply
         xp1 = self.mapminmax_apply(x1, x1_step1_xoffset, x1_step1_gain, x1_step1_ymin)

@@ -153,7 +153,7 @@ class OctaveEquations(Environment):
                 oct2py_lib = importlib.import_module('oct2py')
                 self.oc = oct2py_lib.octave
                 self.oc.addpath(os.path.join(OCEAN_DATA_QC_PY, 'octave'))
-                self.oc.addpath(os.path.join(OCEAN_DATA_QC_PY, 'octave', 'CANYON-B'))
+                # Not needed # self.oc.addpath(os.path.join(OCEAN_DATA_QC_PY, 'octave', 'CANYON-B'))
                 return {'octave_path': self.oct_exe_path}
             except Exception as e:
                 lg.error('>> oct2py LIBRARY COULD NOT BE IMPORTED, OCTAVE PATH WAS NOT SET CORRECTLY')
@@ -342,10 +342,10 @@ class OctaveEquations(Environment):
         #    np.vstack((LATITUDE, np.cos(np.deg2rad(LONGITUDE)), np.sin(np.deg2rad(LONGITUDE)), -1 * DPTH, THETA, SAL, PHSPHT, NITRAT, SILCAT, OXY))))
         return extra_params.alkali_nngv2_bro19(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY)
 
-    def tcarbn_nngv2ldeo_bro20(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, YEAR):
+    def tcarbn_nngv2ldeo_bro20(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, DATE):
         #ret = np.transpose(self.oc.tcarbn_nngv2ldeo_bro20(
         #    np.vstack((LATITUDE, np.cos(np.deg2rad(LONGITUDE)), np.sin(np.deg2rad(LONGITUDE)), -1 * DPTH, THETA, SAL, PHSPHT, NITRAT, SILCAT, OXY, YEAR))))
-        return extra_params.tcarbn_nngv2ldeo_bro20(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, YEAR)
+        return extra_params.tcarbn_nngv2ldeo_bro20(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, DATE)
 
     def nitrat_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
         #return self.oc.nitrat_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
