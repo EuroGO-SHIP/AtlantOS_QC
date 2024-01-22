@@ -834,12 +834,6 @@
             "precision": 3
         },
         {
-            "param_name": "ALKALI_TCARBN_1_RATIO",
-            "equation": "ALKALI / TCARBN -1",
-            "units": false,
-            "precision": 5
-        },
-        {
             "param_name": "ALKALI_NNG2_VEL13",
             "equation": "@alkali_nng2_vel13(LONGITUDE, LATITUDE, _DEPTH, _THETA, _SALINITY, _NITRATE, PHSPHT, SILCAT, _OXYGEN)",
             "units": false,
@@ -865,7 +859,7 @@
         },
         {
             "param_name": "TCARBN_NNGV2LDEO_BRO20",
-            "equation": "@tcarbn_nngv2ldeo_bro20(LONGITUDE, LATITUDE, _DEPTH, _THETA, _SALINITY, _NITRATE, PHSPHT, SILCAT, _OXYGEN, YEAR)",
+            "equation": "@tcarbn_nngv2ldeo_bro20(LONGITUDE, LATITUDE, _DEPTH, _THETA, _SALINITY, _NITRATE, PHSPHT, SILCAT, _OXYGEN, DATE)",
             "units": false,
             "precision": 3
         },
@@ -920,6 +914,12 @@
         {
             "param_name": "ALK_DIFF",
             "equation": "ALK_NNGV2_BRO19 - ALKALI ",
+            "units": false,
+            "precision": 5
+        },
+        {
+            "param_name": "ALKALI_TCARBN_1_RATIO",
+            "equation": "ALKALI / TCARBN -1",
             "units": false,
             "precision": 5
         },
