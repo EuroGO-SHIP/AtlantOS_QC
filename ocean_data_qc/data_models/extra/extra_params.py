@@ -201,7 +201,7 @@ class ExtraParams():
         PHSPHT = self.to_numpy_array(PHSPHT)
         SILCAT = self.to_numpy_array(SILCAT)
         OXY = self.to_numpy_array(OXY)
-        DATE = self.to_numpy_array(YEAR)
+        DATE = self.to_numpy_array(DATE)
         YEAR = DATE // 10000 # YYYYMMSS -> YYYY
 
         cosLON = np.cos(np.deg2rad(LONGITUDE))
