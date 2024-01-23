@@ -50,14 +50,20 @@ class OctaveEquations(Environment):
 
 
     def guess_oct_exe_path(self):
+        start_time = time.time()
         lg.info('-- GUESS OCT EXE PATH --')
-        if sys.platform == 'win32':
-            self._find_octave_windows()
-        elif sys.platform == 'darwin':  # macOS
-            self._find_octave_mac()
-        else:  # Assuming Linux
-            self._find_octave_linux()
+        try:
+            if sys.platform == 'win32':
+                self._find_octave_windows()
+            elif sys.platform == 'darwin':  # macOS
+                self._find_octave_mac()
+            else:  # Assuming Linux
+                self._find_octave_linux()
+        except Exception as e:
+            lg.error(f"Error finding Octave executable: {e} -- took {time.time() - start_time:.3f}s")
+            return {'octave_path': False, 'error': str(e)}
 
+        lg.info(f'took {time.time() - start_time:.3f}s')
         if self.oct_exe_path:
             # self.oct_exe_path = pathlib.Path(self.oct_exe_path).as_uri()
             return self.set_oct_exe_path()
@@ -65,7 +71,6 @@ class OctaveEquations(Environment):
             return {'octave_path': False}
 
     def _find_octave_windows(self):
-        start_time = time.time()
         # First, check if octave-cli.exe is in PATH
         path_in_path = shutil.which('octave-cli.exe')
         if path_in_path:
@@ -91,22 +96,18 @@ class OctaveEquations(Environment):
                     for path in possible_paths:
                         if os.path.isfile(path):
                             self.oct_exe_path = path
-                            lg.info(f'took {time.time() - start_time:.3f}s')
                             return
 
     def _find_octave_mac(self):
-        start_time = time.time()
         # First, check if octave-cli is in PATH
         path_in_path = shutil.which('octave-cli')
         if path_in_path:
             self.oct_exe_path = path_in_path
-            lg.info(f'took {time.time() - start_time:.3f}s')
             return
 
         # Check /usr/local/bin/octave-cli
         if os.path.isfile('/usr/local/bin/octave-cli'):
             self.oct_exe_path = '/usr/local/bin/octave-cli'
-            lg.info(f'took {time.time() - start_time:.3f}s')
             return
 
         # Check /Applications
@@ -116,16 +117,13 @@ class OctaveEquations(Environment):
                     potential_path = os.path.join('/Applications', dname, 'Contents/Resources/usr/bin/octave-cli')
                     if os.path.isfile(potential_path):
                         self.oct_exe_path = potential_path
-                        lg.info(f'took {time.time() - start_time:.3f}s')
                         return
 
     def _find_octave_linux(self):
-        start_time = time.time()
         # First, check if octave-cli is in PATH
         path_in_path = shutil.which('octave-cli')
         if path_in_path:
             self.oct_exe_path = path_in_path
-            lg.info(f'took {time.time() - start_time:.3f}s')
             return
 
         # Add other potential common paths or logic for Linux if needed
