@@ -8,7 +8,6 @@ import csv
 import json
 import time
 import os
-from os import path
 import hashlib
 from datetime import datetime
 from shutil import rmtree
@@ -279,7 +278,7 @@ class CruiseData(CruiseDataExport):
 
     def get_cols_from_settings_file(self):
         """ The columns are set directly from the settings.json file """
-        self.cols = self.env.f_handler.get('columns', path.join(TMP, 'settings.json'))
+        self.cols = self.env.f_handler.get('columns', os.path.join(TMP, 'settings.json'))
 
     def get_cols_by_attrs(self, column_attrs=[], discard_nan=False):
         ''' Possible attrs:
@@ -452,7 +451,7 @@ class CruiseData(CruiseDataExport):
         """ create the self.moves dataframe object
             taking into account if moves.csv is already created or not
         """
-        if path.isfile(MOVES_CSV) and os.stat(MOVES_CSV).st_size != 0:
+        if os.path.isfile(MOVES_CSV) and os.stat(MOVES_CSV).st_size != 0:
             self.moves = pd.read_csv(
                 MOVES_CSV, delimiter=',', skip_blank_lines=True,
                 verbose=True, engine='python', index_col=0, dtype=str
@@ -644,13 +643,13 @@ class CruiseData(CruiseDataExport):
             lg.warn(f'>> REMOVING EMPTY ATTR FROM COLUMNS {column}')
             self.cols[column]['attrs'].remove('empty')
             self.cols[column]['export'] = True
-            self.env.f_handler.set('columns', self.cols, path.join(TMP,'settings.json'))
+            self.env.f_handler.set('columns', self.cols, os.path.join(TMP,'settings.json'))
         elif new_flag_value == 9:
             if 'empty' not in self.cols[column]['attrs'] and self.df[self.df[column] == 9][column].index.size == self.df.index.size:
                 lg.warning(f'>> ADDING EMPTY ATTR TO COLUMN {column}')
                 self.cols[column]['attrs'].append('empty')
                 self.cols[column]['export'] = False
-                self.env.f_handler.set('columns', self.cols, path.join(TMP,'settings.json'))
+                self.env.f_handler.set('columns', self.cols, os.path.join(TMP,'settings.json'))
 
         # lg.info('\n\nData after changed: \n\n%s' % self.df[[ column ]].iloc[row_indices])
 
