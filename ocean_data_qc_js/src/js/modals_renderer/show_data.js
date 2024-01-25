@@ -13,6 +13,7 @@ app_module_path.addPath(__dirname);
 
 const {ipcRenderer} = require('electron');
 const { clipboard } = require('electron');
+const Tabulator = require('tabulator-tables');
 
 const loc = require('locations');
 const lg = require('logging');
@@ -37,24 +38,37 @@ module.exports = {
                 if (results == null) {
                     tools.showModal('ERROR', 'Result is NULL')
                 } else {
-                    var html = results;
-                    $('#loader_mask').before($('<div>', {
-                        class: 'top_layer df_data',
-                        html: html
-                    }));
+                    var jsonData = JSON.parse(results); // Parse the JSON data
+
+                    // Create a container div for the Tabulator table
+                    var tableContainer = $('<div>', {
+                        id: 'data-table',
+                        class: 'tabulator-table top_layer df_data'
+                    });
+
+                    // Insert the table container before the loader_mask div
+                    $('#loader_mask').before(tableContainer);
+
+                    // Initialize Tabulator on an existing DOM element with the JSON data
+                    var tabulator_table = new Tabulator("#data-table", {
+                        data: jsonData, // assign data to the table
+                        autoColumns: true, // create columns from data field names
+                        clipboard:true
+                    });
+
                     $('#loader_mask').before(
                         $('<div>', {
                             class: 'float_button', //  fa fa-arrow-left
                         }).append($('<button>', {
-                            id: 'close_df_data',
-                            type: 'button',
-                            class: 'btn btn-sm btn-primary',
-                            text: 'Close View'
-                        })).append($('<button>', {
                             id: 'cp_to_clipboard_df_data',
                             type: 'button',
                             class: 'btn btn-sm btn-primary',
                             text: 'Copy to clipboard'
+                        })).append($('<button>', {
+                            id: 'close_df_data',
+                            type: 'button',
+                            class: 'btn btn-sm btn-primary',
+                            text: 'Close view'
                         }))
                     );
                     $('#close_df_data').click(function() {
@@ -64,22 +78,13 @@ module.exports = {
                         $('.float_button').remove();
                     });
 
-                    $('#cp_to_clipboard_df_data').click(function() {
-                        var df_data = $('.df_data table').clone();
-                        df_data.find('thead>tr>th').eq(0).remove();
-                        df_data.find('tbody tr>th').remove();
-                        df_data.find('table').removeAttr('class style');
-                        df_data.find('tr').removeAttr('class style');
-                        df_data.find('th').removeAttr('class style');
-                        df_data.find('th').each(function() { $(this).text($(this).text()); });
-
-                        // TODO: replace nan values?
-
-                        clipboard.writeHTML(df_data.html());
+                    $('#cp_to_clipboard_df_data').click(function () {
+                        // Copy all table rows to clipboard
+                        clipboard.writeHTML(tabulator_table.getHtml("all"));
 
                         tools.show_snackbar(
-                            'Table content copied in the clipboard as HTML text. ' +
-                            'You can now paste it in a spreadsheet with Ctrl+V'
+                            'Table content copied to clipboard.' +
+                            'You can now paste it in a spreadsheet with Ctrl+V or CMD+V'
                         );
                     });
 

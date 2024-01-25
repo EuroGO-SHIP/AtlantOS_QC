@@ -154,27 +154,6 @@ class CruiseDataHandler(Environment):
                     self.env.cd_update = None
 
     def get_cruise_data_df_to_html(self):
-        lg.info('-- GET CRUISE DATA DF TO HTML')
-        df_aux = self.env.cruise_data.df.copy(deep=True)
-        new_index = [x for x in range(self.env.cruise_data.df.index.size)]
-        df_aux['NEW_INDEX'] = new_index
-        df_aux.set_index(keys='NEW_INDEX', inplace=True)
-
-        html = df_aux.to_html(
-            classes='table table-striped table-hover',
-            # formatters={
-            #     'EXPOCODE': lambda x: '<b>' + str(x) + '</b>'
-            # },
-            escape=False,
-            justify='left',
-            index_names=False,
-            border=0,
-            # columns=['EXPOCODE', 'STNNBR', 'DEPTH', 'SALNTY', 'SALNTY_FLAG_W']
-        )
-
-        # TODO: I did not find any better way to do this:
-        html = html.replace('<th>', '<th class="rotate"><div><div><span>')
-        html = html.replace('</th>', '</span></div></div>')
-
-        # TODO: store in a tmp file. It should work faster
-        return html
+        lg.info('-- GET CRUISE DATA DF TO JSON')
+        json_data = self.env.cruise_data.df.to_json(orient='records', index=False)
+        return json_data

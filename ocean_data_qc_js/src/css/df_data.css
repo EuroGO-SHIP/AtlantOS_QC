@@ -8,7 +8,8 @@
     font-size: 0.7rem;
     font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
     overflow: scroll;
-    padding: 10px;
+    padding: 5px;
+    padding-top: 29px;
 }
 
 .df_data table {

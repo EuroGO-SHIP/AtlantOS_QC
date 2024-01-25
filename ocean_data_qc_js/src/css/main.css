@@ -327,12 +327,16 @@ html, body, .bokeh_iframe {
     width: 300px;
     position: fixed;
     top: 0;
-    left: 0;
+    right: 0;
+    text-align: right;
 }
 
-.float_button #close_df_data, .help_form_float_button #close_help_form_bt,
-.float_button #cp_to_clipboard_df_data {
+.float_button .help_form_float_button #close_help_form_bt {
     margin: 15px;
+}
+#close_df_data, #cp_to_clipboard_df_data{
+    margin: 2px;
+    margin-right: 3px;
 }
 
 @-webkit-keyframes spin {
@@ -663,4 +667,32 @@ table.dataTable thead th[class^="sorting"]:after {
 
 .bt_arrows_center #move_right {
     margin: 15px 0px 15px 0px;
+}
+
+/* TABULATOR DATA TABLE */
+
+/* Custom CSS for compact Tabulator table */
+.tabulator .tabulator-cell {
+    font-size: 0.7rem; /* Smaller font size */
+    padding: 0.2rem; /* Reduced padding */
+}
+
+.tabulator .tabulator-header .tabulator-col {
+    font-size: 0.7rem;
+    padding: 0.2rem;
+}
+
+/* Adjust row height to match cell padding */
+.tabulator .tabulator-row {
+    height: 18px; /* Adjust based on your needs */
+}
+
+/* Reduce header height */
+.tabulator .tabulator-header {
+    height: 25x; /* Adjust this value as needed */
+}
+
+/* Adjust the line height to align the text vertically */
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-title {
+    line-height: 20px; /* Adjust based on your header height and font size */   
 }
