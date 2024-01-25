@@ -4,20 +4,18 @@
 #    AUTHORS and LICENSE files at the root folder of this application   #
 #########################################################################
 
-from bokeh.util.logconfig import bokeh_logger as lg
-from ocean_data_qc.constants import *
-from ocean_data_qc.env import Environment
-
-from configparser import ConfigParser
-from collections import OrderedDict
-from more_itertools import unique_everseen
-from os import path
 import os
 import json
 import shutil
-from hashlib import md5
+import hashlib
+from configparser import ConfigParser
+from collections import OrderedDict
+from more_itertools import unique_everseen
 from jinja2 import Template
 
+from bokeh.util.logconfig import bokeh_logger as lg
+from ocean_data_qc.constants import *
+from ocean_data_qc.env import Environment
 
 class Graph():
     # TODO: remove this class, make a dictionary for example
@@ -97,8 +95,8 @@ class FilesHandler(Environment):
                 },
         '''
         self.graphs = []
-        if path.isfile(path.join(TMP, 'settings.json')):
-            with open(path.join(TMP, 'settings.json'), 'r') as f:
+        if os.path.isfile(os.path.join(TMP, 'settings.json')):
+            with open(os.path.join(TMP, 'settings.json'), 'r') as f:
                 config = json.load(f,  object_pairs_hook=OrderedDict)
             if 'qc_plot_tabs' in config:
                 self.env.qc_plot_tabs = config.get('qc_plot_tabs', False)
@@ -124,10 +122,10 @@ class FilesHandler(Environment):
             and removes them if needed
         '''
         lg.info('-- REMOVE COLS FROM QC PLOT TABS. REMOVING: {}'.format(cols))
-        if cols != [] and path.isfile(path.join(TMP, 'settings.json')):
+        if cols != [] and os.path.isfile(os.path.join(TMP, 'settings.json')):
             config = {}
             tabs = {}
-            with open(path.join(TMP, 'settings.json'), 'r') as f:
+            with open(os.path.join(TMP, 'settings.json'), 'r') as f:
                 config = json.load(f,  object_pairs_hook=OrderedDict)
                 if 'qc_plot_tabs' in config:
                     tabs = config.get('qc_plot_tabs', False)
@@ -143,7 +141,7 @@ class FilesHandler(Environment):
                             tabs_to_rmv.append(tab)
                     for t in tabs_to_rmv:
                         del tabs[t]   # >> take into account that here config is also updated
-            with open(path.join(TMP, 'settings.json'), 'w') as f:
+            with open(os.path.join(TMP, 'settings.json'), 'w') as f:
                 json.dump(config, f, indent=4, sort_keys=True)
 
     @property
@@ -166,8 +164,8 @@ class FilesHandler(Environment):
     def get_layout_settings(self):
         lg.info('-- GET LAYOUT SETTINGS')
         ly_settings = {}
-        if path.isfile(path.join(TMP, 'settings.json')):
-            with open(path.join(TMP, 'settings.json'), 'r') as f:
+        if os.path.isfile(os.path.join(TMP, 'settings.json')):
+            with open(os.path.join(TMP, 'settings.json'), 'r') as f:
                 config = json.load(f)
                 if 'layout' in config:
                     ly = config.get('layout', False)
@@ -178,8 +176,8 @@ class FilesHandler(Environment):
 
     def _load_settings(self):
         ''' Load some settings into object attributes '''
-        if path.isfile(path.join(TMP, 'settings.json')):
-            with open(path.join(TMP, 'settings.json'), 'r') as f:
+        if os.path.isfile(os.path.join(TMP, 'settings.json')):
+            with open(os.path.join(TMP, 'settings.json'), 'r') as f:
                 config = json.load(f)
                 if 'layout' in config:
                     ly = config.get('layout', False)
@@ -243,9 +241,9 @@ class BokehTemplate(Template):
             function is used in the template
         '''
         def with_hash(rel_path):
-            f_path = path.join(OCEAN_DATA_QC, rel_path)
+            f_path = os.path.join(OCEAN_DATA_QC, rel_path)
             with open(f_path, 'rb') as f:
-                return f'{rel_path}?v={md5(f.read()).hexdigest()}'
+                return f'{rel_path}?v={hashlib.blake2b(f.read()).hexdigest()}'
 
         if 'with_hash' not in kwargs:
             kwargs['with_hash'] = with_hash
