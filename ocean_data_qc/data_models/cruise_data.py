@@ -4,23 +4,23 @@
 #    AUTHORS and LICENSE files at the root folder of this application   #
 #########################################################################
 
-from bokeh.util.logconfig import bokeh_logger as lg
-from ocean_data_qc.constants import *
-from ocean_data_qc.data_models.exceptions import ValidationError
-from ocean_data_qc.data_models.computed_parameter import ComputedParameter
-from ocean_data_qc.data_models.cruise_data_export import CruiseDataExport
-
 import csv
 import json
+import time
 import os
-import pandas as pd
-import numpy as np
 from os import path
 import hashlib
 from datetime import datetime
 from shutil import rmtree
 import re
+import numpy as np
+import pandas as pd
 
+from bokeh.util.logconfig import bokeh_logger as lg
+from ocean_data_qc.constants import *
+from ocean_data_qc.data_models.exceptions import ValidationError
+from ocean_data_qc.data_models.computed_parameter import ComputedParameter
+from ocean_data_qc.data_models.cruise_data_export import CruiseDataExport
 
 class CruiseData(CruiseDataExport):
     ''' This class is gathering all the common methods needed to manage
@@ -473,6 +473,7 @@ class CruiseData(CruiseDataExport):
                 * LATITUDE   latitude
                 * LONGITUDE  longitude
         """
+        start_time = time.time()
         self.df['HASH_ID'] = pd.util.hash_pandas_object(  # faster, but it may create duplicates
             self.df[['STNNBR', 'CASTNO', 'BTLNBR', 'LATITUDE', 'LONGITUDE']],
             index=False
@@ -481,13 +482,14 @@ class CruiseData(CruiseDataExport):
             # TODO: if the second file (the file to update) uses this other method
             #       to create the hashes there will many changes in the hashes.
             #       I could control this with some flag (though it is unlikely to happen)
-            lg.warning('>> HASH ID is being created with hashlib sha256')
+            lg.warning('>> HASH ID is being created with hashlib blake2b')
             self.df['HASH_ID'] = self.df[[
                 'STNNBR', 'CASTNO', 'BTLNBR', 'LATITUDE', 'LONGITUDE'   # if BTLNBR is NaN the hash is made correctly as well
             ]].astype(str).apply(                                       # astype is 4x slower than apply
-                lambda x: hashlib.sha256(str.encode(str(tuple(x)))).hexdigest(), axis=1
+                lambda x: hashlib.blake2b(str.encode(str(tuple(x)))).hexdigest(), axis=1
             )
         self.df = self.df.set_index(['HASH_ID'])
+        lg.info(f'>> Hashing took {time.time() - start_time:.3f}s')
 
     def _validate_required_columns(self):
         lg.info('-- VALIDATE REQUIRED COLUMNS')
