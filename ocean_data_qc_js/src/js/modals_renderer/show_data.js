@@ -83,7 +83,7 @@ module.exports = {
                         clipboard.writeHTML(tabulator_table.getHtml("all"));
 
                         tools.show_snackbar(
-                            'Table content copied to clipboard.' +
+                            'Table content copied to clipboard. ' +
                             'You can now paste it in a spreadsheet with Ctrl+V or CMD+V'
                         );
                     });
