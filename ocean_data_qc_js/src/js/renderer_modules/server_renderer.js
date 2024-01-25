@@ -67,7 +67,7 @@ module.exports = {
         lg.info('-- GO TO BOKEH');
         var self = this;
         $('body').css('overflow-y', 'hidden');  // to prevent two scrolls on the right
-        tools.show_loader();
+        //tools.show_loader();
         var _checkBokehSate = setInterval(function() {
             lg.info('>> BOKEH STATE: ' + $('body').data('bokeh_state')
                     + ' | OCTAVE STATE: ' + $('body').data('oct_state'));
@@ -133,7 +133,7 @@ module.exports = {
 
     reload_bokeh: function(callback=null) {
         var self = this;
-        tools.show_loader();
+        //tools.show_loader();
         var call_params = {
             'object': 'bokeh.loader',
             'method': 'reload_bokeh',
