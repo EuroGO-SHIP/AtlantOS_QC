@@ -41,7 +41,9 @@ def get_package_data():
         'ocean_data_qc': [
             'templates/*.*',
             'files/*.json',
-        ] + ['static/' + x for x in get_file_paths('ocean_data_qc/static')] + ['octave/' + x for x in get_file_paths('ocean_data_qc/octave')]
+        ] + ['static/' + x for x in get_file_paths('ocean_data_qc/static')] 
+          + ['octave/' + x for x in get_file_paths('ocean_data_qc/octave')]
+          + ['data_models/extra/' + x for x in get_file_paths('ocean_data_qc/data_models/extra')]
         # 'ocean_data_qc_js': get_file_paths('ocean_data_qc_js')
     }
 
@@ -88,6 +90,7 @@ setup(
         'ocean_data_qc',
         'ocean_data_qc.bokeh_models',
         'ocean_data_qc.data_models',
+        'ocean_data_qc.data_models.extra',
         'ocean_data_qc.octave'
     ],
     package_data=get_package_data(),
