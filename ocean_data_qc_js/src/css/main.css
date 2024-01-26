@@ -26,7 +26,7 @@ h4 {
 
 h5 {
     font-weight: bold;
-    color: #337ab7;
+    color: #003399;
 }
 
 .ml15 {
@@ -54,15 +54,19 @@ h5 {
     /* background-image: url(../img/background.png);  */
 
     background-size: cover;
-    background-color: #337ab7;
+    background-color: #003399;
     -webkit-box-shadow: none;
     box-shadow: none;
-    border: 1px solid  #337ab7;
+    border: 1px solid  #003399;
     border-radius: 0px;
 }
 
 .card .card-body {
-    border: 2px solid  #337ab7;
+    border: 2px solid  #003399;
+}
+
+.card-header {
+    background-color: #003399;
 }
 
 #panels .card-body {
@@ -74,7 +78,8 @@ h5 {
 }
 
 .card-logos {
-    border-radius: 4px !important;
+    /* border-radius: 4px !important; */
+    background-color: #003399;
 }
 
 .card .card-body p {
@@ -82,7 +87,7 @@ h5 {
 }
 
 .card a {
-    color: #337ab7;
+    color: #003399;
 }
 
 .card-title .fa {
@@ -100,7 +105,7 @@ h5 {
 
 #enable_dev_mode:hover, #enable_dev_mode:focus {
     text-decoration: none;
-    color: #337ab7;
+    color: #003399;
 }
 
 .container {
@@ -120,7 +125,7 @@ h5 {
 }
 
 .json_template_blue {
-    color: #337ab7;
+    color: #003399;
 }
 
 .json_template_green {
@@ -142,9 +147,10 @@ img#ctd_logo {
     width: 5%;
 }
 
-img#atlantos_logo {
-    margin: 0.7rem 5% 0.7rem 5%;
-    width: 12%;
+img#eurogoship_logo {
+    margin: -20px 0 -20px -15px;
+    width: 21%;
+    background-color: #003399;
 }
 
 #logos_div img {
@@ -274,7 +280,7 @@ html, body, .bokeh_iframe {
 .loader {
     border: 16px solid #d7e9f9;
     border-radius: 50%;
-    border-top: 16px solid #337ab7;
+    border-top: 16px solid #003399;
     width: 120px;
     height: 120px;
     -webkit-animation: spin 2s linear infinite;
@@ -284,7 +290,7 @@ html, body, .bokeh_iframe {
 
 .log_python {
     color: black;
-    border: 3px solid #337ab7;
+    border: 3px solid #003399;
     width: 80%;
     height: 200px;
     margin: 10% auto;
@@ -302,7 +308,7 @@ html, body, .bokeh_iframe {
 .mini_loader {
     border: 4px solid #f3f3f3;
     border-radius: 50%;
-    border-top: 4px solid #337ab7;
+    border-top: 4px solid #003399;
     width: 20px;
     height: 20px;
     -webkit-animation: spin 2s linear infinite;
@@ -376,7 +382,7 @@ html, body, .bokeh_iframe {
 
 
 fieldset table th {
-    background-color: #337ab7;
+    background-color: #003399;
     color: white;
     border: 1px solid #337ab5 !important;
     font-weight: bold;
@@ -415,7 +421,7 @@ fieldset select[name='tab_title'] {
 
 .comparison_title {
     font-weight: bold;
-    color: #337ab7;
+    color: #003399;
 }
 
 table.results_table td.remove_warning {
@@ -445,7 +451,7 @@ a#update_values_by_station {
 /* UPDATE VALUES BY STATION MODAL FORM */
 
 #accordion_stations .ui-state-active {
-    background: #337ab7 !important;
+    background: #003399 !important;
 }
 
 #accordion_stations .table th, #accordion_stations .table td {
@@ -594,7 +600,7 @@ select[name='all_computed_param'] {
 }
 
 .set_octave_path_manually a {
-    color: #337ab7 !important;
+    color: #003399 !important;
 }
 
 /* COLUMN SETTINGS MODAL */
@@ -694,5 +700,5 @@ table.dataTable thead th[class^="sorting"]:after {
 
 /* Adjust the line height to align the text vertically */
 .tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-title {
-    line-height: 20px; /* Adjust based on your header height and font size */   
+    line-height: 20px; /* Adjust based on your header height and font size */
 }

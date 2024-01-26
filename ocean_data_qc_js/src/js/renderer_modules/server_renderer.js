@@ -581,19 +581,22 @@ module.exports = {
             if (err) {
                 lg.error('ERROR LOADING ICON.PNG: ' + err)
             } else {
-                var img = $('<img>', {
-                    id: 'ctd_logo',
-                    src: 'data:image/png;base64,' + data,
-                    style: 'display: none;',
-                });
-                $('#logos_div').append(img);
+                // TODO: this is the logo of the app, but maybe it is not so important to show it here on the main screen
+                //       Actually it is very similar to the logo of Eurogoship
 
-                fs.readFile(path.join(loc.img, 'atlantos_logo.svg'), {encoding: 'base64'}, function(err, data) {
+                // var img = $('<img>', {
+                //     id: 'ctd_logo',
+                //     src: 'data:image/png;base64,' + data,
+                //     style: 'display: none;',
+                // });
+                // $('#logos_div').append(img);
+
+                fs.readFile(path.join(loc.img, 'eurogoship_logo.svg'), {encoding: 'base64'}, function(err, data) {
                     if (err) {
-                        lg.error('ERROR LOADING ATLANTOS_LOGO.SVG: ' + err)
+                        lg.error('ERROR LOADING EUROGOSHIP_LOGO.SVG: ' + err)
                     } else {
                         var img = $('<img>', {
-                            id: 'atlantos_logo',
+                            id: 'eurogoship_logo',
                             src: 'data:image/svg+xml;base64,' + data,
                             style: 'display: none;',
                         });
