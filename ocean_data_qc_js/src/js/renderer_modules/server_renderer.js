@@ -275,6 +275,7 @@ module.exports = {
             $('#octave_version').css('color', 'black');
             $('#octave_version').css('font-weight', 'normal');
             $('#set_octave_path_manually').css('display', 'none');
+            $('#octave_p').css('display', 'inline');
         } else {
             lg.warn('>> OCTAVE UNDETECTED');
             if (msg !== false) {
