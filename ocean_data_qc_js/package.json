@@ -34,7 +34,7 @@
         "bokeh"
     ],
     "author": "IIM-CSIC <avelo@iim.csic.es>",
-    "license": "CC0-1.0",
+    "license": "GPL-3.0-or-later",
     "dependencies": {
         "@electron/remote": "^2.0.10",
         "@logdna/tail-file": "^3.0.1",
