@@ -277,3 +277,7 @@ const main_paths = {
 ipcMain.on('get-main-paths', (event) => {
     event.returnValue = main_paths;
 });
+
+ipcMain.on('will-quit', (event) => {
+    server.close_app();
+})

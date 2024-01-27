@@ -30,7 +30,7 @@ module.exports = {
         self.ts_shell = null;
         self.python_options = {};
         self.script_env_path = ''
-        self.python_path = 'python';
+        self.python_path = '';
         self.ocean_data_qc_path = '';
         self.dom_ready = false;
     },
@@ -290,7 +290,7 @@ module.exports = {
         lg.info('-- LAUNCHING BOKEH');
         var self = this;
         self.bokeh_port = data.get('bokeh_port', loc.shared_data);
-        self.set_python_path();
+        tools.set_python_path(self, 'server');
     },
 
     check_python_version: function() {
@@ -322,51 +322,18 @@ module.exports = {
         });
     },
 
-    /** Sets the python path
-     *    1. First check if python exists in the environment
-     *    2. If not it will use the local python instaled in the system
-     *  Sets scripts python path as well
-    */
-    set_python_path: function() {
+    show_python_path_dg_err: function(error='') {
         var self = this;
-        lg.info('-- SET PYTHON PATH')
-        if (process.platform === 'win32' && fs.existsSync(loc.python_win)) {
-            self.python_path = loc.python_win;
-            self.script_env_path = loc.env_bin_win;
-        } else if (process.platform === 'darwin' && fs.existsSync(loc.python_mac)) {
-            self.python_path = loc.python_mac;
-            self.script_env_path = loc.env_bin_mac;
-        } else if (process.platform === 'linux' && fs.existsSync(loc.python_lin)) {
-            self.python_path = loc.python_lin;
-            self.script_env_path = loc.env_bin_lin;
-        } else {
-            self.python_path = 'python';
-        }
-        lg.info('>> (SET_PYTHON_PATH) SELF.PYTHON_PATH: ' + self.python_path)
-        self.check_python_version().then(() => {
-            self.set_ocean_data_qc_path();
-        }).catch((err) => {
-            lg.warn('>> WRONG PYTHON PATH: ' + self.python_path);
-            lg.warn('>> ERR: ' + err);
-            if (command_exists_sync('python')) {
-                self.python_path = 'python'
-                self.check_python_version().then(() => {
-                    self.set_ocean_data_qc_path();
-                }).catch((err) => {
-                    lg.warn('>> WRONG PYTHON PATH USED: ' + self.python_path);
-                    lg.warn('>> ERR: ' + err);
-                })
-            } else {
-                if (command_exists_sync('python3')) {
-                    self.python_path = 'python3'
-                    self.check_python_version().then(() => {
-                        self.set_ocean_data_qc_path();
-                    }).catch((err) => {
-                        lg.warn('>> WRONG PYTHON PATH USED: ' + self.python_path);
-                        lg.warn('>> ERR: ' + err);
-                    })
-                }
-            }
+        dialog.showMessageBox({
+            type: 'error',
+            buttons: ['Ok' ],
+            title: 'Critical Error',
+            message: 'Python path or version error. Is the python path correct?'
+                     + `\n\nPython path: "${self.python_path}"`
+                     + `\nScrip env path: "${self.script_env_path}"`
+                     + `\nError description: "${error}"`
+        }).then(() => {
+            self.close_app();
         })
     },
 
@@ -514,9 +481,11 @@ module.exports = {
     close_app: function () {
         var self = this;
         lg.info('-- CLOSE APP')
-        self.shell.childProcess.kill();  // mac needs to kill children explicitly
-        if (self.ts_shell != null) {
-            self.ts_shell.childProcess.kill();
+        if (self.shell != null) {  // TODO not tested
+            self.shell.childProcess.kill();  // mac needs to kill children explicitly
+            if (self.ts_shell != null) {
+                self.ts_shell.childProcess.kill();
+            }
         }
         app.quit();  // this waits until the children (self.shell.childProcess) are killed
     },

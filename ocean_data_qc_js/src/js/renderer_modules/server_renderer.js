@@ -29,7 +29,9 @@ module.exports = {
     init: function() {
         var self = this;
         self.ipc_renderer = ipcRenderer;
-        self.set_python_path();
+        self.python_path = '';
+        self.script_env_path = '';
+        tools.set_python_path(self, 'server_renderer');
         self.check_previous_session();
     },
 
@@ -375,54 +377,19 @@ module.exports = {
         });
     },
 
-    /** Sets the python path
-     *    1. First check if python exists in the environment
-     *    2. If not it will use the local python instaled in the system
-     *  Sets scripts python path as well
-    */
-    set_python_path: function() {
-        // TODO: repeated method, move to tools.js or somewhere else
-
-        lg.info('-- SET PYTHON PATH (server_renderer.js)')
+    show_python_path_dg_err: function(error='') {
         var self = this;
-        if (process.platform === 'win32' && fs.existsSync(loc.python_win)) {
-            self.python_path = loc.python_win;
-            self.script_env_path = loc.env_bin_win;
-        } else if (process.platform === 'darwin' && fs.existsSync(loc.python_mac)) {
-            self.python_path = loc.python_mac;
-            self.script_env_path = loc.env_bin_mac;
-        } else if (process.platform === 'linux' && fs.existsSync(loc.python_lin)) {
-            self.python_path = loc.python_lin;
-            self.script_env_path = loc.env_bin_lin;
-        } else {
-            self.python_path = 'python';
-        }
-        lg.info('>> (SET_PYTHON_PATH) SELF.PYTHON_PATH: ' + self.python_path)
-        self.check_python_version().then(() => {
-            self.get_css_checksums();
-        }).catch((err) => {
-            lg.warn('>> WRONG PYTHON PATH: ' + self.python_path);
-            lg.warn('>> ERR: ' + err);
-            if (command_exists_sync('python')) {
-                self.python_path = 'python'
-                self.check_python_version().then(() => {
-                    self.get_css_checksums();
-                }).catch((err) => {
-                    lg.warn('>> WRONG PYTHON PATH USED: ' + self.python_path);
-                    lg.warn('>> ERR: ' + err);
-                })
-            } else {
-                if (command_exists_sync('python3')) {
-                    self.python_path = 'python3'
-                    self.check_python_version().then(() => {
-                        self.get_css_checksums();
-                    }).catch((err) => {
-                        lg.warn('>> WRONG PYTHON PATH USED: ' + self.python_path);
-                        lg.warn('>> ERR: ' + err);
-                    })
-                }
+        tools.show_modal({
+            'msg_type': 'html',
+            'type': 'ERROR',
+            'msg': '<p>Python path or version error. Is the python path correct?:</p>'
+                     + `<p>Python path: <code>"${self.python_path}"</code></p>`
+                     + `<p>Scrip env path: <code>"${self.script_env_path}"</code></p>`
+                     + `<p>Error description: <code>"${error}"</code></p>`,
+            'callback': function() {
+                ipcRenderer.send('will-quit');
             }
-        })
+        });
     },
 
     /* This method is used to add a hash file as a parameter in the links to css files.
@@ -447,7 +414,7 @@ module.exports = {
                 results = results.replace(/'/g,'"');
                 results = results.replace('\r','');
                 results = JSON.parse(results);  // try catch ??
-                // lg.warn('>> RESULTS: ' + JSON.stringify(results, null, 4));
+                // lg.warn('>> CHECKSUM RESULTS: ' + JSON.stringify(results, null, 4));
                 $.each(results, function(key, value) {
                     if (key == 'electron_css_path') {  // TODO: How to run this before the window is shown?
                         $.each(results[key], function(file_name, hash) {

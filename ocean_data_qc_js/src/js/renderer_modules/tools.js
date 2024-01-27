@@ -14,6 +14,7 @@ const { clipboard } = require('electron');
 
 const tail_file = require('@logdna/tail-file')
 const split2 = require('split2') // A common and efficient line splitter
+const fs = require('fs');
 
 const lg = require('logging');
 const loc = require('locations');
@@ -550,5 +551,41 @@ module.exports = {
         }
 
         return 0;
-    }
+    },
+
+    set_python_path: function(obj, caller) {
+        lg.info('-- SET PYTHON PATH')
+        if (process.platform === 'win32' && fs.existsSync(loc.python_win)) {
+            obj.python_path = loc.python_win;
+            obj.script_env_path = loc.env_bin_win;
+        } else if (process.platform === 'darwin' && fs.existsSync(loc.python_mac)) {
+            obj.python_path = loc.python_mac;
+            obj.script_env_path = loc.env_bin_mac;
+        } else if (process.platform === 'linux' && fs.existsSync(loc.python_lin)) {
+            obj.python_path = loc.python_lin;
+            obj.script_env_path = loc.env_bin_lin;
+        } else {
+            if (caller == 'server') {
+                obj.show_python_path_dg_err();
+            }
+            return;
+        }
+        if (obj.python_path != '' && obj.script_env_path != '') {
+            obj.check_python_version().then(() => {
+                if (caller == 'server') {
+                    obj.set_ocean_data_qc_path();
+                } else { // 'server_renderer'
+                    obj.get_css_checksums()
+                }
+            }).catch((err) => {
+                if (caller == 'server') {
+                    obj.show_python_path_dg_err(err);
+                }
+            })
+        } else {
+            if (caller == 'server') {
+                obj.show_python_path_dg_err()
+            }
+        }
+    },
 }
