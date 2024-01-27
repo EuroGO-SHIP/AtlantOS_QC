@@ -556,7 +556,7 @@ module.exports = {
                 //     src: 'data:image/png;base64,' + data,
                 //     style: 'display: none;',
                 // });
-                // $('#logos_div').append(img);
+                // $('#eurogoship_logo_div').append(img);
 
                 fs.readFile(path.join(loc.img, 'eurogoship_logo.svg'), {encoding: 'base64'}, function(err, data) {
                     if (err) {
@@ -565,12 +565,27 @@ module.exports = {
                         var img = $('<img>', {
                             id: 'eurogoship_logo',
                             src: 'data:image/svg+xml;base64,' + data,
-                            style: 'display: none;',
+                            style: 'display: none; height: 80px',
                         });
-                        $('#logos_div').append(img);
-                        $('#logos_div img').fadeIn(1000);
+                        $('#eurogoship_logo_div').append(img);
+                        $('#eurogoship_logo_div img').fadeIn(1000);
                     }
                 });
+
+                fs.readFile(path.join(loc.img, 'atlantos-new-logo.png'), {encoding: 'base64'}, function(err, data2) {
+                    if (err) {
+                        lg.error('ERROR LOADING ATLANTOS-NEW-LOGO.PNG: ' + err)
+                    } else {
+                        var img2 = $('<img>', {
+                            id: 'atlantos_logo',
+                            src: 'data:image/png;base64,' + data2,
+                            style: 'display: none; height: 50px',
+                        });
+                        $('#atlantos_logo_div').append(img2);
+                        $('#atlantos_logo_div img').fadeIn(1000);
+                    }
+                });
+
             }
         });
     }

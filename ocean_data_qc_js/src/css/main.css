@@ -149,11 +149,10 @@ img#ctd_logo {
 
 img#eurogoship_logo {
     margin: -20px 0 -20px -15px;
-    width: 21%;
     background-color: #003399;
 }
 
-#logos_div img {
+#eurogoship_logo_div img, #atlantos_logo_div img {
     float: left;
 }
 
