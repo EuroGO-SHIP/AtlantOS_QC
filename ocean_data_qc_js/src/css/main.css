@@ -148,7 +148,7 @@ img#ctd_logo {
 }
 
 img#eurogoship_logo {
-    margin: -20px 0 -20px -15px;
+    margin: -50px 0 0 100px;
     background-color: #003399;
 }
 
@@ -700,4 +700,9 @@ table.dataTable thead th[class^="sorting"]:after {
 /* Adjust the line height to align the text vertically */
 .tabulator .tabulator-header .tabulator-col .tabulator-col-content .tabulator-col-title {
     line-height: 20px; /* Adjust based on your header height and font size */
+}
+
+
+.slick-cell.editable {
+    overflow: auto;
 }
