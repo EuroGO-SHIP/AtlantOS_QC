@@ -294,7 +294,8 @@ html, body, .bokeh_iframe {
     height: 200px;
     margin: 10% auto;
     overflow: auto;
-    display: flex;
+    /* display: flex; */
+    display: none;
     flex-direction: column-reverse;
     padding: 10px;
 }

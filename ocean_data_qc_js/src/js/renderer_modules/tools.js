@@ -370,6 +370,9 @@ module.exports = {
         $('.welcome_container').fadeOut('slow', function() {
             $('.loader_container').fadeIn('slow');
 
+            return;
+            // TODO: create a cleaner log. This was not working in Mac
+
             const tail = new tail_file(loc.log_python, {encoding: 'utf8'})
             tail.on('tail_error', (err) => {
                 console.error('tail_file had an error!', err);
