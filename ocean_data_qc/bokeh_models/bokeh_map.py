@@ -49,6 +49,8 @@ class BokehMap(Environment):
         y_range = DataRange1d(
             range_padding=range_padding,
             # range_padding_units='absolute',
+            min_interval=300000,
+            bounds=(-20010000, 20050000)
         )
 
         self.env.wmts_map = figure(
