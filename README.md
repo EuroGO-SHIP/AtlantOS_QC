@@ -2,7 +2,7 @@
 
 This software is an interactive tool for helping in first Quality Control (1st QC, QC1) of Hydrographic Cruise Data. Fully open source code built mainly in Python but using Node, JavaScript, HTML5 and related technologies. It can be run on most Unix, Windows and MacOS systems.
 
-![demo](https://github.com/EuroGO-SHIP/AtlantOS_QC/demo.gif?raw=true)
+![demo](https://github.com/EuroGO-SHIP/AtlantOS_QC/blob/master/demo.gif?raw=true)
 
 ## About
 
