@@ -224,7 +224,11 @@ class BokehSources(Environment):
         # })
 
         if self.env.cur_partial_stt_selection == [] or force_selection:
-            self._set_partial_stt_selection()  # len(partial_stt_selection) <= NPROF
+            lg.info(f'>> empty partial or force({force_selection})')
+            try:
+                self._set_partial_stt_selection()  # len(partial_stt_selection) <= NPROF
+            except Exception as e:
+                lg.error('>> failing to _set_partial_stt_selection')
 
         # self._sync_with_patches()  # NOTE: sends less data but the algorythm takes longer to process
         self._sync_with_full_df()
@@ -259,7 +263,7 @@ class BokehSources(Environment):
         self.env.pc_src.selected.indices = prof_sel
 
         p4 = time.time()
-        lg.info('>> TIME: ML: {} | PC: {} | SYNC: {} >> FULL ALGORITHM TIME: {}'.format(
+        lg.info('>> SYNC WITH FULL DF TIME: ML: {} | PC: {} | SYNC: {} >> FULL ALGORITHM TIME: {}'.format(
             round(p2 - p1, 2), round(p3 - p2, 2), round(p4 - p3, 2), round(p4 - start, 2)
         ))
 

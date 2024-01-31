@@ -186,13 +186,16 @@ class BokehEvents(Environment):
     def _on_change_nearby_prof_select(self, attr, old, new):
         lg.info('-- ON CHANGE NEARBY PROF SELECT')
         # TODO: dont trigger this the first time
-        s = self.env.stations
-        new_pos = s.index(new)
-        self.env.cur_nearby_prof = s[new_pos]
+        try:
+            s = self.env.stations
+            new_pos = s.index(new)
+            self.env.cur_nearby_prof = s[new_pos]
 
-        # NOTE: trigger this just in case there is a manual change
-        self.env.bk_sources._upd_prof_srcs(force_selection=True)
-        self._check_profile_limits()
+            # NOTE: trigger this just in case there is a manual change
+            self.env.bk_sources._upd_prof_srcs(force_selection=True)
+            self._check_profile_limits()
+        except Exception as e:
+            lg.error(f'_on_change_nearby_prof_select error:{e}')
 
     def _check_profile_limits(self):
         ''' Disable previous and next buttons when the station selected in in the limit or
@@ -218,7 +221,7 @@ class BokehEvents(Environment):
         try:
             self.nearby_prof_select.remove_on_change('value', self._on_change_nearby_prof_select)
         except Exception as e:
-            lg.warning('Select callback could not be removed')
+            lg.warning(f'Select callback could not be removed. Error: {e}')
 
     def _reset_nearby_prof_select_opts(self):
         ''' Removes callback when the onchange method in the dropdown is triggeres
@@ -233,13 +236,13 @@ class BokehEvents(Environment):
 
     def _update_nearby_prof_select_opts(self):
         lg.info(f'-- UPDATE NEARBY PROF SELECT OPTS | STT TO SELECT: {self.env.stt_to_select}')
-        options = self.env.stations
+        options = self.env.stations.copy()
         if self.env.stt_to_select is not None:
             options.remove(self.env.stt_to_select)
-            self.nearby_prof_select.options = [f'{s}' for s in options]
-            self.nearby_prof_select.on_change('value', self._on_change_nearby_prof_select)
-            self.nearby_prof_select.disabled = False
-            self._check_profile_limits()
+        self.nearby_prof_select.options = [f'{s}' for s in options]
+        self.nearby_prof_select.on_change('value', self._on_change_nearby_prof_select)
+        self.nearby_prof_select.disabled = False
+        self._check_profile_limits()
 
     def _init_nearby_prof_cb(self):
         def on_click_nearby_prof(attr, old, new):
