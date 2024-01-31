@@ -95,23 +95,54 @@ module.exports = {
     cp_original_csv_from_excel: function() {
         lg.info('-- CP ORIGINAL CSV FROM EXCEL');
         var self = this;
-        var workbook = xlsx.readFile(self.file_path);
+        var workbook;
+        try {
+            workbook = xlsx.readFile(self.file_path);
+        } catch (err) {
+            tools.showModal('ERROR', `Failed to read the Excel file at ${self.file_path}. Error: ${err.message}`);
+            return;
+        }
         var sheet_name_list = workbook.SheetNames;
+        if (!sheet_name_list.length) {
+            tools.showModal('ERROR', 'The Excel file does not contain any sheets.');
+            return;
+    var stream;
+    try {
+        stream = xlsx.stream.to_csv(workbook.Sheets[sheet_name_list[0]]);
+    } catch (err) {
+        tools.showModal('ERROR', `Failed to create CSV from the first worksheet. Error: ${err.message}`);
+        return;
+    }        }
 
-        var md_json = xlsx.utils.sheet_to_json(
-            workbook.Sheets[sheet_name_list[1]], {'header': 1}
-        );
+        var md_json;
+        try {
+            md_json = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[1]], {'header': 1});
+        } catch (err) {
+            tools.showModal('ERROR', `Failed to convert sheet to JSON. Sheet: ${sheet_name_list[1]}, Error: ${err.message}`);
+            return;
+        }
         var md_json_flat = md_json.map(function(val) {
             return val[0];
         });
         var metadata = '';
-        $.each(md_json_flat, function(key, val) {
-            val = val.replace(/^# /g, '');
-            metadata += val + '\n';
+        $.each(md_json, function(key, val) {
+            if (val && val[0] !== undefined) {
+                // Only attempt to replace if val is not undefined
+                var cleanVal = val[0].replace(/^# /g, '');
+                metadata += cleanVal + '\n';
+            } else {
+                lg.warn(`Skipping undefined or empty value at row ${key + 1} in sheet ${sheet_name_list[1]}`);
+            }
         });
 
         var output_file_name = path.join(loc.proj_files, 'original.csv');
-        var stream = xlsx.stream.to_csv(workbook.Sheets[sheet_name_list[0]]);  // suggested by the library docs
+        var stream;
+        try {
+            stream = xlsx.stream.to_csv(workbook.Sheets[sheet_name_list[0]]); // suggested by the library docs
+        } catch (err) {
+            tools.showModal('ERROR', `Failed to create CSV stream from the first worksheet. Error: ${err.message}`);
+            return;
+        }        
         var s = stream.pipe(fs.createWriteStream(output_file_name), {encoding: 'utf8'});
 
         s.on('error', (err) => {
