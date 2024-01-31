@@ -9,7 +9,7 @@ import os #from os import path, environ, getenv
 import re
 from math import *
 import types
-import subprocess as sbp
+import subprocess
 from importlib import import_module
 import time
 import traceback
@@ -41,16 +41,19 @@ class ComputedParameter(Environment):
 
     def import_octave_equations(self):
         start_time = time.time()
-        lg.info('>> OCTAVE PATH: {}'.format(self.env.oct_eq.oct_exe_path))
-        oc_output = sbp.getstatusoutput('"{}" --eval "OCTAVE_VERSION"'.format(self.env.oct_eq.oct_exe_path))
-        if oc_output[0] == 0:
-            lg.info('>> OCTAVE DETECTED FROM PYTHON, VERSION: {}'.format(
-                oc_output[1].split('=')[1].strip())
-            )
-            #self.equations = self.env.oct_eq  # remove methods that are not equations
-        else:
-            lg.warning('>> OCTAVE UNDETECTED')
-            #self.equations = None
+        lg.info(f'>> OCTAVE PATH: {self.env.oct_eq.oct_exe_path}')
+        try:
+            oc_output = subprocess.check_output(f'"{self.env.oct_eq.oct_exe_path}" --eval "OCTAVE_VERSION"',
+                                            shell=True, timeout=0.1).decode('utf-8')
+            if oc_output:
+                lg.info(f'>> OCTAVE DETECTED FROM PYTHON, VERSION: {oc_output.split("=")[1].strip()}')
+                #self.equations = self.env.oct_eq  # remove methods that are not equations
+            else:
+                lg.warning('>> OCTAVE UNDETECTED')
+                #self.equations = None
+        except subprocess.TimeoutExpired:
+            lg.warning('>> OCTAVE CHECK TIMED OUT')
+        #self.equations = None
         self.equations = self.env.oct_eq # Keep equations even if octave is not detected, as most have been migrated to python 
         lg.info(f'import_octave_equations took {time.time() - start_time:.3f}s')
 

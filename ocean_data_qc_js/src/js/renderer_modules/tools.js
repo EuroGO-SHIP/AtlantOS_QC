@@ -215,7 +215,7 @@ module.exports = {
                     self.showModal('ERROR','', 'Uncaught Exception', false, $('body').data('python_error'))
                     $('body').removeData('python_error');
                 }
-            }, 100);
+            }, 10);
         });
     },
 

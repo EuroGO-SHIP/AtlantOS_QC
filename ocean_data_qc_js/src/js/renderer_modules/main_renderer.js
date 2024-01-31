@@ -43,7 +43,7 @@ data_renderer.ipc_renderer = ipcRenderer;
 
 $('body').data('bokeh_state', 'not-ready');  // bokeh server state: 'not-ready', 'ready'
 $('body').data('ts_state', 'checking');      // tile server state: 'checking', 'offline', 'online'
-$('body').data('oct_state', 'checking');     // octave state: 'checking', 'checked'
+$('body').data('oct_state', 'checked');     // octave state: 'checking', 'checked'
 
 tools.multi_modal_fix();
 tools.popover_fix();
@@ -208,7 +208,7 @@ ipcRenderer.on('relaunch-bokeh', (event, arg) => {
 });
 
 ipcRenderer.on('set-octave-path', (event, arg) => {
-    $('body').data('oct_state', 'checking');
+    $('body').data('oct_state', 'checked');
     server_renderer.set_octave_path(arg.manual_octave_folder_path);
 });
 
