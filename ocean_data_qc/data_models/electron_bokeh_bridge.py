@@ -19,6 +19,7 @@ import os
 from os import path
 import traceback
 import hashlib
+import time
 
 from ocean_data_qc.data_models.files_handler import BokehTemplate
 
@@ -107,6 +108,7 @@ class ElectronBokehBridge(Environment):
                 'args': {}
             }
         """
+        start_time=time.time()
         lg.info('-- PYTHON RESPONSE')
         message = json.loads(self.bridge_text.value)  # TODO: check if this works or if
 
@@ -121,9 +123,9 @@ class ElectronBokehBridge(Environment):
             return
 
         if len(str(args)) < 500:
-            lg.info('>> OBJ: {} | METHOD: {} | ARGS: {}'.format(obj, method_str, args))
+            lg.info(f'>> OBJ: {obj} | METHOD: {method_str} | ARGS: {args} .Took: {time.time() - start_time:.3f}s')
         else:
-            lg.info('>> OBJ: {} | METHOD: {} | ARGS VERY LONG'.format(obj, method_str))
+            lg.info(f'>> OBJ: {obj} | METHOD: {method_str} | ARGS VERY LONG .Took: {time.time() - start_time:.3f}s')
 
         # TODO: try to return the object directly with eval, instead of creating an elif for each model
         if obj == 'cruise.data':
@@ -164,28 +166,35 @@ class ElectronBokehBridge(Environment):
                 signal='python-response',
                 params=result
             )
+        lg.info(f'>> send_python_response took: {time.time() - start_time:.3f}s')
 
     def run_js_code(self, signal, params={}):
         """ General method to run JavaScript inside the iframe
             The signal is sent to the bokeh_renderer.js file
             TODO: they are developing a better way to run JavaScript directly
         """
+        start_time=time.time()
         if params != {}:
-            params = json.dumps(params, sort_keys=True)
-        if len(params) < 5000:
-            lg.info('>> RUN JS CODE, PARAMS: {}'.format(params))
+            params_str = json.dumps(params, sort_keys=True)#, separators=(',', ':'))
+            if len(params_str) < 5000:
+                lg.info(f'>> RUN JS CODE, PARAMS: {params_str} took: {time.time() - start_time:.3f}s')
+            else:
+                lg.warning(f'>> Very long string in param, skiping print. Took: {time.time() - start_time:.3f}s')
         else:
-            lg.warning('>> Very long string in param, skiping print')
+            params_str = '{}'
+
         lg.info('>> SIGNAL: {}'.format(signal))
         js_code = """
             window.top.postMessage({{
                 'signal': '{}',
                 'params': {}
             }}, '*');                        // to main_renderer.js
-        """.format(signal, params)
+        """.format(signal, params_str)
         # lg.info('>> JS CODE: {}'.format(js_code))
+        lg.info(f'>> took: {time.time() - start_time:.3f}s')
         self.bridge_plot_callback.code = js_code
         self.bridge_trigger.glyph.size += 1  # triggers the callback
+        lg.info(f'>> run_js_code took: {time.time() - start_time:.3f}s')
 
     def call_js(self, params={}):
         """ General method to run JavaScript code from python
