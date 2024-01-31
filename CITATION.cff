@@ -1,14 +1,25 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
+title: "EuroGO-SHIP AtlantOS_QC v1.6.0"
+version: 1.6.0
+doi: "10.5281/zenodo.10600496"
+date-released: 2024-01-01
 authors:
-- family-names: "YOUR_NAME_HERE"
-  given-names: "YOUR_NAME_HERE"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
-- family-names: "Lisa"
-  given-names: "Mona"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
-title: "AtlantOS_QC"
-version: 1.0.0
-doi: 10.5281/zenodo.1234
-date-released: 2024-01-31
-url: "https://github.com/EuroGO-SHIP/AtlantOS_QC"
+  - family-names: "Velo"
+    given-names: "A."
+    orcid: "0000-0002-7598-5700"
+  - family-names: "Cacabelos"
+    given-names: "J."
+  - family-names: "Lange"
+    given-names: "N."
+  - family-names: "Tanhua"
+    given-names: "T."
+    orcid: "0000-0002-0313-2557"
+  - family-names: "Olsen"
+    given-names: "A."
+    orcid: "0000-0003-1696-9142"
+  - family-names: "Pérez"
+    given-names: "F. F."
+    orcid: "0000-0003-4836-8974"
+repository-code: "https://github.com/EuroGO-SHIP/AtlantOS_QC/"
+url: "https://github.com/EuroGO-SHIP/AtlantOS_QC/"
