@@ -13,7 +13,9 @@ Version 1.0 was released under [![DOI](https://zenodo.org/badge/DOI/10.5281/zeno
 
 Since version 1.0 to 1.4.0, the application had no specific nor continuous funding for its development, having received partial support from [H2020-COMFORT](https://comfort.w.uib.no/) project and being also a contribution to WATER:iOS Interdisciplinary Thematic Platform [@WATER_IOS_CSIC](https://twitter.com/water_ios_csic)
 
-From 1.5.0 onwards is supported by [**Euro GO-SHIP**](https://eurogo-ship.eu/) (Grant #101094690), a EU-HORIZON project for _Developing a research infraestructure concept to support european hydrography_ [![DOI](https://zenodo.org/badge/549480947.svg)](https://zenodo.org/doi/10.5281/zenodo.10015794)
+From 1.5.0 onwards is supported by [**Euro GO-SHIP**](https://eurogo-ship.eu/) (Grant #101094690), a EU-HORIZON project for _Developing a research infraestructure concept to support european hydrography_ 
+
+Since v1.6.0 having Octave installed is no longer a recomendation, as internal Octave code was translated to python. Full app functionality can be provided alone with the provided installers
 
 ## Installation
 
@@ -22,15 +24,16 @@ It's not essential for this software to run, but in order to take advantage of t
 ### Using built-in installers
 
 Releases (https://github.com/EuroGO-SHIP/AtlantOS_QC/releases):
-* Windows x64,  [ocean-data-qc-setup-1.5.0.exe](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC.Setup.1.5.0.exe)
-* macOS: [ocean-data-qc-1.5.0-arm64.dmg (Apple Silicon)](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC-1.5.0-arm64.dmg) | [ocean-data-qc-1.5.0.dmg](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC-1.5.0.dmg)
-* GNU/linux deb (Ubuntu, Debian,...): [ocean-data-qc_1.5.0_amd64.deb](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/ocean-data-qc_1.5.0_amd64.deb)
-* GNU/Linux rpm (RedHat, SuSe, ...): [ocean-data-qc-1.5.0.x86_64.rpm](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/ocean-data-qc-1.5.0.x86_64.rpm)
-* GNU/Linux snap: [ocean-data-qc_1.5.0_amd64.snap](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/ocean-data-qc_1.5.0_amd64.snap)
-* GNU/Linux AppImage: [ocean-data-qc-1.5.0.AppImage](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/AtlantOS.Ocean.Data.QC-1.5.0.AppImage)
+* Windows x64,  [AtlantOS.Ocean.Data.QC.Setup.1.6.0.exe](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/AtlantOS.Ocean.Data.QC.Setup.1.6.0.exe)
+* macOS: [AtlantOS.Ocean.Data.QC-1.6.0-arm64.dmg (Apple Silicon)](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/AtlantOS.Ocean.Data.QC-1.6.0-arm64.dmg) | [AtlantOS.Ocean.Data.QC-1.6.0.dmg](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/AtlantOS.Ocean.Data.QC-1.6.0.dmg)
+* GNU/linux deb (Ubuntu, Debian,...): [ocean-data-qc_1.6.0_amd64.deb](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/ocean-data-qc_1.6.0_amd64.deb)
+* GNU/Linux rpm (RedHat, SuSe, ...): [ocean-data-qc-1.6.0.x86_64.rpm](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/ocean-data-qc-1.6.0.x86_64.rpm)
+* GNU/Linux snap: [ocean-data-qc_1.6.0_amd64.snap](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/ocean-data-qc_1.6.0_amd64.snap)
+* GNU/Linux AppImage: [AtlantOS.Ocean.Data.QC-1.6.0.AppImage](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/AtlantOS.Ocean.Data.QC-1.6.0.AppImage)
 
 Source code:
 * latest: [![DOI](https://zenodo.org/badge/549480947.svg)](https://zenodo.org/doi/10.5281/zenodo.10015794)
+* v1.6.0: [https://github.com/EuroGO-SHIP/AtlantOS_QC/archive/refs/tags/v1.6.0.tar.gz] [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.100600496.svg)](https://doi.org/10.5281/zenodo.100600496)
 * v1.5.0: [https://github.com/EuroGO-SHIP/AtlantOS_QC/archive/refs/tags/v1.5.0.tar.gz] [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10015795.svg)](https://doi.org/10.5281/zenodo.10015795)
 * v1.4.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.4.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.4.0.tar.gz) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4532402.svg)](https://doi.org/10.5281/zenodo.4532402)
 * v1.3.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.3.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.3.0.tar.gz)
@@ -44,7 +47,7 @@ Source code:
 
     2. Download and install [yarn](https://yarnpkg.com/). Follow instructions from: https://yarnpkg.com/ (Alternatively  you can use [npm](https://www.npmjs.com/))
 
-    3. Optional but very recommended for functionality: GNU Octave
+    3. OPTIONAL, not needed anymore, just in case you want to include own code: GNU Octave
 
         * Download and install GNU Octave. Follow instructions from: [https://www.gnu.org/software/octave/#install](https://www.gnu.org/software/octave/#install)
 
@@ -52,20 +55,18 @@ Source code:
 
 1. Install the python `ocean_data_qc` package and its dependencies in your python setup (if you have installed python through miniconda/anaconda and is not in PATH, you have to use Anaconda Prompt as command shell):
 
-        python setup.py develop
-            or for non-root install in Linux:
-        python setup.py develop --user
+        python -m pip install --editable .
+            or :
+        python -m pip install .
 
 1. Install the node dependencies in the `ocean_data_qc_js` folder
 
-        cd ocean_data_qc_js
-        yarn install
+        yarn --cwd ocean_data_qc_js/ install
 
 1. Open the GUI from the `ocean_data_qc_js` folder
 
-        cd ocean_data_qc_js
-        yarn start               # or npm start
-        (first time launching delays some time, please wait)
+        yarn --cwd ocean_data_qc_js/ start
+        (first launching time delays a bit, please wait)
 
 ## Libraries and languages Used
 
@@ -94,8 +95,8 @@ This project is licensed under the GPLv3 License - see the LICENSE file for deta
 
 ## References
 
-* [CO2SYS.m](https://doi.org/10.3334/CDIAC/otg.CO2SYS_MATLAB_v1.1). CO2SYS version 1.1 (Sept 2011)
-    >van Heuven, S., D. Pierrot, J.W.B. Rae, E. Lewis, and D.W.R. Wallace (2011) MATLAB Program Developed for CO2 System Calculations. ORNL/CDIAC-105b. Carbon Dioxide Information Analysis Center, Oak Ridge National Laboratory, U.S. Department of Energy, Oak Ridge, Tennessee. [https://doi.org/10.3334/CDIAC/otg.CO2SYS_MATLAB_v1.1](https://doi.org/10.3334/CDIAC/otg.CO2SYS_MATLAB_v1.1)
+* [PyCO2SYS](https://github.com/mvdh7/PyCO2SYS).
+    >Humphreys, M. P., Schiller, A. J., Sandborn, D. E., Gregor, L., Pierrot, D., van Heuven, S. M. A. C., Lewis, E. R., and Wallace, D. W. R. (2022). PyCO2SYS: marine carbonate system calculations in Python. Zenodo. [doi:10.5281/zenodo.3744275](http://doi.org/10.5281/zenodo.3744275)
 
 * [CANYON-B](https://github.com/HCBScienceProducts/CANYON-B). Adapted to run in this application
     >Bittig et al. (2018). An alternative to static climatologies: Robust estimation of open ocean CO2 variables and nutrient concentrations from T, S and O2 data using Bayesian neural networks. Front. Mar. Sci. 5:328. [http://dx.doi.org/10.3389/fmars.2018.00328](http://dx.doi.org/10.3389/fmars.2018.00328).
