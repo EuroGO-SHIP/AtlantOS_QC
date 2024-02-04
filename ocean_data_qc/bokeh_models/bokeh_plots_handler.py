@@ -69,8 +69,12 @@ class BokehPlotsHandler(Environment):
         self._init_ranges()
         graphs = self.env.f_handler.graphs_per_tab  # property of FilesHandler object
         for tab in self.env.f_handler.tab_list:
-            tab_flag = tab + FLAG_END       # TODO: tabs titles cannot be flags?
-                                            #       if there is not flag available choose the first in the dropdown
+            tab_flag = tab + FLAG_END
+
+            flags_sorted = sorted(self.env.cruise_data.get_cols_by_attrs(['flag']))
+            if tab_flag not in flags_sorted:
+                tab_flag = flags_sorted[0]
+
             self.env.tabs_flags_plots[tab] = {
                 'flag': tab_flag,
                 'plots': [],

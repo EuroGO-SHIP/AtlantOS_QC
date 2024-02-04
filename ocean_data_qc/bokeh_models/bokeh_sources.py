@@ -102,6 +102,11 @@ class BokehSources(Environment):
         for tab in self.env.f_handler.tab_list:
             flag = tab + FLAG_END
             flags = {}
+
+            flags_sorted = sorted(self.env.cruise_data.get_cols_by_attrs(['flag']))
+            if flag not in flags_sorted:
+                flag = flags_sorted[0]
+
             for i, val in enumerate(self.env.source.data[flag]):
                 flags.setdefault(int(val), []).append(i)
 

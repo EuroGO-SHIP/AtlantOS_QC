@@ -304,6 +304,10 @@ class BokehEvents(Environment):
         self.env.cur_tab = ordered_tab_list[0]              # self.env.cur_tab initialization
         self.env.cur_flag = self.env.cur_tab + FLAG_END     # self.env.cur_tab initialization
 
+        flags_sorted = sorted(self.env.cruise_data.get_cols_by_attrs(['flag']))
+        if self.env.cur_flag not in flags_sorted:
+            self.env.cur_flag = flags_sorted[0]
+
         ly_settings = self.env.f_handler.get_layout_settings()
         for tab in ordered_tab_list:
             indices = self.env.tabs_flags_plots[tab]['plots']

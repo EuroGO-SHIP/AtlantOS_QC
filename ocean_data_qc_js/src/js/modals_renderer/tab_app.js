@@ -62,6 +62,7 @@ module.exports = {
             if (f !== '_FLAG_W' && !attrs.includes('non_qc')) {
                 self.non_qc_params.push(c);
             }
+            $('#dl_title').append($('<option>').attr('value', c));
         });
 
         var computed_params = data.get('computed_params', loc.custom_settings);
@@ -88,12 +89,6 @@ module.exports = {
             var new_fieldset = $('fieldset').first().clone();
             $('#qc_tabs_container').append(new_fieldset);
             new_fieldset.slideDown();
-            self.non_qc_params.forEach(function(column) {
-                new_fieldset.find('select[name=tab_title]').append($('<option>', {
-                    value: column,
-                    text: column,
-                }));
-            })
             self.app_columns.forEach(function(column) {
                 if (self.cps_columns.includes(column)) {
                     new_fieldset.find('.qc_tabs_table_row select').append($('<option>', {
@@ -136,17 +131,29 @@ module.exports = {
     load_save_button: function() {
         $('.save_settings').on('click', function() {
             // validations
+            var error = false;
+            var re = new RegExp("^[A-Za-z0-9 _]+$");
+            $('input[name="tab_title"]:not(:first)').each(function(){
+               if (!re.test($(this).val())) {
+                    tools.show_modal({
+                       'msg_type': 'html',
+                       'type': 'VALIDATION ERROR',
+                       'msg': '<p>Valid characters in tab title: "A-Za-z0-9 _".</p>',
+                    });
+                    error = true;
+               }
+            });
+
             if ($('#qc_tabs_table-0').length == 0) {
                 tools.show_modal({
                     'type': 'VALIDATION ERROR',
                     'msg': 'At least there should be one tab with plots filled.'
                 });
-                return;
+                error = true;
             }
             var tab_titles = [];
             var dup_tab = []
-            var error = false;
-            $('#qc_tabs_container select[name=tab_title]').slice(1).each(function() {  // slice(1) to remove the first element
+            $('#qc_tabs_container input[name=tab_title]').slice(1).each(function() {  // slice(1) to remove the first element
                 var val = $(this).val();
                 if (tab_titles.includes(val)) {
                     dup_tab.push(val);
@@ -160,10 +167,14 @@ module.exports = {
                     type: 'VALIDATION ERROR',
                     msg: 'The following tab title/s is/are duplicated: ' + dup_tab,
                 });
-                return;
+                error = true
             }
 
             // TODO: check also at least 1 element inside the tab
+
+            if (error) {
+                return;
+            }
 
             var first = true;
             var qc_plot_tabs = {}
@@ -171,7 +182,7 @@ module.exports = {
                 if (first == true) {
                     first = false;
                 } else {
-                    var tab = $(this).find('select[name=tab_title]').val();
+                    var tab = $(this).find('input[name=tab_title]').val();
                     lg.info('>> CURRENT TAB: ' + tab);
                     qc_plot_tabs[tab] = []
                     var first_row = true;
@@ -233,13 +244,7 @@ module.exports = {
                     $(this).parent().parent().remove();
                 });
             });
-            self.non_qc_params.forEach(function (column) {
-                new_qc_tab_div.find('select[name=tab_title]').append($('<option>', {
-                    value: column,
-                    text: column,
-                }));
-            });
-            new_qc_tab_div.find('select[name=tab_title]').val(tab);
+            new_qc_tab_div.find('input[name=tab_title]').val(tab);
 
             qc_plot_tabs[tab].forEach(function (graph) {
                 var new_row = self.get_new_row(graph);

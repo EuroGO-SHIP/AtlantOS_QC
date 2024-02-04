@@ -142,7 +142,7 @@ module.exports = {
         } catch (err) {
             tools.showModal('ERROR', `Failed to create CSV stream from the first worksheet. Error: ${err.message}`);
             return;
-        }        
+        }
         var s = stream.pipe(fs.createWriteStream(output_file_name), {encoding: 'utf8'});
 
         s.on('error', (err) => {
@@ -223,6 +223,11 @@ module.exports = {
             self.file_columns = cols_dict['cols'];
             self.cps_columns = cols_dict['cps'];
             self.params = cols_dict['params'];
+
+            self.file_columns.forEach(function (column) {
+                $('#dl_title').append($('<option>').attr('value', column));
+            });
+
             var qc_plot_tabs = data.get('qc_plot_tabs', loc.custom_settings);
             var qc_plot_tabs_final = {};
             Object.keys(qc_plot_tabs).forEach(function(tab) {
@@ -317,7 +322,7 @@ module.exports = {
             $('#qc_tabs_container').append(new_fieldset);
             new_fieldset.slideDown();
             self.params.forEach(function(column) {
-                new_fieldset.find('select[name=tab_title]').append($('<option>', {
+                new_fieldset.find('input[name=tab_title]').append($('<option>', {
                     value: column,
                     text: column,
                 }));
@@ -363,25 +368,39 @@ module.exports = {
     load_accept_and_plot_button() {
         $('.accept_and_plot').on('click', function() {
             // validations
+            var error = false;
+            var re = new RegExp("^[A-Za-z0-9 _]+$");
+            $('input[name="tab_title"]:not(:first)').each(function(){
+               if (!re.test($(this).val())) {
+                    tools.show_modal({
+                        'msg_type': 'html',
+                        'type': 'VALIDATION ERROR',
+                        'msg': '<p>Valid characters in tab title: "A-Za-z0-9 _".</p>',
+                    });
+                error = true;
+               }
+            });
+
             if($('#project_name').val() == '') {
                 tools.show_modal({
                     'msg_type': 'html',
                     'type': 'VALIDATION ERROR',
                     'msg': '<p>The project name field must be filled.</p> <p>It is a required field.</p>',
                 });
-                return;
+                error = true;
             }
+
             if ($('#qc_tabs_table-0').length == 0) {
                 tools.show_modal({
                     'type': 'VALIDATION ERROR',
                     'msg': 'At least there should be one tab with plots filled.'
                 });
-                return;
+                error = true;
             }
+
             var tab_titles = [];
             var dup_tab = []
-            var error = false;
-            $('#qc_tabs_container select[name=tab_title]').slice(1).each(function() {  // slice(1) to remove the first element
+            $('#qc_tabs_container input[name=tab_title]').slice(1).each(function() {  // slice(1) to remove the first element
                 var val = $(this).val();
                 if (val == '') {
                     error = true;
@@ -390,7 +409,7 @@ module.exports = {
                         type: 'VALIDATION ERROR',
                         msg: 'Tab titles cannot be empty',
                     });
-                    return;
+                    error = true
                 } else {
                     if (tab_titles.includes(val)) {
                         dup_tab.push(val);
@@ -405,8 +424,9 @@ module.exports = {
                     type: 'VALIDATION ERROR',
                     msg: 'The following tab title/s is/are duplicated: ' + dup_tab,
                 });
-                return;
+                error = true
             }
+
             if (error) {
                 return;
             }
@@ -422,7 +442,7 @@ module.exports = {
                 if (first == true) {
                     first = false;
                 } else {
-                    var tab = $(this).find('select[name=tab_title]').val();
+                    var tab = $(this).find('input[name=tab_title]').val();
                     lg.info('>> CURRENT TAB: ' + tab);
                     qc_plot_tabs[tab] = []
                     var first_row = true;
@@ -482,13 +502,7 @@ module.exports = {
                     $(this).parent().parent().remove();
                 });
             });
-            self.params.forEach(function (column) {
-                new_qc_tab_div.find('select[name=tab_title]').append($('<option>', {
-                    value: column,
-                    text: column,
-                }));
-            });
-            new_qc_tab_div.find('select[name=tab_title]').val(tab);
+            new_qc_tab_div.find('input[name=tab_title]').val(tab);
 
             qc_plot_tabs[tab].forEach(function (graph) {
                 var new_row = self.get_new_row(graph);
@@ -577,10 +591,15 @@ module.exports = {
                 'method': 'get_cruise_data_columns'
             }
             tools.call_promise(params).then((cols_dict) => {
-                // lg.warn('>> COLUMNS: ' + JSON.stringify(cols_dict, null, 4));
+                lg.warn('>> COLUMNS: ' + JSON.stringify(cols_dict, null, 4));
                 self.file_columns = cols_dict['cols'];
                 self.cps_columns = cols_dict['cps'];
                 self.params = cols_dict['params'];
+
+                self.file_columns.forEach(function (column) {
+                    $('#dl_title').append($('<option>').attr('value', column));
+                });
+
                 var qc_plot_tabs = data.get('qc_plot_tabs', loc.proj_settings);
                 var qc_plot_tabs_final = {};
                 Object.keys(qc_plot_tabs).forEach(function(tab) {
@@ -602,23 +621,40 @@ module.exports = {
 
                 $('.accept_and_plot').on('click', function() {
                     // validations
+                    var error = false;
+                    var re = new RegExp("^[A-Za-z0-9 _]+$");
+                    $('input[name="tab_title"]:not(:first)').each(function(){
+                       if (!re.test($(this).val())) {
+                            tools.show_modal({
+                                'msg_type': 'html',
+                                'type': 'VALIDATION ERROR',
+                                'msg': '<p>Valid characters in tab title: "A-Za-z0-9 _".</p>',
+                            });
+                        error = true;
+                       }
+                    });
+
                     if($('#project_name').val() == '') {
                         tools.show_modal({
                             'msg_type': 'html',
                             'type': 'VALIDATION ERROR',
                             'msg': '<p>The project name field must be filled.</p> <p>It is a required field.</p>',
                         });
-                        return;
+                        error = true;
                     }
                     if ($('#qc_tabs_table-0').length == 0) {
                         tools.show_modal({
                             'type': 'VALIDATION ERROR',
                             'msg': 'At least there should be one tab with plots filled.'
                         });
-                        return;
+                        error = true;
                     }
 
                     // TODO: check also at least 1 element inside the tab
+
+                    if (error) {
+                        return;
+                    }
 
                     data.set({'project_name': $('#project_name').val(),}, loc.proj_settings);
                     data.set({'project_state': 'modified',}, loc.shared_data);
@@ -629,7 +665,7 @@ module.exports = {
                         if (first == true) {
                             first = false;
                         } else {
-                            var tab = $(this).find('select[name=tab_title]').val();
+                            var tab = $(this).find('input[name=tab_title]').val();
                             // lg.info('>> CURRENT TAB: ' + tab);
                             qc_plot_tabs[tab] = []
                             var first_row = true;

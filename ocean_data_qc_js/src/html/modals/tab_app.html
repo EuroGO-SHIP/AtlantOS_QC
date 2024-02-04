@@ -26,11 +26,14 @@ data-toggle="modal" data-target="#tab_app" style="display: none;">Open Modal</bu
                             </ul>
                     </div>
 
+                    <!-- autocomplete for tab title -->
+                    <datalist id="dl_title" />
+
                     <!-- table to clone -->
                     <fieldset id="qc_tabs_table" style="display: none;">
                         <div class="row">
                             <label class="control-label col-sm-2" for="tab_title">Tab title:</label>
-                            <select class="form-control form-control-sm" name="tab_title" ></select>
+                            <input class="form-control form-control-sm" name="tab_title" list="dl_title"/>
                             <button type="button" class="delete_tab form-control form-control-sm btn btn-danger col-sm-2 float-right">Delete this tab</button>
                         </div>
                         <div class="row">

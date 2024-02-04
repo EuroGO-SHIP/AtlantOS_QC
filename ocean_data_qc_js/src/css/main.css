@@ -397,7 +397,7 @@ fieldset a:hover{
     text-decoration: none;
 }
 
-fieldset select[name='tab_title'] {
+fieldset input[name='tab_title'] {
     width: 30% !important;
     float: left;
 }
