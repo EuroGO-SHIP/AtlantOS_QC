@@ -136,7 +136,6 @@ class BokehMap(Environment):
         '''
 
         hover = HoverTool(
-            toggleable=True,
             mode='mouse',
             tooltips=tooltips,
             renderers=[self.env.wmts_map_scatter],

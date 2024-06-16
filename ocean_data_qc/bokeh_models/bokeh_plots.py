@@ -101,7 +101,7 @@ class BokehPlots(Environment):
         for key in self.env.all_flags:  # TODO: set some order (overlapping layers)
             # TODO: Waiting for the GroupFilter by numeric value https://github.com/bokeh/bokeh/issues/7524
 
-            c = self.plot.circle(
+            c = self.plot.scatter(
                 x=self.x,
                 y=self.y,
                 size=4,
@@ -153,7 +153,7 @@ class BokehPlots(Environment):
         # profile colors = [..., light blue, blue, dark blue, red]
         for i in range(NPROF):
             color = self.env.profile_colors[i]
-            c = self.plot.circle(
+            c = self.plot.scatter(
                 x='{}_{}_{}'.format(self.tab, self.x, i),
                 y='{}_{}_{}'.format(self.tab, self.y, i),
                 line_color=color,
@@ -210,7 +210,7 @@ class BokehPlots(Environment):
             nonselection_fill_alpha=0.0
         )
 
-        self.aux_asterisk_circle = self.plot.circle(
+        self.aux_asterisk_circle = self.plot.scatter(
             x='{}_{}'.format(self.tab, self.x),
             y='{}_{}'.format(self.tab, self.y),
             size=3,
@@ -311,9 +311,8 @@ class BokehPlots(Environment):
             <b>{y}_FLAG_W: </b> @{y}_FLAG_W <br>
         '''.format(x=self.x, y=self.y)
 
-        hover = HoverTool(                  # TODO: try to make this toggleable
+        hover = HoverTool(
             renderers=self.circles,
-            toggleable=True,
             mode='mouse',
             tooltips=tooltips,
         )
