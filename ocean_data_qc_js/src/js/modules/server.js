@@ -377,7 +377,7 @@ module.exports = {
     set_python_shell_options: function() {
         lg.info('-- SET PYTHON SHELL OPTIONS')
         var self = this;
-
+        
         var dev_mode = data.get('dev_mode', loc.shared_data);
         var user_options = [
             '-m', 'bokeh', 'serve',
@@ -387,6 +387,7 @@ module.exports = {
             '--log-format', '"%(asctime)s %(levelname)s %(message)s"',       // not working??
             '--log-file', loc.log_python
         ]
+        lg.warn('python path > ' + self.python_path)
         var aux_options = user_options;
         if (dev_mode) {
             aux_options = user_options.concat(dev_options);

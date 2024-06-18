@@ -17,7 +17,7 @@ from bokeh.events import Reset, DoubleTap
 from bokeh.models.renderers import GlyphRenderer
 from bokeh.models.callbacks import CustomJS
 from bokeh.models.glyphs import Line
-from bokeh.models import Circle
+from bokeh.models import Scatter
 from bokeh.palettes import Reds3
 from bokeh.models.tools import (
     PanTool, BoxZoomTool, BoxSelectTool, WheelZoomTool,
@@ -115,7 +115,8 @@ class BokehPlots(Environment):
                 nonselection_fill_color=CIRCLE_COLORS[key],
                 nonselection_fill_alpha=1.0,
             )
-            c.selection_glyph = Circle(
+            c.selection_glyph = Scatter(
+                marker="circle",
                 line_color=Reds3[0],
                 line_alpha=1.0,
                 fill_color='yellow',
@@ -166,7 +167,8 @@ class BokehPlots(Environment):
                 nonselection_line_alpha=1.0,
                 nonselection_fill_alpha=1.0
             )
-            c.selection_glyph = Circle(
+            c.selection_glyph = Scatter(
+                marker="circle",
                 line_color=RED,
                 fill_color='yellow',
                 line_alpha=1.0,

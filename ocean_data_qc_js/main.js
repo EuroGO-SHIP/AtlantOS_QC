@@ -212,20 +212,6 @@ ipcMain.on('open-dialog', (event, arg) => {
     menu_actions.open_dialog();
 })
 
-ipcMain.on('open-octave-path-dialog', (event, arg) => {
-    dialog.showOpenDialog({
-            title: 'Setting Octave path folder...',
-            filters: [{ name: 'Octave Path Folder', }],
-            properties: ['openDirectory'],
-    }).then((results) => {
-        if (results['canceled'] === false) {
-            var file_path = results['filePaths'][0];
-            var web_contents = main_window.webContents;
-            web_contents.send('set-octave-path', {'manual_octave_folder_path': file_path});
-        }
-    });
-})
-
 ipcMain.on('open-file', (event, arg) => {
     lg.info('-- IPC MAIN OPEN-FILE, ARG: ' + arg);
     menu_actions.open_file(arg);

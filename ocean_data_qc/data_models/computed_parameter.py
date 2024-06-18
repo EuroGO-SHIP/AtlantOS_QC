@@ -34,29 +34,6 @@ class ComputedParameter(Environment):
         self._proj_settings_cps = None
         self._proj_settings_last_mod = None
 
-        # NOTE: check octave availability again here because if we check shared_data maybe
-        #       the value is not updated due to asyncronous matters
-        self.equations = None
-        self.import_octave_equations()
-
-    def import_octave_equations(self):
-        start_time = time.time()
-        lg.info(f'>> OCTAVE PATH: {self.env.oct_eq.oct_exe_path}')
-        try:
-            oc_output = subprocess.check_output(f'"{self.env.oct_eq.oct_exe_path}" --eval "OCTAVE_VERSION"',
-                                            shell=True, timeout=0.1).decode('utf-8')
-            if oc_output:
-                lg.info(f'>> OCTAVE DETECTED FROM PYTHON, VERSION: {oc_output.split("=")[1].strip()}')
-                #self.equations = self.env.oct_eq  # remove methods that are not equations
-            else:
-                lg.warning('>> OCTAVE UNDETECTED')
-                #self.equations = None
-        except subprocess.TimeoutExpired:
-            lg.warning('>> OCTAVE CHECK TIMED OUT')
-        #self.equations = None
-        self.equations = self.env.oct_eq # Keep equations even if octave is not detected, as most have been migrated to python 
-        lg.info(f'import_octave_equations took {time.time() - start_time:.3f}s')
-
     @property
     def proj_settings_cps(self):
         start_time = time.time()
@@ -246,14 +223,14 @@ class ComputedParameter(Environment):
             'dist': sw.extras.dist, 'f': sw.extras.f, 'satAr': sw.extras.satAr,
             'satN2': sw.extras.satN2, 'satO2': sw.extras.satO2, 'swvel': sw.extras.swvel,
         })
-        if self.equations is not None:
-            for elem_str in dir(self.equations):
-                if elem_str[0] != '_' and elem_str not in ['guess_oct_exe_path', 'set_oct_exe_path']:
-                    elem_obj = getattr(self.equations, elem_str)
+        if self.env.param_eq is not None:
+            for elem_str in dir(self.env.param_eq):
+                if elem_str[0] != '_':
+                    elem_obj = getattr(self.env.param_eq, elem_str)
                     if isinstance(elem_obj, (\
                     types.FunctionType, types.BuiltinFunctionType,
                     types.MethodType, types.BuiltinMethodType)):
-                        # lg.info('>> ACCEPTED METHOD: {}'.format(elem_str))
+                        lg.info('>> ACCEPTED METHOD: {}'.format(elem_str))
                         local_dict.update({elem_str: elem_obj})
         return local_dict
 

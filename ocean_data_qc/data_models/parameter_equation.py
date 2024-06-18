@@ -27,136 +27,14 @@ from ocean_data_qc.data_models.extra.extra_params import ExtraParams
 pycanyonb = PyCANYONB()
 extra_params = ExtraParams()
 
-class OctaveEquations(Environment):
+class ParameterEquation(Environment):
     env = Environment
 
     def __init__(self):
-        lg.info('-- INIT OCTAVE EXECUTABLE')
-        self.env.oct_eq = self
+        lg.info('-- INIT PARAMETER EQUATION')
+        self.env.param_eq = self
         self.oc = None
         self.oct_exe_path = False
-
-    def _get_regular_oct_folder(self):
-        start_time = time.time()
-        s = r'C:\Program Files\GNU Octave'
-        try:
-            for d in os.listdir(s):
-                if d.startswith('Octave-'):
-                    folder = os.path.join(s, d)
-                    lg.info(f'GET REGULAR OCTAVE FOLDER: {folder} -- {time.time() - start_time:.3f}s')
-                    return folder
-        except:
-            return ''
-
-
-    def guess_oct_exe_path(self):
-        start_time = time.time()
-        lg.info('-- GUESS OCT EXE PATH --')
-        try:
-            if sys.platform == 'win32':
-                self._find_octave_windows()
-            elif sys.platform == 'darwin':  # macOS
-                self._find_octave_mac()
-            else:  # Assuming Linux
-                self._find_octave_linux()
-        except Exception as e:
-            lg.error(f"Error finding Octave executable: {e} -- took {time.time() - start_time:.3f}s")
-            return {'octave_path': False, 'error': str(e)}
-
-        lg.info(f'took {time.time() - start_time:.3f}s')
-        if self.oct_exe_path:
-            # self.oct_exe_path = pathlib.Path(self.oct_exe_path).as_uri()
-            return self.set_oct_exe_path()
-        else:
-            return {'octave_path': False}
-
-    def _find_octave_windows(self):
-        # First, check if octave-cli.exe is in PATH
-        path_in_path = shutil.which('octave-cli.exe')
-        if path_in_path:
-            self.oct_exe_path = path_in_path
-            lg.info('-- OCTAVE IN PATH')
-            return
-
-        # Check common directories
-        common_dirs = [
-            self._get_regular_oct_folder(),
-            r'C:\Octave'
-        ]
-
-        for base_dir in common_dirs:
-            if os.path.isdir(base_dir):
-                lg.info(f'-- OCTAVE TRYING: {base_dir}')
-                for version_dir in sorted(os.listdir(base_dir), reverse=True):
-                    possible_paths = [
-                        os.path.join(base_dir, version_dir, 'mingw64', 'bin', 'octave-cli.exe'),
-                        os.path.join(base_dir, version_dir, 'bin', 'octave-cli.exe'),
-                        os.path.join(base_dir, version_dir, 'mingw32', 'bin', 'octave-cli.exe')
-                    ]
-                    for path in possible_paths:
-                        if os.path.isfile(path):
-                            self.oct_exe_path = path
-                            return
-
-    def _find_octave_mac(self):
-        # First, check if octave-cli is in PATH
-        path_in_path = shutil.which('octave-cli')
-        if path_in_path:
-            self.oct_exe_path = path_in_path
-            return
-
-        # Check /usr/local/bin/octave-cli
-        if os.path.isfile('/usr/local/bin/octave-cli'):
-            self.oct_exe_path = '/usr/local/bin/octave-cli'
-            return
-
-        # Check /Applications
-        if os.path.isdir('/Applications'):
-            for dname in os.listdir('/Applications'):
-                if fnmatch.fnmatch(dname, 'Octave-*'):
-                    potential_path = os.path.join('/Applications', dname, 'Contents/Resources/usr/bin/octave-cli')
-                    if os.path.isfile(potential_path):
-                        self.oct_exe_path = potential_path
-                        return
-
-    def _find_octave_linux(self):
-        # First, check if octave-cli is in PATH
-        path_in_path = shutil.which('octave-cli')
-        if path_in_path:
-            self.oct_exe_path = path_in_path
-            return
-
-        # Add other potential common paths or logic for Linux if needed
-
-    def set_oct_exe_path(self, path=None):
-        start_time = time.time()
-        lg.info('-- SET OCT EXE PATH')
-
-        if path is not None:
-            if sys.platform == 'win32':
-                if os.path.basename(path) != 'octave-cli.exe':
-                    self.oct_exe_path = os.path.join(path, 'octave-cli.exe')
-                else:
-                    self.oct_exe_path = path
-            else:
-                if os.path.basename(path) != 'octave-cli':
-                    self.oct_exe_path = os.path.join(path, 'octave-cli')
-                else:
-                    self.oct_exe_path = path
-
-        if self.oct_exe_path:
-            lg.info(f'OCTAVE PATH: {path}')  # escape spaces
-            os.environ['OCTAVE_EXECUTABLE'] = self.oct_exe_path
-            try:
-                oct2py_lib = importlib.import_module('oct2py')
-                self.oc = oct2py_lib.octave
-                self.oc.addpath(os.path.join(OCEAN_DATA_QC_PY, 'octave'))
-                # Not needed # self.oc.addpath(os.path.join(OCEAN_DATA_QC_PY, 'octave', 'CANYON-B'))
-                return {'octave_path': self.oct_exe_path}
-            except Exception as e:
-                lg.error('>> oct2py LIBRARY COULD NOT BE IMPORTED, OCTAVE PATH WAS NOT SET CORRECTLY')
-        lg.info(f'took {time.time() - start_time:.3f}s')
-        return {'octave_path': False}
 
     def pressure_combined(self, CTDPRS, DEPTH, LATITUDE):
         pressure = -1 * CTDPRS
@@ -290,81 +168,71 @@ class OctaveEquations(Environment):
     #    ret = self.oc.tcarbn_from_alkali_phsws25p0(np.transpose(np.vstack((ALKALI, PH_SWS, SAL, SILCAT, PHSPHT))))
     #    return ret
     def tcarbn_from_alkali_phsws25p0(self, ALKALI, PH_SWS, SAL, SILCAT, PHSPHT):
-        ret = co2.sys(par1=ALKALI, 
-                         par2=PH_SWS, 
-                         par1_type=1, 
+        ret = co2.sys(par1=ALKALI,
+                         par2=PH_SWS,
+                         par1_type=1,
                          par2_type=3,
                          opt_pH_scale=2,
-                         salinity=SAL, 
+                         salinity=SAL,
                          temperature=25,  # Assuming a constant temperature
                          pressure=0,  # Assuming surface pressure
-                         total_silicate=SILCAT, 
+                         total_silicate=SILCAT,
                          total_phosphate=PHSPHT)['dic']
-        return ret       
-    
+        return ret
+
     def tcarbn_from_alkali_phts25p0(self, ALKALI, PH_TOT, SAL, SILCAT, PHSPHT):
         #ret = self.oc.tcarbn_from_alkali_phts25p0(np.transpose(np.vstack((ALKALI, PH_TOT, SAL, SILCAT, PHSPHT))))
-        ret = co2.sys(par1=ALKALI, 
-                         par2=PH_TOT, 
-                         par1_type=1, 
+        ret = co2.sys(par1=ALKALI,
+                         par2=PH_TOT,
+                         par1_type=1,
                          par2_type=3,
                          opt_pH_scale=1,
-                         salinity=SAL, 
+                         salinity=SAL,
                          temperature=25,  # Assuming a constant temperature
                          pressure=0,  # Assuming surface pressure
-                         total_silicate=SILCAT, 
+                         total_silicate=SILCAT,
                          total_phosphate=PHSPHT)['dic']
         return ret
 
     def phts25p0_from_alkali_tcarbn(self, ALKALI, TCARBN, SAL, SILCAT, PHSPHT):
         #ret = self.oc.phts25p0_from_alkali_tcarbn(np.transpose(np.vstack((ALKALI, TCARBN, SAL, SILCAT, PHSPHT))))
-        ret = co2.sys(par1=ALKALI, 
-                    par2=TCARBN, 
-                    par1_type=1, 
+        ret = co2.sys(par1=ALKALI,
+                    par2=TCARBN,
+                    par1_type=1,
                     par2_type=2,
                     opt_pH_scale=1,
-                    salinity=SAL, 
+                    salinity=SAL,
                     temperature=25,  # Assuming a constant temperature
                     pressure=0,  # Assuming surface pressure
-                    total_silicate=SILCAT, 
+                    total_silicate=SILCAT,
                     total_phosphate=PHSPHT)['pH']
         return ret
 
+# -------------------- PYCANYONB (extra folder) ---------------------- #
+
     def alkali_nng2_vel13(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY):
-        #ret = np.transpose(self.oc.alkali_nng2_vel13(
-        #    np.vstack((LONGITUDE, LATITUDE, -1 * DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY))))
         return extra_params.alkali_nng2_vel13(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY)
 
     def alkali_nngv2_bro19(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY):
-        #ret = np.transpose(self.oc.alkali_nngv2_bro19(
-        #    np.vstack((LATITUDE, np.cos(np.deg2rad(LONGITUDE)), np.sin(np.deg2rad(LONGITUDE)), -1 * DPTH, THETA, SAL, PHSPHT, NITRAT, SILCAT, OXY))))
         return extra_params.alkali_nngv2_bro19(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY)
 
     def tcarbn_nngv2ldeo_bro20(self, LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, DATE):
-        #ret = np.transpose(self.oc.tcarbn_nngv2ldeo_bro20(
-        #    np.vstack((LATITUDE, np.cos(np.deg2rad(LONGITUDE)), np.sin(np.deg2rad(LONGITUDE)), -1 * DPTH, THETA, SAL, PHSPHT, NITRAT, SILCAT, OXY, YEAR))))
         return extra_params.tcarbn_nngv2ldeo_bro20(LONGITUDE, LATITUDE, DPTH, THETA, SAL, NITRAT, PHSPHT, SILCAT, OXY, DATE)
 
     def nitrat_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        #return self.oc.nitrat_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
         return pycanyonb.nitrat_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
 
     def phspht_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        #return self.oc.phspht_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
         return pycanyonb.phspht_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
 
     def silcat_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        #return self.oc.silcat_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
         return pycanyonb.silcat_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
 
     def alkali_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        #return self.oc.alkali_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
         return pycanyonb.alkali_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
-    
+
     def tcarbn_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        #return self.oc.tcarbn_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
         return pycanyonb.tcarbn_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)
 
     def phts25p0_nncanyonb_bit18(self, DATE, LATITUDE, LONGITUDE, PRES, CTDTMP, SAL, OXY):
-        #return self.oc.phts25p0_nncanyonb_bit18(np.transpose(np.vstack((DATE.to_numpy() // 10000, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY))))
         return pycanyonb.phts25p0_nncanyonb_bit18(DATE, LATITUDE, LONGITUDE, -1 * PRES, CTDTMP, SAL, OXY)

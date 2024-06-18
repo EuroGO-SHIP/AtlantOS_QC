@@ -190,17 +190,11 @@ module.exports = {
         cs_p.on('close', function(){
             var ms = 0
             var _checkBokehSate = setInterval(function() {
-                if ($('body').data('bokeh_state') == 'ready' && $('body').data('oct_state') == 'checked') {
+                if ($('body').data('bokeh_state') == 'ready') {
                     clearInterval(_checkBokehSate);
                     self.init_form();
                 } else {
                     ms += 100;
-                    if ($('body').data('oct_state') == 'checking') {
-                        if (ms == 10000) {
-                            tools.showModal('ERROR', 'Guessing the Octave path is taking a long time');
-                            clearInterval(_checkBokehSate);
-                        }
-                    }
                     if ($('body').data('bokeh_state') == 'not-ready') {
                         if (ms == 20000) {
                             tools.showModal('ERROR', 'Loading bokeh is taking a long time. Try to open the file again when it is loaded.');

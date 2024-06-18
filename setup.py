@@ -42,15 +42,15 @@ def get_package_data():
             'templates/*.*',
             'files/*.json',
         ] + ['static/' + x for x in get_file_paths('ocean_data_qc/static')]
-          + ['octave/' + x for x in get_file_paths('ocean_data_qc/octave')]
           + ['data_models/extra/' + x for x in get_file_paths('ocean_data_qc/data_models/extra')]
         # 'ocean_data_qc_js': get_file_paths('ocean_data_qc_js')
     }
 
-requires = [
-    'bokeh ==3.4.1',
-    'pandas >=2.0.3',  # bokeh 3.0.0 requires pandas
-    'numpy >= 1.25.2',
+requires = [  # TODO: sometimes, installing the latest version is not a good idea because it gives some errors.
+              #       So I think the specific version of every package must be set here to prevent errors
+    'bokeh ==3.3.4',     # there is one issue when selecting samples with the version 3.4.1, waiting for the version 5
+    'pandas >=2.0.3',    # TODO: bokeh 3.0.0 requires pandas, so is this dependency needed anyway?
+    'numpy == 1.26.4',   # the new version 2.0.0 does not work
     'PyCO2SYS >=1.8.0',
     'shapely >=2.0.1',
     'seawater >=3.3.4',
@@ -65,7 +65,8 @@ requires = [
     # 'selenium >=3.141.0',
 ]
 
-dependency_links = [  # FIXME: this is not being used, a manual installation is needed
+dependency_links = [  # FIXME: this is not being used, a manual installation is needed.
+                      #        Check again because I might be using the pip cache. Use `pip cache purge` first  
     'https://github.com/ocean-data-qc/tilecloud/tarball/master#egg=tilecloud'
 ]
 
@@ -75,7 +76,7 @@ if sys.platform == "win32":
 setup(
     name='ocean_data_qc',
     version='1.6.0',                                    # TODO: extract the version from package.json
-    python_requires='>=3.12',
+    python_requires='>=3.11',                           # they are still solving bugs in python 3.12
     description='Open source application for assisted primary quality control of hydrographic cruise data focused on carbon and ancillary parameters',
     long_description=open("README.md").read(),          # TODO: check if this is readable in this is publish in a future channel repository or
     long_description_content_type="text/markdown",      #       Python Package Index https://pypi.org/
@@ -91,7 +92,6 @@ setup(
         'ocean_data_qc.bokeh_models',
         'ocean_data_qc.data_models',
         'ocean_data_qc.data_models.extra',
-        'ocean_data_qc.octave'
     ],
     package_data=get_package_data(),
     zip_safe=False,

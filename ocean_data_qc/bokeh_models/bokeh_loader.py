@@ -76,7 +76,6 @@ class BokehLoader(Environment):
             'cruise_data',      # only if a session is closed or the opening is cancelled
             'f_handler',        # nothing important in the __init__ method
             'ts_state',
-            'oct_eq',           # octave path manager
             'bk_export',
         ]
         if reset != []:

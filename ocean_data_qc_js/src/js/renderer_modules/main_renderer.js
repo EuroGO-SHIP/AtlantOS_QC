@@ -43,7 +43,6 @@ data_renderer.ipc_renderer = ipcRenderer;
 
 $('body').data('bokeh_state', 'not-ready');  // bokeh server state: 'not-ready', 'ready'
 $('body').data('ts_state', 'checking');      // tile server state: 'checking', 'offline', 'online'
-$('body').data('oct_state', 'checked');     // octave state: 'checking', 'checked'
 
 tools.multi_modal_fix();
 tools.popover_fix();
@@ -86,7 +85,6 @@ window.onmessage = function(e){
 
         // NOTE: be careful here, only one call to bokeh at the same time is possible
         server_renderer.check_tile_server_state();
-        server_renderer.set_octave_path();
     }
 
     if (typeof(e.data.signal) !== 'undefined') {
@@ -158,10 +156,6 @@ $('#json_template_upload_custom>a').click(function() {
 
 // ------------------------------- HOME LINKS ---------------------------------- //
 
-$('#set_octave_path_manually').click(function() {
-    ipcRenderer.send('open-octave-path-dialog');
-});
-
 $('#open_file').on('click', function (){
     ipcRenderer.send('open-dialog');
 })
@@ -205,11 +199,6 @@ ipcRenderer.on('show-loader', (event, arg) => {
 ipcRenderer.on('relaunch-bokeh', (event, arg) => {
     $('body').data('bokeh_state','not-ready');
     server_renderer.go_to_bokeh();
-});
-
-ipcRenderer.on('set-octave-path', (event, arg) => {
-    $('body').data('oct_state', 'checked');
-    server_renderer.set_octave_path(arg.manual_octave_folder_path);
 });
 
 ipcRenderer.on('export-pdf-file', (event, arg) => {
