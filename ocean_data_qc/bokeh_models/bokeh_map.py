@@ -41,19 +41,21 @@ class BokehMap(Environment):
         tile_source = WMTSTileSource(**tile_options)
 
         range_padding = 0.30
-        max_zoom = 50000000
-        min_zoom = 10000
+        #max_zoom = 50000000
+        #min_zoom = 10000
 
         # TODO: when a profile is selected, the range size is changed??
         x_range = DataRange1d(
             range_padding=range_padding,
             # range_padding_units='absolute',
-            max_interval = max_zoom, min_interval = min_zoom
+            #max_interval = max_zoom, min_interval = min_zoom
+            bounds=(-20026376.39, 20026376.39)  # longitude bounds for mercator
         )
         y_range = DataRange1d(
             range_padding=range_padding,
             # range_padding_units='absolute',
-            max_interval = max_zoom, min_interval = min_zoom
+            #max_interval = max_zoom, min_interval = min_zoom
+            bounds=(-20048966.10, 20048966.10) # latitude bounds for mercator
         )
 
         self.env.wmts_map = figure(

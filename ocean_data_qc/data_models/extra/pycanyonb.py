@@ -21,7 +21,6 @@ class PyCANYONB():
         crc = 0
         for arg in args:
             # Convert the argument to bytes for the CRC calculation
-            # This is a simplistic conversion; you might need to adjust it based on your data types
             arg_bytes = str(arg).encode('utf-8')
             crc = zlib.crc32(arg_bytes, crc)
         return crc
