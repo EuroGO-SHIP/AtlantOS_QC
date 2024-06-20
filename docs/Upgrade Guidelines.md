@@ -2,6 +2,22 @@
 
 These guidelines are useful in order to remember what to do when someone wants to upgrade the version of the app
 
+## 0. JSON Versions
+
+There are some versions in the app json files:
+
+* `default_settings.json` (App Source folder) and `custom_settings.json` (`AppData` folder)
+
+    * `"json_version"`: if they have different versions, the version must be updated in `custom_settings.json` file.
+    
+        TODO: I think all the new calculated parameters created by the user should be kept. Just new calculated parameters should be added to the `custom_settings.json` file. The rest of attributes must be added as well if there is any new one, but if they already exist the value must be kept.
+
+* `shared_data.json` (`Source` and `AppData` folder)
+
+    * `"json_version"`: If they have different versions, the version must be updated
+
+    * `"retrocompatible_version"`: This version must be updated if there are breaking changes in the `default_settings.json` file or in the way the data files are opened or saved.
+
 ## 1. Create Git Commit to upgrade the version and add a Tag
 
 Create a commit as usual just changing the versions in the files:

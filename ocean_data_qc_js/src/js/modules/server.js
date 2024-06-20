@@ -107,9 +107,22 @@ module.exports = {
         var self = this;
 
         return new Promise((resolve, reject) => {
-            // if the default.json are differents versions, replace it
+            // custom_settings.json in appdata >> update json_version and add new columns if there is any, the rest should must stay as it is 
+            var v_custom_settings = data.get('json_version', loc.custom_settings);
+            
+            // if the share_data.json are differents versions, replace it
             var v_src = data.get('json_version', loc.shared_data_src);  // new version if the app is updated
             var v_appdata = data.get('json_version', loc.shared_data);
+
+            var comp_res = tools.compare_versions(v_appdata, v_custom_settings)
+            lg.warn('>> COMPARISON (app data version vs custom_settings version) : ' + comp_res)
+            if (comp_res !== false && comp_res > 0) {
+                // update version and add new columns
+                data.set({'json_version': v_appdata }, loc.custom_settings);
+
+                // TODO: iterate over all the columns and add the ones that don't exist
+            }
+
             if (v_appdata === false) {       // then: v < 1.3.0
                 self.overwrite_json_file(loc.shared_data_src, loc.shared_data).then((result) => {
                     resolve(true);

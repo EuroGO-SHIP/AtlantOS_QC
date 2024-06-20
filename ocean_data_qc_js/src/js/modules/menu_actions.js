@@ -181,14 +181,13 @@ module.exports = {
         }
         lg.info('>> OUTPUT PATH: ' + output_path);
         try {
-            zip.unzipSync(file_path, output_path)     // TODO: dangerous if the content is other, how to check it?
-                                                      //       check file names and file types (sha1 algorithm?)
-            var project_file = file_url(file_path)
+            zip.unzipSync(file_path, output_path);
+            var project_file = file_url(file_path);
             data.set({'project_file': project_file, }, loc.proj_settings);
-        } catch(err) {                                // we must trust the user
+        } catch(err) {
             self.web_contents.send('show-modal', {
                 type: 'ERROR',
-                msg: 'The file could not be opened!<br />Make sure that is a correct AQC file',
+                msg: 'The file could not be opened! Make sure that is a correct AQC file',
                 code: err.stack
             });
             return false;
@@ -196,12 +195,16 @@ module.exports = {
 
         // check aqc file version
         var json_version = data.get('json_version', loc.proj_settings);
+        var retrocompatible_version = data.get('retrocompatible_version', loc.shared_data);  
+        if (retrocompatible_version == false) {
+            retrocompatible_version = '1.6.0';  // retrocompatible_version attribute started in v1.6.0
+        }
         var wrong_version = false;
         lg.warn('>> JSON VERSION: ' + json_version)
         if (json_version === false) {
             wrong_version = true;
         } else {
-            var comp_res = tools.compare_versions(json_version, app.getVersion())
+            var comp_res = tools.compare_versions(json_version, retrocompatible_version)
             lg.warn('>> COMPARISON: ' + comp_res)
             if (comp_res !== false && comp_res < 0) {
                 wrong_version = true;
