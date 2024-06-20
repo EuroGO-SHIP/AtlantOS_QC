@@ -36,7 +36,7 @@
     "author": "IIM-CSIC <avelo@iim.csic.es>",
     "license": "GPL-3.0-or-later",
     "dependencies": {
-        "@electron/remote": "^2.0.10",
+        "@electron/remote": "^2.1.2",
         "@logdna/tail-file": "^3.0.1",
         "app-module-path": "^2.2.0",
         "awesome-bootstrap-checkbox": "^1.0.1",
@@ -65,7 +65,7 @@
         "tabulator-tables": "^5.5.3",
         "url": "^0.11.1",
         "url-exist": "^2.0.2",
-        "winston": "^2.4.7",
+        "winston": "3.13.0",
         "xlsx": "^0.18.5"
     },
     "devDependencies": {

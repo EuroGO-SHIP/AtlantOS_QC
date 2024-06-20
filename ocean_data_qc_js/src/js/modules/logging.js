@@ -8,7 +8,7 @@
 const loc = require('locations');
 const winston = require('winston');
 
-var logger = new (winston.Logger)({
+var logger = winston.createLogger({
     transports: [
         new (winston.transports.File)({
             formatter: function(options) {
