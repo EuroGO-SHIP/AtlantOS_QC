@@ -8,18 +8,29 @@
 const loc = require('locations');
 const winston = require('winston');
 
-var logger = winston.createLogger({
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, printf } = format;
+
+const lg_format = printf(({ level, message, timestamp }) => {
+    return `${timestamp} NODE - ${level.toUpperCase()}: ${message}`;
+});
+
+const datetime_format = () => new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+}).format(new Date());
+
+const logger = createLogger({
+    level: 'info',
+    format: combine(format.timestamp({ format: datetime_format }), lg_format),
     transports: [
-        new (winston.transports.File)({
-            formatter: function(options) {
-                var date = new Date();
-                var str_date = date.toISOString().replace(/T|Z/g, ' ')
-                return str_date + 'NODE - ' + options.level.toUpperCase() +' '+ (options.message ? options.message : '') +
-                    (options.meta && Object.keys(options.meta).length ? '\n\t'+ JSON.stringify(options.meta) : '' );
-            },
-            json: false,            // because there is an unfixable bug: https://github.com/winstonjs/winston/issues/545
-            filename: loc.log_js,
-        })
+        // new transports.Console(),                    // Log to the console
+        new transports.File({ filename: loc.log_js })   // Log to a file
     ]
 });
 
