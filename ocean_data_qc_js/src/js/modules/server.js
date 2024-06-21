@@ -85,6 +85,8 @@ module.exports = {
     /** In previous versions there used to be a default_settings.json
      *  in the appdata folder. Now it is just a template in the app folder.
      *  So this method removes the file if it exists in the appdata folder
+     * 
+     *  TODO: check just when installing this app
     */
     check_json_old_default_settings: function() {
         lg.info('-- CHECK JSON OLD DEFAULT SETTINGS');
@@ -102,39 +104,66 @@ module.exports = {
         });
     },
 
+    /** Checks if the shared data file exists to copy or replace it
+     */
     check_json_shared_data: function() {
-        lg.info('-- CHECK JSON SHARED DATA');
+        lg.info('-- CHECK SHARED DATA FILE')
         var self = this;
 
         return new Promise((resolve, reject) => {
-            // custom_settings.json in appdata >> update json_version and add new columns if there is any, the rest should must stay as it is 
-            var v_custom_settings = data.get('json_version', loc.custom_settings);
-            
-            // if the share_data.json are differents versions, replace it
-            var v_src = data.get('json_version', loc.shared_data_src);  // new version if the app is updated
-            var v_appdata = data.get('json_version', loc.shared_data);
+            fs.access(loc.shared_data, fs.constants.F_OK, (err) => {
+                if (err) {
+                    var a = fs.createReadStream(loc.shared_data_src);
+                    var c = fs.createWriteStream(loc.shared_data);
 
-            var comp_res = tools.compare_versions(v_appdata, v_custom_settings)
-            lg.warn('>> COMPARISON (app data version vs custom_settings version) : ' + comp_res)
-            if (comp_res !== false && comp_res > 0) {
-                // update version and add new columns
-                data.set({'json_version': v_appdata }, loc.custom_settings);
+                    a.on('error', (err) => {
+                        tools.showModal('ERROR', 'The shared data file could not be read');
+                        reject(err);
+                    });
+                    c.on('error', (err) => {
+                        tools.showModal('ERROR', 'Some error copying the shared data file');
+                        reject(err);
+                    });
+                    var p = a.pipe(c);
 
-                // TODO: iterate over all the columns and add the ones that don't exist
-            }
+                    p.on('close', function(){
+                        resolve(true);
+                    });
 
-            if (v_appdata === false) {       // then: v < 1.3.0
+                } else {
+                    self.check_json_shared_data_version().then((res) => {
+                        if (res == true) {
+                            resolve(true);
+                        } else {
+                            reject(res);
+                        }
+                    });
+                }
+            });
+        });
+    },
+
+    /** Overwrites shared_data file json_version is older
+     *  This can happen only when the app is updated
+     * 
+     *  TODO: this is checked every time the app is executed,
+     *        it should be only run in case it is updated
+     */
+    check_json_shared_data_version: function() {
+        lg.info('-- CHECK JSON SHARED DATA');
+        var self = this;
+        return new Promise((resolve, reject) => {            
+            var v_shared_data_src = data.get('json_version', loc.shared_data_src);  // TODO: check app version instead?
+            var v_shared_data = data.get('json_version', loc.shared_data);
+
+            var comp_res = tools.compare_versions(v_shared_data_src, v_shared_data)
+            lg.warn('>> COMPARISON (shared data src version vs share_data version) : ' + comp_res)
+            if (comp_res !== false && comp_res > 0) {   // TODO: what happens if: v < 1.3.0, it does not have json_version attr
                 self.overwrite_json_file(loc.shared_data_src, loc.shared_data).then((result) => {
                     resolve(true);
                 }).catch((msg) => {reject(msg)});
             } else {
-                if (v_src != v_appdata) {
-                    self.overwrite_json_file(loc.shared_data_src, loc.shared_data).then((result) => {
-                        resolve(true);
-                    }).catch((msg) => {reject(msg)});
-                } else {
-                    resolve(true);
-                }
+                resolve(true);
             }
         });
     },
