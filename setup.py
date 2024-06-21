@@ -55,8 +55,8 @@ requires = [  # TODO: sometimes, installing the latest version is not a good ide
     'shapely >=2.0.1',
     'seawater >=3.3.4',
     'more_itertools >=10.0.0',
-    'oct2py >=5.6.0',
-    'scipy >=1.10.1',  # oct2py needs it, though it is not a direct dependency
+    # 'oct2py >=5.6.0', removed
+    'scipy >=1.10.1', 
     'tilecloud ==1.1.0',  # 'tilecloud >=1.10.0', >> latest version does not work on python 3.11.5
 
     # libraries related to export svg, png and pdf files
