@@ -77,6 +77,7 @@ class BokehLoader(Environment):
             'f_handler',        # nothing important in the __init__ method
             'ts_state',
             'bk_export',
+            'param_eq',
         ]
         if reset != []:
             for elem in reset:
