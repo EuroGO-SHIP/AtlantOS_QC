@@ -17,6 +17,8 @@ From 1.5.0 onwards is supported by [**Euro GO-SHIP**](https://eurogo-ship.eu/) (
 
 Since v1.6.0 having Octave installed is no longer a recomendation, as internal Octave code was translated to python. Full app functionality can be provided alone with the provided installers
 
+Version v1.7.0 fully removed Octave engine
+
 ## Installation
 
 It's not essential for this software to run, but in order to take advantage of the main functionalities of this software program it is absolutly recommended to have [GNU Octave](https://www.gnu.org/software/octave/) installed, as most parameter calculations relies on Octave/Matlab code. Installers can be found [here](https://www.gnu.org/software/octave/download.html)
@@ -24,15 +26,16 @@ It's not essential for this software to run, but in order to take advantage of t
 ### Using built-in installers
 
 Releases (https://github.com/EuroGO-SHIP/AtlantOS_QC/releases):
-* Windows x64,  [AtlantOS.Ocean.Data.QC.Setup.1.6.0.exe](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/AtlantOS.Ocean.Data.QC.Setup.1.6.0.exe)
-* macOS: [AtlantOS.Ocean.Data.QC-1.6.0-arm64.dmg (Apple Silicon)](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/AtlantOS.Ocean.Data.QC-1.6.0-arm64.dmg) | [AtlantOS.Ocean.Data.QC-1.6.0.dmg](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/AtlantOS.Ocean.Data.QC-1.6.0.dmg)
-* GNU/linux deb (Ubuntu, Debian,...): [ocean-data-qc_1.6.0_amd64.deb](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/ocean-data-qc_1.6.0_amd64.deb)
-* GNU/Linux rpm (RedHat, SuSe, ...): [ocean-data-qc-1.6.0.x86_64.rpm](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/ocean-data-qc-1.6.0.x86_64.rpm)
-* GNU/Linux snap: [ocean-data-qc_1.6.0_amd64.snap](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.5.0/ocean-data-qc_1.6.0_amd64.snap)
-* GNU/Linux AppImage: [AtlantOS.Ocean.Data.QC-1.6.0.AppImage](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.6.0/AtlantOS.Ocean.Data.QC-1.6.0.AppImage)
+* Windows x64,  [AtlantOS.Ocean.Data.QC.Setup.1.7.0.exe](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.7.0/AtlantOS.Ocean.Data.QC.Setup.1.7.0.exe)
+* macOS: [AtlantOS.Ocean.Data.QC-1.7.0-arm64.dmg (Apple Silicon)](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.7.0/AtlantOS.Ocean.Data.QC-1.7.0-arm64.dmg) | [AtlantOS.Ocean.Data.QC-1.7.0.dmg](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.7.0/AtlantOS.Ocean.Data.QC-1.7.0.dmg)
+* GNU/linux deb (Ubuntu, Debian,...): [ocean-data-qc_1.7.0_amd64.deb](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.7.0/ocean-data-qc_1.7.0_amd64.deb)
+* GNU/Linux rpm (RedHat, SuSe, ...): [ocean-data-qc-1.7.0.x86_64.rpm](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.7.0/ocean-data-qc-1.7.0.x86_64.rpm)
+* GNU/Linux snap: [ocean-data-qc_1.7.0_amd64.snap](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.7.0/ocean-data-qc_1.7.0_amd64.snap)
+* GNU/Linux AppImage: [AtlantOS.Ocean.Data.QC-1.7.0.AppImage](https://github.com/EuroGO-SHIP/AtlantOS_QC/releases/download/v1.7.0/AtlantOS.Ocean.Data.QC-1.7.0.AppImage)
 
 Source code:
 * latest: [![DOI](https://zenodo.org/badge/549480947.svg)](https://zenodo.org/doi/10.5281/zenodo.10015794)
+* v1.7.0: [https://github.com/EuroGO-SHIP/AtlantOS_QC/archive/refs/tags/v1.7.0.tar.gz] [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.100600496.svg)](https://doi.org/10.5281/zenodo.12516799)
 * v1.6.0: [https://github.com/EuroGO-SHIP/AtlantOS_QC/archive/refs/tags/v1.6.0.tar.gz] [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.100600496.svg)](https://doi.org/10.5281/zenodo.100600496)
 * v1.5.0: [https://github.com/EuroGO-SHIP/AtlantOS_QC/archive/refs/tags/v1.5.0.tar.gz] [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10015795.svg)](https://doi.org/10.5281/zenodo.10015795)
 * v1.4.0: [https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.4.0.tar.gz](https://github.com/ocean-data-qc/ocean-data-qc/archive/v1.4.0.tar.gz) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4532402.svg)](https://doi.org/10.5281/zenodo.4532402)
@@ -70,13 +73,11 @@ Source code:
 
 ## Libraries and languages Used
 
-* [**Electron**](https://electronjs.org/) (formerly known as Atom Shell). Electron is an open source library developed by GitHub for building cross-platform desktop applications with HTML, CSS, and JavaScript. Electron accomplishes this by combining Chromium and Node.js into a single runtime and apps can be packaged for Mac, Windows, and Linux. The application uses Electron to embed in an application the bokeh plots and drive the user interaction with interface, providing also all the menus and interfaces.
+* [**Python**](https://www.python.org/). Python version 3 is the main language in the application. Most processing on data and files are performed through Pandas and/or NumPy libraries in python, and sent to Bokeh, which is also built on python and has an own javascript library for displaying and interacting. Python source code is presented in ocean_data_qc folder in the application.
 
 * [**Bokeh**](https://bokeh.pydata.org) (Python Library). Bokeh is an interactive visualization library that targets modern web browsers for presentation. Its goal is to provide elegant, concise construction of versatile graphics, and to extend this capability with high-performance interactivity over very large or streaming datasets. Bokeh is the main library for the application, as deals with graphic presentation and interaction (Bokeh Development Team (2014). Python library for interactive visualization. [http://www.bokeh.pydata.org](http://www.bokeh.pydata.org))
 
-* [**Octave**](https://www.gnu.org/software/octave/). GNU Octave is a high-level interpreted language, primarily intended for numerical computations. It provides capabilities for the numerical solution of linear and nonlinear problems, and for performing other numerical experiments. It also provides extensive graphics capabilities for data visualization and manipulation. The GNU Octave language is quite similar to Matlab™ so that most programs are easily portable. The application uses GNU Octave to drive main oceanographic calculations, as it's actually the main used language in that field of work, and most typical Matlab™ open source oceanographic libraries were built in Matlab™. Running these calculations directly in GNU Octave allows to easy integrating code from researchers.
-
-* [**Python**](https://www.python.org/). Python version 3 is the main language in the application. Most processing on data and files are performed through Pandas and/or NumPy libraries in python, and sent to Bokeh, which is also built on python and has an own javascript library for displaying and interacting. Python source code is presented in ocean_data_qc folder in the application.
+* [**Electron**](https://electronjs.org/) (formerly known as Atom Shell). Electron is an open source library developed by GitHub for building cross-platform desktop applications with HTML, CSS, and JavaScript. Electron accomplishes this by combining Chromium and Node.js into a single runtime and apps can be packaged for Mac, Windows, and Linux. The application uses Electron to embed in an application the bokeh plots and drive the user interaction with interface, providing also all the menus and interfaces.
 
 * [**JavaScript**](https://developer.mozilla.org/es/docs/Web/JavaScript). Electron is built on node, that is built with JavaScript. All code for menus, screens, and interacting elements on the application are made with Javascript. Some of the functionality are provided directly by Electron and some other by Bokeh, but the code to merge all these things were built with JavaScript. JavaScript source code is presented in ocean_data_qc_js folder in the application.
 
