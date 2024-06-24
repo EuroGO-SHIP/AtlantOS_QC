@@ -1,7 +1,7 @@
 {
     "project_name": "default_settings",
     "project_file": false,
-    "json_version": "1.6.0",
+    "json_version": "1.7.0",
     "layout": {
         "plots_per_row": 3,
         "plots_width": 320,
@@ -63,7 +63,6 @@
             ],
             "data_type": "integer",
             "attrs": [
-                "required",
                 "non_qc"
             ],
             "unit": false,

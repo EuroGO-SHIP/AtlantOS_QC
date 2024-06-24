@@ -75,7 +75,7 @@ if sys.platform == "win32":
 
 setup(
     name='ocean_data_qc',
-    version='1.6.0',                                    # TODO: extract the version from package.json
+    version='1.7.0',                                    # TODO: extract the version from package.json
     python_requires='>=3.11',                           # they are still solving bugs in python 3.12
     description='Open source application for assisted primary quality control of hydrographic cruise data focused on carbon and ancillary parameters',
     long_description=open("README.md").read(),          # TODO: check if this is readable in this is publish in a future channel repository or

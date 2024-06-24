@@ -3,7 +3,7 @@
     "description": "AtlantOS Ocean Data Quality Control",
     "homepage": "https://github.com/EuroGO-SHIP/AtlantOS_QC",
     "main": "main.js",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "scripts": {
         "start": "electron .",
         "start_offline": "electron . --offline",
