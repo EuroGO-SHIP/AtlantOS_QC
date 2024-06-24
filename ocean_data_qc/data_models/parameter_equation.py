@@ -38,14 +38,14 @@ class ParameterEquation(Environment):
 
     def pressure_combined(self, CTDPRS, DEPTH, LATITUDE):
         pressure = -1 * CTDPRS
-        #pres_from_depth = sw.pres(DEPTH, LATITUDE)
-        #pressure[np.isnan(pressure)] = pres_from_depth[np.isnan(pressure)]
+        pres_from_depth = sw.pres(DEPTH, LATITUDE)
+        pressure[np.isnan(pressure)] = pres_from_depth[np.isnan(pressure)]
         return pressure
 
     def depth_combined(self, CTDPRS, DEPTH, LATITUDE):
-        #depth = DEPTH
+        depth = DEPTH.copy()
         depth_from_pres = -1 * sw.dpth(CTDPRS, LATITUDE)
-        #depth[np.isnan(depth)] = depth_from_pres[np.isnan(depth)]
+        depth[np.isnan(depth)] = depth_from_pres[np.isnan(depth)]
         return depth_from_pres
 
     def nitrate_combined(self):
