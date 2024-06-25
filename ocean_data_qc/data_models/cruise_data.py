@@ -394,8 +394,16 @@ class CruiseData(CruiseDataExport):
         non_sanitized = self.df.columns.tolist()
         self.df.columns = self._sanitize_cols(self.df.columns.tolist())  # remove spaces from columns
         self.df.columns = self._map_col_names(self.df.columns.tolist(), non_sanitized)
+
+        # fill missing columns
         self._create_btlnbr_or_sampno_column()  # >> basic params?
         self._manage_date_time()
+        if not 'CASTNO' in self.df:
+            self.df['CASTNO'] = 1
+            self.add_moves_element(
+                'castno_column_added',
+                'CASTNO column was automatically generated and filled with 1'
+            )
 
     def _create_btlnbr_or_sampno_column(self):
         if 'BTLNBR' in self.df and not 'SAMPNO' in self.df:
@@ -467,8 +475,8 @@ class CruiseData(CruiseDataExport):
         """ Create a column id for the whp-exchange files
             this new column is a hash of these fields combined:
                 * STNNBR     station number
-                * CASTNO     cast number (it may exist or not)
-                * BTLNBR     bottle number (it may exist or not)
+                * CASTNO     cast number
+                * BTLNBR     bottle number
                 * LATITUDE   latitude
                 * LONGITUDE  longitude
         """
