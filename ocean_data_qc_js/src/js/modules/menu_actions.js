@@ -6,15 +6,17 @@
 "use strict";
 
 const path = require('path');
+const util = require('util');
 const fs = require('fs');
-const file_url = require('file-url');     // converts file path to file:// protocol,
-                                          // use fileToPath() function for the opposite
+const fs_promises = require('fs').promises;
+const file_url = require('file-url');           // converts file path to file:// protocol,
+                                                // use fileToPath() function for the opposite
 const {dialog} = require('electron');
 const {app} = require('electron');
 const db = require('mime-db');
 const mime = require('mime-type')(db);
-const {URL} = require('url');             // constructor > fs recognise the file:// url built with this
-const zip = require('cross-zip');         // it does not work on Windows 7 by default
+const {URL} = require('url');                   // constructor > fs recognise the file:// url built with this
+const cross_zip = require('cross-zip');         // it does not work on Windows 7 by default
 const rmdir = require('rimraf')
 
 const loc = require('locations');
@@ -111,6 +113,7 @@ module.exports = {
                             msg: 'The project file temp folder could not be removed:',
                             code: err.stack
                         });
+                        self.web_contents.send('show-default-cursor');
                     } else {
                         self.open_by_mime_type(file_paths[0]);
                     }
@@ -151,6 +154,7 @@ module.exports = {
                 'file_type': 'ods'
             });
         } else {
+            self.web_contents.send('show-deafult-cursor');
             self.web_contents.send('show-modal', {   // it is impossible to get to here, because is out of domain ['csv', 'aqc']
                 'type': 'ERROR',
                 'msg': 'Wrong filetype!! It must be an AQC, CSV, ODS or XLSX file'
@@ -160,7 +164,7 @@ module.exports = {
 
     init_aqc: function(file_path) {
         var self = this;
-        fs.mkdir(loc.proj_files, { recursive: true }, (err) => {  // only if
+        fs.mkdir(loc.proj_files, { recursive: true }, async (err) => {
             if (err) {
                 self.web_contents.send('show-modal', {
                     type: 'ERROR',
@@ -168,34 +172,47 @@ module.exports = {
                     code: err.stack
                 });
             } else {
-                self.open_aqc(file_path);
+                try {
+                    await self.open_aqc(file_path);
+                } catch (err) {
+                    self.web_contents.send('show-modal', {
+                        type: 'ERROR',
+                        msg: 'Error inside open_apc function',
+                        code: err.stack
+                    });
+                }
             }
         });
     },
 
-    open_aqc: function(file_path) {
+    open_aqc: async function(file_path) {
         var self = this;
         var output_path = path.join(loc.proj_files, '..');
         if (process.platform === 'win32') { // check if it is only in windows
             output_path = loc.proj_files;
         }
         lg.info('>> OUTPUT PATH: ' + output_path);
+        var unzip = util.promisify(cross_zip.unzip)
         try {
-            zip.unzipSync(file_path, output_path);
+            await unzip(file_path, output_path);
             var project_file = file_url(file_path);
             data.set({'project_file': project_file, }, loc.proj_settings);
-        } catch(err) {
+            self.check_aqc_version();
+        } catch (err) {
             self.web_contents.send('show-modal', {
                 type: 'ERROR',
-                msg: 'The file could not be opened! Make sure that is a correct AQC file',
+                msg: 'The file could not be opened! Make sure that it is a correct AQC file. ' +
+                     'If it is correct, there might be a developer bug.',
+                msg_type: 'html',
                 code: err.stack
             });
-            return false;
         }
+    },
 
-        // check aqc file version
+    check_aqc_version: function() {
+        var self = this;
         var json_version = data.get('json_version', loc.proj_settings);
-        var retrocompatible_version = data.get('retrocompatible_version', loc.shared_data);  
+        var retrocompatible_version = data.get('retrocompatible_version', loc.shared_data);
         if (retrocompatible_version == false) {
             retrocompatible_version = '1.6.0';  // retrocompatible_version attribute started in v1.6.0
         }
@@ -280,9 +297,9 @@ module.exports = {
         return new Promise((resolve, reject) => {
             var settings = data.load(loc.proj_settings);  // use settings only to read
             dialog.showSaveDialog({
-                    title: 'Save Project',
-                    defaultPath: '~/examples/' + settings.project_name + '.aqc',    // TODO >> previuos opened folder?? https://github.com/electron/electron/issues/1541
-                    filters: [{ extensions: ['aqc'] }]
+                title: 'Save Project',
+                defaultPath: '~/examples/' + settings.project_name + '.aqc',    // TODO >> previuos opened folder?? https://github.com/electron/electron/issues/1541
+                filters: [{ extensions: ['aqc'] }]
             }).then((results) => {
                 if (results['canceled'] === false) {
                     var file_path = results['filePath'];
@@ -290,34 +307,78 @@ module.exports = {
                     if (typeof(file_path) !== 'undefined') {
                         try {
                             // data.set({'project_state': 'saved', }, loc.proj_settings);
-                            zip.zipSync(loc.proj_files, file_path);
-                            file_path = file_url(file_path);
-                            self.web_contents.send('disable-watcher');  // I do not why, but this is necessary
-                            data.write_promise({'project_file': file_path }).then((value) => {
-                                // https://blog.risingstack.com/mastering-async-await-in-nodejs/
-                                if (value == true) {  // if everything was OK >> di this with reject and catch(err)...
-                                    self.web_contents.send('enable-watcher', {'mark': 'saved'});
-                                    lg.warn('>> SELF.SAVE_FROM: ' + self.save_from);
-                                    if (typeof(self.save_from) !== 'undefined' && self.save_from == 'closing_process') {
-                                        self.web_contents.send('show-project-saved-dialog')
-                                    } else {
-                                        self.web_contents.send('show-snackbar', {
-                                            'msg': 'The project was saved correctly'
-                                        });
-                                    }
-                                }
-                            });
+                            self.zip_aqc_file(loc.proj_files, file_path);
                         } catch(err) {
                             self.web_contents.send('show-modal', {
                                 'type': 'ERROR',
-                                'msg': 'The file could not be saved!<br />' + err
+                                'msg': 'The file could not be saved!<br />' + err,
+                                'msg_type': 'html'
                             });
-                            reject(new Error('fail'));
+                            reject(new Error('The file could not be saved!'));
                         }
                     }
                 }
                 resolve(true);
             });
+        });
+    },
+
+    /**
+     * @param src_folder - temp folder where the project is stored
+     * @param zip_file_path - where the aqc file will be stored
+     */
+    zip_aqc_file: async function(src_folder, zip_file_path) {
+
+        // remove the previous aqc file if it exists
+        try {
+            await fs_promises.access(zip_file_path);
+            await fs_promises.unlink(zip_file_path);
+            console.log('Archivo existente eliminado.');
+        } catch (err) {
+            if (err.code !== 'ENOENT') {
+                self.web_contents.send('show-modal', {
+                    'type': 'ERROR',
+                    'msg': 'The file that you want to create already exists and could not be replaced.<br />' + err,
+                    'type': 'html'
+                });
+            }
+        }
+
+        var self = this;
+        cross_zip.zip(src_folder, zip_file_path, function(err) {
+            if (err) {
+                self.web_contents.send('show-modal', {
+                    'type': 'ERROR',
+                    'msg': 'The project could not be zipped in order to save it.<br />' + err,
+                    'type': 'html'
+                });
+            } else {
+                fs.access(zip_file_path, fs.constants.F_OK, (err) => {  // to check if the file was correctly created
+                    if (err) {
+                        self.web_contents.send('show-modal', {
+                            'type': 'ERROR',
+                            'msg': 'The project could not be created.<br />' + err,
+                            'type': 'html'
+                        });
+                    } else {
+                        var file_path = file_url(zip_file_path);
+                        self.web_contents.send('disable-watcher');  // I do not why, but this is necessary
+                        data.write_promise({'project_file': file_path }).then((value) => {
+                            if (value == true) {
+                                self.web_contents.send('enable-watcher', {'mark': 'saved'});
+                                lg.warn('>> SELF.SAVE_FROM: ' + self.save_from);
+                                if (typeof(self.save_from) !== 'undefined' && self.save_from == 'closing_process') {
+                                    self.web_contents.send('show-project-saved-dialog')
+                                } else {
+                                    self.web_contents.send('show-snackbar', {
+                                        'msg': 'The project was saved correctly'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
         });
     },
 
