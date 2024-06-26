@@ -115,6 +115,7 @@ module.exports = {
             throw err;
         }
     },
+
     write_promise: function(dict) {
         var self = this;
         return new Promise((resolve, reject) => {
