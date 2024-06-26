@@ -36,3 +36,15 @@ Add this to your workspace settings to prevent [similar errors](https://stackove
     }
 
 This is just a workaround: "Disabling all override warnings has the unwanted side-effect of removing useful warnings."
+
+# Electron
+
+1. Run the application with this to stop on the first instruction. That is needed in order to have time to open de devtools
+
+    electron --inspect-brk=9229 .
+
+2. Go to `chrome://inspect/#devices` and press `inspect` on the electron app
+
+3. Press "play" in order to go to the next stop. You can add breakpoints manually in the code with the function: `debugger;`. You can add them manually with the interface as well.
+
+You need to repeat the process every time you want to debug. I didn't find a way to keep the devtools open and make it work.
