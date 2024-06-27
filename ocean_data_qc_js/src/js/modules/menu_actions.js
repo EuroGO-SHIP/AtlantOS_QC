@@ -5,19 +5,16 @@
 
 "use strict";
 
+const { BrowserWindow, dialog } = require('electron');
 const path = require('path');
 const util = require('util');
 const fs = require('fs');
-const fs_promises = require('fs').promises;
 const file_url = require('file-url');           // converts file path to file:// protocol,
                                                 // use fileToPath() function for the opposite
-const {dialog} = require('electron');
-const {app} = require('electron');
 const db = require('mime-db');
 const mime = require('mime-type')(db);
 const {URL} = require('url');                   // constructor > fs recognise the file:// url built with this
 const cross_zip = require('cross-zip');         // it does not work on Windows 7 by default
-const rmdir = require('rimraf')
 
 const loc = require('locations');
 const lg = require('logging');
@@ -27,10 +24,11 @@ const tools = require('../renderer_modules/tools');
 
 
 module.exports = {
-    init: function(web_contents, server) {
+    init: function(web_contents, server, main_window) {
         var self = this;
         self.web_contents = web_contents;
         self.server = server;
+        self.main_window = main_window;
     },
 
     update_from_csv: function() {
@@ -83,44 +81,48 @@ module.exports = {
         }
     },
 
-    open_dialog: function() {
+    open_dialog: async function(main_window) {
+        lg.info('-- OPEN FILE');
         var self = this;
-        dialog.showOpenDialog({
-            title: 'Open the AQC file...',
-            filters: [{ name: 'AtlantOS Ocean Data QC file', extensions: ['aqc', 'csv', 'xlsx', 'ods'] }],
-            properties: ['openFile'],
-        }).then(result => {
-            lg.info(result);
-            if (result['canceled'] === false) {
-                self.open_file(result['filePaths']);
+        try {
+            const options = {
+                title: 'Open file...',
+                filters: [{ name: 'AtlantOS Ocean Data QC file', extensions: ['aqc', 'csv', 'xlsx', 'ods'] }],
+                properties: ['openFile'],
+                modal: true
+            };
+            const result = await dialog.showOpenDialog(main_window, options);
+            if (!result.canceled) {
+                self.open_file(result.filePaths);
             }
-        });
+        } catch (error) {
+            self.web_contents.send('show-modal', {
+                type: 'ERROR',
+                msg: 'Error opening dialog:',
+                code: error.stack
+            });
+        }
     },
 
-    open_file: function (file_paths) {
+    open_file: async function (file_paths) {
         lg.info('-- OPEN FILE');
         var self = this;
         if (JSON.stringify(file_paths) == '[]') return;
         self.web_contents.send('show-wait-cursor');
-        fs.access(loc.proj_files, fs.constants.F_OK, (err) => {
-            if (err) {  // if the folder does not exist
-                self.open_by_mime_type(file_paths[0]);
-            } else {
-                rmdir(loc.proj_files, function(err) {  // if there was some folder from the previous execution
-                    if (err) {
-                        self.web_contents.send('show-modal', {
-                            type: 'ERROR',
-                            msg: 'The project file temp folder could not be removed:',
-                            code: err.stack
-                        });
-                        self.web_contents.send('show-default-cursor');
-                    } else {
-                        self.open_by_mime_type(file_paths[0]);
-                    }
-                });
+        try {
+            const folder_exists = await data.f_exists(loc.proj_files);
+            if (folder_exists) {
+                await fs.promises.rm(loc.proj_files, { recursive: true, force: true });
             }
-        });
-
+            self.open_by_mime_type(file_paths[0]);
+        } catch (error) {
+            self.web_contents.send('show-modal', {
+                type: 'ERROR',
+                msg: 'The project file temp folder could not be checked or removed:',
+                code: error.stack
+            });
+            self.web_contents.send('show-default-cursor');
+        }
     },
 
     open_by_mime_type: function(file_path) {
@@ -209,7 +211,7 @@ module.exports = {
         }
     },
 
-    check_aqc_version: function() {
+    check_aqc_version: async function() {
         var self = this;
         var json_version = data.get('json_version', loc.proj_settings);
         var retrocompatible_version = data.get('retrocompatible_version', loc.shared_data);
@@ -236,57 +238,54 @@ module.exports = {
             if (json_version !== false) {
                 msg += '<p>The file version is: <b>' + json_version + '</b>';
             }
-            rmdir(loc.proj_files, function(err) {  // remove garbage
-                if (err) {
-                    msg += 'The project file temp folder could not be removed'
-                }
+            self.web_contents.send('show-modal', {
+                type: 'ERROR',
+                msg_type: 'html',
+                msg: msg
+            });
+
+            try {
+                await fs.promises.rm(loc.proj_files, { recursive: true, force: true });
+            } catch (error) {
                 self.web_contents.send('show-modal', {
                     type: 'ERROR',
-                    msg_type: 'html',
-                    msg: msg
+                    msg: 'Error removing temporal folder.' +
+                         ' Make sure the files are not being used by another application: ',
+                    code: error.stack
                 });
-            });
+            }
         } else {
             self.web_contents.send('go-to-bokeh');
         }
     },
 
-    save_file: function(arg) {
+    save_file: async function(arg) {
+        lg.info('-- SAVE FILE');
         var self = this;
         if (typeof(arg) !== 'undefined' && 'save_from' in arg) {
             self.save_from = arg.save_from;
         }
-        return new Promise((resolve, reject) => {
-            var project_file = data.get('project_file', loc.proj_settings);
-            var file_path = false;
-            if (project_file !== false) {
-                file_path = tools.file_to_path(project_file);
-            }
-            lg.info('>> URL PROJECT FILE: ' + file_path);
-            if (file_path !== false && fs.existsSync(file_path)) {
-                try {
-                    zip.zipSync(loc.proj_files, file_path);
-                    self.web_contents.send('enable-watcher', { 'mark': 'saved' });
-                    lg.warn('>> SAVE FROM VALUE: ' + self.save_from);
-                    if (typeof(self.save_from) !== 'undefined' && self.save_from == 'closing_process') {
-                        self.web_contents.send('show-project-saved-dialog')
-                    } else {
-                        self.web_contents.send('show-snackbar', {'msg': 'The project was saved correctly' });
-                    }
-                } catch(err) {
-                    self.web_contents.send('show-modal', {
-                        'type': 'ERROR',
-                        'msg': 'The file could not be saved!'
-                    });
-                }
-                resolve(true);
-            } else {
-                self.save_file_as();
-            }
-        });
+        const project_file = data.get('project_file', loc.proj_settings);
+        if (!project_file) {
+            self.save_file_as();
+            return;
+        }
+        const file_path = project_file ? tools.file_to_path(project_file) : false;
+
+        lg.info('>> PROJECT FILE PATH: ' + file_path);
+        try {
+            await self.zip_aqc_file(loc.proj_files, file_path);
+        } catch (error) {
+            self.web_contents.send('show-modal', {
+                type: 'ERROR',
+                msg: 'The file could not be saved!',
+                code: error.stack
+            });
+        }
+
     },
 
-    save_file_as: function(arg) {
+    save_file_as: async function(arg) {
         lg.info('-- SAVE FILE AS');
         var self = this;
         if (typeof(arg) !== 'undefined' && 'save_from' in arg) {
@@ -294,33 +293,30 @@ module.exports = {
         } else {
             lg.warn('>> NO SAVE FROM save_file')
         }
-        return new Promise((resolve, reject) => {
-            var settings = data.load(loc.proj_settings);  // use settings only to read
-            dialog.showSaveDialog({
-                title: 'Save Project',
-                defaultPath: '~/examples/' + settings.project_name + '.aqc',    // TODO >> previuos opened folder?? https://github.com/electron/electron/issues/1541
-                filters: [{ extensions: ['aqc'] }]
-            }).then((results) => {
-                if (results['canceled'] === false) {
-                    var file_path = results['filePath'];
-                    lg.info('Saving project at: ' + file_path);
-                    if (typeof(file_path) !== 'undefined') {
-                        try {
-                            // data.set({'project_state': 'saved', }, loc.proj_settings);
-                            self.zip_aqc_file(loc.proj_files, file_path);
-                        } catch(err) {
-                            self.web_contents.send('show-modal', {
-                                'type': 'ERROR',
-                                'msg': 'The file could not be saved!<br />' + err,
-                                'msg_type': 'html'
-                            });
-                            reject(new Error('The file could not be saved!'));
-                        }
-                    }
+        var settings = data.load(loc.proj_settings);  // use settings only to read
+        const options = {
+            title: 'Save Project',
+            defaultPath: '~/examples/' + settings.project_name + '.aqc',    // TODO >> previuos opened folder?? https://github.com/electron/electron/issues/1541
+            filters: [{ extensions: ['aqc'] }],
+            modal: true
+        }
+        try {
+            var results = await dialog.showSaveDialog(self.main_window, options);
+            if (results['canceled'] === false) {
+                var file_path = results['filePath'];
+                lg.info('Saving project at: ' + file_path);
+                if (typeof(file_path) !== 'undefined') {
+                    await self.zip_aqc_file(loc.proj_files, file_path);
+                    // data.set({'project_state': 'saved', }, loc.proj_settings);
                 }
-                resolve(true);
+            }
+        } catch(error) {
+            self.web_contents.send('show-modal', {
+                type: 'ERROR',
+                msg: 'The file could not be saved.',
+                code: error.stack
             });
-        });
+        }
     },
 
     /**
@@ -328,58 +324,46 @@ module.exports = {
      * @param zip_file_path - where the aqc file will be stored
      */
     zip_aqc_file: async function(src_folder, zip_file_path) {
-
-        // remove the previous aqc file if it exists
+        var self = this;
         try {
-            await fs_promises.access(zip_file_path);
-            await fs_promises.unlink(zip_file_path);
-            console.log('Archivo existente eliminado.');
-        } catch (err) {
-            if (err.code !== 'ENOENT') {
+            if(data.f_exists(zip_file_path)) {
+                await fs.promises.unlink(zip_file_path);
+            }
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
                 self.web_contents.send('show-modal', {
-                    'type': 'ERROR',
-                    'msg': 'The file that you want to create already exists and could not be replaced.<br />' + err,
-                    'type': 'html'
+                    type: 'ERROR',
+                    msg: 'The file that you want to save already exists and could not be replaced.',
+                    code: error.stack
                 });
+                return;
             }
         }
+        var zip = util.promisify(cross_zip.zip);
+        await zip(src_folder, zip_file_path);
+        // self.web_contents.send('enable-watcher', { 'mark': 'saved' });
+        lg.warn('>> SAVE FROM VALUE: ' + self.save_from);
+        var f_url = file_url(zip_file_path);
+        self.web_contents.send('disable-watcher');  // I do not why, but this is necessary
+        try {
+            await data.write_async({'project_file': f_url });
+        } catch(error) {
+            self.web_contents.send('show-modal', {
+                type: 'ERROR',
+                msg: 'The file could not be zipped!',
+                code: error.stack
+            });
+        }
+        self.web_contents.send('enable-watcher', {'mark': 'saved'});
+        lg.warn('>> SELF.SAVE_FROM: ' + self.save_from);
 
-        var self = this;
-        cross_zip.zip(src_folder, zip_file_path, function(err) {
-            if (err) {
-                self.web_contents.send('show-modal', {
-                    'type': 'ERROR',
-                    'msg': 'The project could not be zipped in order to save it.<br />' + err,
-                    'type': 'html'
-                });
-            } else {
-                fs.access(zip_file_path, fs.constants.F_OK, (err) => {  // to check if the file was correctly created
-                    if (err) {
-                        self.web_contents.send('show-modal', {
-                            'type': 'ERROR',
-                            'msg': 'The project could not be created.<br />' + err,
-                            'type': 'html'
-                        });
-                    } else {
-                        var file_path = file_url(zip_file_path);
-                        self.web_contents.send('disable-watcher');  // I do not why, but this is necessary
-                        data.write_promise({'project_file': file_path }).then((value) => {
-                            if (value == true) {
-                                self.web_contents.send('enable-watcher', {'mark': 'saved'});
-                                lg.warn('>> SELF.SAVE_FROM: ' + self.save_from);
-                                if (typeof(self.save_from) !== 'undefined' && self.save_from == 'closing_process') {
-                                    self.web_contents.send('show-project-saved-dialog')
-                                } else {
-                                    self.web_contents.send('show-snackbar', {
-                                        'msg': 'The project was saved correctly'
-                                    });
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        });
+        if (typeof(self.save_from) !== 'undefined' && self.save_from == 'closing_process') {
+            self.web_contents.send('show-project-saved-dialog')
+        } else {
+            self.web_contents.send('show-snackbar', {
+                msg: 'The project was saved correctly'
+            });
+        }
     },
 
     save_file_as_caught: function() {
@@ -443,7 +427,7 @@ module.exports = {
         }
     },
 
-    close_project: function() {
+    close_project: async function() {
         var self = this;
         lg.info('-- CLOSE PROJECT');
         var project_state = data.get('project_state', loc.shared_data);
@@ -454,17 +438,16 @@ module.exports = {
             });
         }else{
             self.web_contents.send('disable-watcher');
-            rmdir(loc.proj_files, function(err) {
-                if (err) {
-                    self.web_contents.send('show-modal', {
-                        type: 'ERROR',
-                        msg: 'The temporal folder could not be removed:',
-                        code: err
-                    });
-                    return false;
-                }
+            try {
+                await fs.promises.rm(loc.proj_files, { recursive: true, force: true });
                 self.web_contents.send('reset-bokeh-cruise-data');
-            });
+            } catch (error) {
+                self.web_contents.send('show-modal', {
+                    type: 'ERROR',
+                    msg: 'The temporal folder could not be removed:',
+                    code: error.stack
+                });
+            }
         }
     },
 };

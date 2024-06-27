@@ -13,7 +13,6 @@ app_module_path.addPath(__dirname);
 
 const {ipcRenderer} = require('electron');
 const fs = require('fs');                             // file system module
-const rmdir = require('rimraf');
 const xlsx = require('xlsx');
 
 const loc = require('locations');
@@ -242,20 +241,26 @@ module.exports = {
             self.load_column_project_button();
             self.load_help_popover();
 
-            $('#discard_plotting, .close').on('click', function() {  // on unload
-                if (fs.existsSync(loc.proj_files)) {
-                    rmdir(loc.proj_files, function () {
-                        // TODO: if an error occur, then the window is shown again, or an error appears
-                        lg.info('~~ PROJECT DIRECTORY DELETED');
-                    });
+            $('#discard_plotting, .close').on('click', async () => {  // on unload
+                try {
+                    await fs.promises.rm(loc.proj_files, { recursive: true, force: true });
+                    lg.warn('Temp folder removed if it existed.');
+                } catch (error) {
+                    tools.showModal(
+                        'ERROR', 'Error removing temporal folder.' +
+                        ' Make sure the files are not being used by another application'
+                    );
                 }
                 var call_params = {
                     'object': 'bokeh.loader',
                     'method': 'reset_env_cruise_data',
                 }
-                tools.call_promise(call_params).then((result) => {
-                    lg.info('>> ENV CRUISE DATA RESET')
-                });
+                try {
+                    await tools.call_promise(call_params);
+                    lg.info('>> ENV CRUISE DATA RESET');
+                } catch (error) {
+                    lg.error('Failed to reset ENV CRUISE DATA:', error);
+                }
             });
 
             tools.show_default_cursor();

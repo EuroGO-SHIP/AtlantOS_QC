@@ -93,10 +93,12 @@ module.exports = {
             throw err;
         }
     },
+
     getPath: function () {
         var self = this;
         return self.path;
     },
+
     write: function(dict){
         var self = this;
         if (typeof(dict) != 'object'){
@@ -131,6 +133,22 @@ module.exports = {
                 resolve(true);
             });
         });
+    },
+
+    write_async: async function(dict) {
+        var self = this;
+        if (typeof(dict) !== 'object'){
+            throw new Error('The argument of write_async must be an object')
+        }
+        Object.keys(dict).forEach(function(key) {  // TODO: replace forEach with a for loop
+            self.data[key] = dict[key];
+        });
+        var data_str = JSON.stringify(self.data, null, 4);
+        try {
+            await fs.promises.writeFile(self.path, data_str, 'utf-8');
+        } catch(error) {
+            throw error;
+        }
     },
 
     writeJsonToPath: function(dict, path){
@@ -170,4 +188,20 @@ module.exports = {
         });
         read.pipe(write);
     },
+
+    /** Checks if a folder or file exists
+     *  @param path
+     */
+    f_exists: async function (path) {
+        try {
+            await fs.promises.access(path);
+            return true;
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                return false;
+            } else {
+                throw error;
+            }
+        }
+    }
 }

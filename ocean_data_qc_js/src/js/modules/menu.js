@@ -14,11 +14,12 @@ const lg = require('logging');
 const path = require('path');
 
 module.exports = {
-    init: function(web_contents, menu_actions, server) {
+    init: function(web_contents, menu_actions, server, main_window) {
         var self = this;
         self.web_contents = web_contents;
         self.menu_actions = menu_actions;
         self.server = server;
+        self.main_window = main_window;
     },
 
     set_main_menu: function () {
@@ -74,7 +75,7 @@ module.exports = {
         self.file_menu = {
             label: 'File',
             submenu: [
-                { label: 'Open File...', accelerator: 'CmdOrCtrl+O', click: () => { self.web_contents.send('close-embed-forms'); self.menu_actions.open_dialog(); } },
+                { label: 'Open File...', accelerator: 'CmdOrCtrl+O', click: () => { self.web_contents.send('close-embed-forms'); self.menu_actions.open_dialog(self.main_window); } },
                 // { label: 'Go to stack...', accelerator: 'CmdOrCtrl+O', click: () => { self.server.go_to_stack(); } },
                 { type: 'separator' },
                 { label: "Exit", accelerator: "Command+Q", click: () => { self.menu_actions.server.close_with_exit_prompt_dialog(); } }
@@ -109,7 +110,7 @@ module.exports = {
 
                 { label: 'Export Data (CSV)...', accelerator: 'CmdOrCtrl+D', click: () => { self.web_contents.send('export-csv'); } },
                 { label: 'Export Data (WHP)...', accelerator: 'CmdOrCtrl+W', click: function() { self.web_contents.send('export-whp'); } },
-                { label: 'Export Data (XLSX)...', accelerator: 'CmdOrCtrl+E', click: function() { self.web_contents.send('export-xlsx'); } },
+                { label: 'Export Data (XLSX)...', accelerator: 'CmdOrCtrl+L', click: function() { self.web_contents.send('export-xlsx'); } },
                 { label: 'Export Data (ODS)...', accelerator: 'CmdOrCtrl+O', click: function() { self.web_contents.send('export-ods'); } },
                 { type: 'separator' },
 
@@ -152,7 +153,7 @@ module.exports = {
                     click: () => { self.web_contents.send('close-embed-forms'); self.menu_actions.update_from_csv(); }
                 },
                 {
-                    label: 'Calculated Parameters', accelerator: 'CmdOrCtrl+P',
+                    label: 'Calculated Parameters', accelerator: 'CmdOrCtrl+M',
                     click: function() { self.web_contents.send('close-embed-forms'); self.web_contents.send('add-computed-parameter'); }
                 },
                 {
@@ -160,7 +161,7 @@ module.exports = {
                     click: function() { self.web_contents.send('show-data'); }
                 },
                 {
-                    label: 'Edit Metadata', accelerator: 'CmdOrCtrl+M',
+                    label: 'Edit Metadata', accelerator: 'CmdOrCtrl+E',
                     click: function() { self.web_contents.send('close-embed-forms'); self.web_contents.send('edit-metadata'); }
                 }
             ]
@@ -169,8 +170,8 @@ module.exports = {
         self.bokeh_dev_menu = {
             label: 'Development',
             submenu: [
-                { label: 'Project Settings (JSON)', accelerator: 'CmdOrCtrl+Shift+P', click: () => { self.web_contents.send('close-embed-forms'); self.web_contents.send('json-project'); } },
-                { label: 'App Settings (JSON)', accelerator: 'CmdOrCtrl+Shift+J', click: () => { self.web_contents.send('close-embed-forms'); self.web_contents.send('json-app'); } },
+                { label: 'Project Settings (JSON)', accelerator: 'CmdOrCtrl+P', click: () => { self.web_contents.send('close-embed-forms'); self.web_contents.send('json-project'); } },
+                { label: 'App Settings (JSON)', accelerator: 'CmdOrCtrl+J', click: () => { self.web_contents.send('close-embed-forms'); self.web_contents.send('json-app'); } },
                 // { label: 'Logger [TO-DO]', accelerator: 'CmdOrCtrl+L', click: () => { alert('Not implemented yet');} },
                 { label: 'Reload Server', accelerator: 'CmdOrCtrl+R', click: () => { self.web_contents.send('close-embed-forms'); self.menu_actions.server.relaunch_bokeh(); } },
                 {

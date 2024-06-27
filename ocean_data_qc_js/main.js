@@ -124,8 +124,8 @@ if (!lock) {
                     lg.info('>> PROMISE ALL RESULT: ' + result);
                     server.set_file_to_open();
 
-                    menu_actions.init(web_contents, server);
-                    menu.init(web_contents, menu_actions, server);
+                    menu_actions.init(web_contents, server, main_window);
+                    menu.init(web_contents, menu_actions, server, main_window);
                     menu.set_main_menu();
 
                     server.init(menu);
@@ -209,7 +209,7 @@ ipcMain.on('save-file-as', (event, arg) => {
 })
 
 ipcMain.on('open-dialog', (event, arg) => {
-    menu_actions.open_dialog();
+    menu_actions.open_dialog(main_window);
 })
 
 ipcMain.on('open-file', (event, arg) => {

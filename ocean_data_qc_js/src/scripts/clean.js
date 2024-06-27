@@ -5,13 +5,15 @@
 
 "use strict";
 
-const rmdir = require('rimraf')
 const chalk = require("chalk")
+const fs = require('fs').promises;
 
-rmdir('dist', function (err) {
-    if (err) {
-        console.log(`${chalk.red("ERROR")}: the dist folder could not be removed.`)
+async function clean(folder_path) {
+    try {
+        await fs.rm(folder_path, { recursive: true, force: true });
+        console.log(`${chalk.yellow("WARNING")}: dist folder removed if it existed.`);
+    } catch (error) {
+        console.error(`${chalk.red("ERROR")}: the dist folder could not be removed: `, error);
     }
-    console.log(`${chalk.yellow("WARNING")}: dist folder removed.`)
-});
-
+}
+clean('dist');

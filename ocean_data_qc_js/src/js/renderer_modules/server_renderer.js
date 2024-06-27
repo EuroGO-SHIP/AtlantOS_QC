@@ -12,8 +12,6 @@ app_module_path.addPath(path.join(__dirname, '../modals_renderer'));
 app_module_path.addPath(__dirname);
 
 const { ipcRenderer } = require('electron');
-const command_exists_sync = require('command-exists').sync;
-const rmdir = require('rimraf');
 const url_exist = require('url-exist');
 const fs = require('fs');
 const { spawn } = require('child_process');
@@ -163,11 +161,8 @@ module.exports = {
         // TODO: check if it is an aqc (mark watcher as saved file) or a csv file (mark as modified)
 
         var project_file = data.get('project_file', loc.proj_settings);
-        var project_state = 'modified';
-        if (project_file !== false) {
-            data.set({'project_state': 'saved'}, loc.shared_data);  // although it should be saved already
-            project_state = 'saved';
-        } else {
+        var project_state = data.get('project_state', loc.shared_data);  // modified or saved
+        if (project_file === false) {  // csv file, not saved
             data.set({'project_state': 'modified'}, loc.shared_data);
             project_state = 'modified';
         }
@@ -179,26 +174,26 @@ module.exports = {
         tools.hide_loader();
     },
 
-    come_back_to_welcome: function(reset_cruise_data=false) {
+    come_back_to_welcome: async function(reset_cruise_data=false) {
         lg.info('-- COME BACK TO WELCOME --');
         var self = this;
         document.title = 'AtlantOS Ocean Data QC!';
         ipcRenderer.send('disable-watcher');
-        rmdir(loc.proj_files, function (err) {
-            if (err) {
-                tools.showModal(
-                    'ERROR',
-                    'Something was wrong deleting temporal files:<br />' + err
-                );
-                return;
-            }
-            lg.info('Project files deleted');
+        try {
+            await fs.promises.rm(loc.proj_files, { recursive: true, force: true });
             if (reset_cruise_data) {
                 self.reset_bokeh_cruise_data();
             } else {
                 self.reset_bokeh();
             }
-        });
+        } catch (error) {
+            tools.show_modal({
+                type: 'ERROR',
+                msg: 'Error removing temporal folder.' +
+                       ' Make sure the files are not being used by another application.',
+                code: error.stack
+            });
+        }
     },
 
     check_python_version: function() {
@@ -331,6 +326,7 @@ module.exports = {
         var file_to_open = data.get('file_to_open', loc.shared_data);
         lg.info('>> FILE TO OPEN: ' + file_to_open);
         if (file_to_open != '--updated') {  // if the app is not being updated
+                                            // TODO: check this in a more proper way
 
             // wait for app detection bokeh >> ready is the only way, but it will take time
             // before bokeh is launched port detection should take place
@@ -354,16 +350,19 @@ module.exports = {
         }
     },
 
-    rmv_proj_files: function(file_to_open=false) {
+    rmv_proj_files: async function() {
         var self = this;
         data.set({'file_to_open': false}, loc.shared_data);
-        rmdir(loc.proj_files, function () {
-            // TODO: if an error occur, then the window is shown again, or an error appears
-            lg.info('Directory files removed');
-            if (file_to_open !== false) {
-                self.ipc_renderer.send('open-file', [file_to_open]);
-            }
-        });
+        try {
+            await fs.promises.rm(loc.proj_files, { recursive: true, force: true });
+        } catch (error) {
+            tools.show_modal({
+                type: 'ERROR',
+                msg: 'The temporal folder could not be removed. ' +
+                     'Make sure the tmp folder is not being used by another app.',
+                code: error.stack
+            });
+        }
     },
 
     restore_session: function(file_to_open=false) {
@@ -378,8 +377,7 @@ module.exports = {
         }
 
         var cb_no = function() {
-            var file_to_open = data.get('file_to_open', loc.shared_data);
-            self.rmv_proj_files(file_to_open);
+            self.rmv_proj_files();
         }
 
         tools.modal_question({

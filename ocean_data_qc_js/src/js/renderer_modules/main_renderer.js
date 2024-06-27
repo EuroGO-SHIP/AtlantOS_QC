@@ -12,7 +12,6 @@ app_module_path.addPath(path.join(__dirname, '../modals_renderer'));
 app_module_path.addPath(__dirname);
 
 const { ipcRenderer } = require('electron');
-const rmdir = require('rimraf');
 const fs = require('fs');
 
 const loc = require('locations');

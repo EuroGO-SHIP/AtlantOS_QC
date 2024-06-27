@@ -9,9 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const python_shell = require('python-shell');
 const port_scanner = require('portscanner');
-const rmdir = require('rimraf');
 const url = require('url');
-const command_exists_sync = require('command-exists').sync;
 
 const {dialog} = require('electron');
 const {app} = require('electron');
@@ -85,7 +83,7 @@ module.exports = {
     /** In previous versions there used to be a default_settings.json
      *  in the appdata folder. Now it is just a template in the app folder.
      *  So this method removes the file if it exists in the appdata folder
-     * 
+     *
      *  TODO: check just when installing this app
     */
     check_json_old_default_settings: function() {
@@ -145,14 +143,14 @@ module.exports = {
 
     /** Overwrites shared_data file json_version is older
      *  This can happen only when the app is updated
-     * 
+     *
      *  TODO: this is checked every time the app is executed,
      *        it should be only run in case it is updated
      */
     check_json_shared_data_version: function() {
         lg.info('-- CHECK JSON SHARED DATA');
         var self = this;
-        return new Promise((resolve, reject) => {            
+        return new Promise((resolve, reject) => {
             var v_shared_data_src = data.get('json_version', loc.shared_data_src);  // TODO: check app version instead?
             var v_shared_data = data.get('json_version', loc.shared_data);
 
@@ -419,7 +417,7 @@ module.exports = {
     set_python_shell_options: function() {
         lg.info('-- SET PYTHON SHELL OPTIONS')
         var self = this;
-        
+
         var dev_mode = data.get('dev_mode', loc.shared_data);
         var user_options = [
             '-m', 'bokeh', 'serve',
@@ -555,21 +553,22 @@ module.exports = {
         }
     },
 
-    close_with_exit_prompt: function (results) {
+    close_with_exit_prompt: async function(results) {
         var self = this;
         lg.info(JSON.stringify(results))
         if (results['response'] === 0) { // The following is run if 'Yes' is clicked
-            rmdir(loc.proj_files, function(err) {
-                if (err) {
-                    webContents.send('show-modal', {
-                        'type': 'ERROR',
-                        'msg': 'The project could not be discarded:<br />' + err
-                    });
-                } else {
-                    app.showExitPrompt = false
-                    self.close_app();
-                }
-            });
+            try {
+                await fs.promises.rm(loc.proj_files, { recursive: true, force: true });
+                lg.warn('Temp folder removed if it existed.');  // check it exists first?
+                app.showExitPrompt = false
+                self.close_app();
+            } catch (error) {
+                self.web_contents.send('show-modal', {
+                    'type': 'ERROR',
+                    'msg': 'Error removing temporal folder.' +
+                           ' Make sure the files are not being used by another application: ' + error
+                });
+            }
         }
     },
 
