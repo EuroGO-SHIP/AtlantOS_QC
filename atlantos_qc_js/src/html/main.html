@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>AtlantosQC</title> <!-- TODO: add the project name to the title -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' 'unsafe-inline' http://localhost:5006 https://server.arcgisonline.com; img-src 'self' data: https://server.arcgisonline.com;">
+    <!-- NOTE: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/default-src
+               I could use 'nonce' as well for inline scripts, is it safer? -->
+
+    <!-- img-src directive and schemes, to make work base64 as images in this case:
+               https://stackoverflow.com/a/18449556/4891717 -->
+
+    <link rel="stylesheet" href="../css/snackbar.css">
+    <link rel="stylesheet" href="../css/df_data.css">
+    <link rel="stylesheet" href="../css/tooltips.css">
+
+    <!-- CODE MIRROR: JSON EDITOR -->
+    <script src="../../node_modules/codemirror/lib/codemirror.js"></script>
+    <script src="../../node_modules/codemirror/mode/javascript/javascript.js"></script>
+    <script src="../../node_modules/codemirror/addon/display/autorefresh.js"></script>
+    <link rel="stylesheet" href="../../node_modules/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../../node_modules/codemirror/theme/monokai.css">
+
+    <!-- EXTERNAL LIBRARIES -->
+    <link rel="stylesheet" href="../js/external_resources/jquery-ui.min.css">
+    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="../../node_modules/tabulator-tables/dist/css/tabulator.min.css" >
+
+
+    <!-- code taken from here: https://github.com/bordercore/bootstrap4-tagsinput -->
+    <link rel="stylesheet" href="../js/external_resources/tagsinput-bs4.css">
+
+    <link rel="stylesheet" href="../../node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../node_modules/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css">
+
+    <link rel="stylesheet" href="../css/main.css">
+
+  </head>
+  <body>
+    <div class="loader_container" style="display: none;">
+      <div id="loader" class="loader" ></div>
+      <div id="log_python" class="log_python"></div>
+    </div>
+
+    <div id="loader_mask" class="top_layer" style="display: none;">
+      <!-- <div id="translucent_loader" class="loader hidden" ></div> -->
+    </div>
+
+    <div id="snackbar">Project saved correctly...</div>
+
+    <iframe id="bokeh_iframe" style="display: none;"
+            frameborder="0" marginheight="0" marginwidth="0"
+            width="100%" height="100%" scrolling="auto"></iframe>
+
+    <div class="welcome_container container theme-showcase" style="display: none;">
+      <div id="page">
+        <!-- WELCOME MENU PANELS -->
+
+        <div id="panels" class="row col-xs-12 card-deck">
+          <div class="card">
+            <div class="card-header card-title text-white">Start <div class="fa fa-home float-right"></div></div>
+            <div class="card-body">
+              <p>Open source tool for 1st Quality Control (QC1) on Hydrographic Cruise Data</p>
+              <p>
+                <a id="open_file" href="#">Open file...    </a>
+                <i class="fa fa-question-circle possible_formats pop" style="cursor: pointer;"></i>
+
+                <!-- popover content -->
+                <div id="possible_formats" style="display: none;">
+                  You can open files with some of the following formats:
+                  <ul style="margin-bottom: 0;">
+                      <li>CSV files with <b>WHP format</b>. This file format include metadata in the header, units and some keywords to identify the format. Click <a href="https://exchange-format.readthedocs.io/en/latest/bottle.html"><b>here</b></a> for more information.</li>
+                      <li>Plain <b>CSV</b> files. Just columns and rows. Unit row can alsobe included.</li>
+                      <li><b>XLSX and ODS</b> files. First sheet with the data, the second with the metadata. Always with maximum precision</li>
+                      <li><b>AQC</b> files. This application can save the project in this format. The file includes the CSV file data and some metadata.</li>
+                  </ul>
+                </div>
+              </p>
+              <br>
+              <p><strong><a target="_blank" href="https://github.com/EuroGO-SHIP/AtlantOS_QC">GitHub Repository</a></strong></p>
+              <p hidden><strong><a href="#" id="enable_dev_mode">Enable developer mode</a></strong></p>
+              <p>
+                <span id="json_template_state" class="json_template_orange"><strong>Checking templates versions...</strong></span>
+                <span id="json_template_restore_to_default" class="json_template_orange" hidden>
+                  <a href="#"><strong>Restore to default settings (Calculated Parameters included)</strong></a>
+                </span>
+              </p>
+              <p>
+                <span id="json_template_download_custom" class="json_template_blue">
+                  <a href="#"><strong>Export custom settings in order to share with other users</strong></a>
+                </span>
+              </p>
+              <p>
+                <span id="json_template_upload_custom" class="json_template_blue">
+                  <a href="#"><strong>Import custom settings file</strong></a>
+                </span>
+              </p>
+
+              <p><a id="modify_app_settings" href="#"><strong>Modify app settings</strong></a></p>
+            </div>
+          </div>
+
+          <!-- <div class="card">
+            <div class="card-header card-title text-white">Recent files [TO-DO] <div class="fa fa-copy float-right"></div></div>
+            <div class="card-body">
+              <p><a href="#">Open latest file [TO-DO]</a></p>
+              <p><a href="#">Open previous file [TO-DO]</a></p>
+              <p><a href="#">Open previous file [TO-DO]</a></p>
+              <p><a href="#">Open previous file [TO-DO]</a></p>
+              <p><a href="#">Open previous file [TO-DO]</a></p>
+            </div>
+          </div> -->
+
+          <div class="card">
+            <div class="card-header card-title text-white">Resources <div class="fa fa-bolt float-right"></div></div>
+            <div class="card-body">
+              <p><strong>AtlantosQC: </strong><script>
+                const remote = require('@electron/remote');
+		            const { app } = remote;
+                document.write(app.getVersion());
+                </script></p>
+              <p><strong>App Update: <span id="update_state" ></span></strong></p>
+              <div id="bokeh_info" class="clearfix">
+                <div class="pull-left">
+                    <strong>Bokeh: </strong> <span id="bokeh_state">(loading)</span>
+                </div>
+                <div class="pull-left">
+                  <div id="bokeh_state_loader" class="mini_loader"></div>
+                </div>
+              </div>
+              <p><strong>Electron: </strong><script>document.write(process.versions.electron)</script></p>
+              <p><strong>Chromium: </strong><script>document.write(process.versions.chrome)</script></p>
+              <p><strong>Node.js: </strong><script>document.write(process.versions.node)</script></p>
+              <p><strong>Tile Server Status: </strong><span id="argis_tile_server_state">Checking...</span></p>
+              <p id="octave_p" style="display: none;">
+                <strong>Octave: </strong>
+                <span id="octave_version">Checking...</span>
+                <strong><a href="#" id="set_octave_path_manually" style="color: orange; display: none;">Set folder path manually...</a></strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="panels" class="row col-xs-12 card-deck">
+          <div class="card">
+            <div class="card-header card-title text-white">Supported by: <div class="fa fa-ship float-right" aria-hidden="true"></div></div>
+            <div class="card-body card-logos" onclick="location.href='https://eurogo-ship.eu/'" style="cursor: pointer;">
+              <div id="eurogoship_logo_div" class="clearfix"></div>
+            </div>
+          </div>
+        </div>
+        <div id="panels_footer" style="margin-top: 100px">
+        <footer class="bg-transparent text-right">
+          <div onclick="location.href='https://atlantos-h2020.eu/'" style="cursor: pointer;">
+            Originally developed in:
+            <div>
+              <div id="atlantos_logo_div" style="float:right"></div>
+            </div>
+            <div style="clear: both; line-height: 1.1em; font-size: 10px; font-family: sans-serif;">
+              <span>Optimising and Enhancing the Integrated
+              <br> Atlantic Ocean Observing Systems
+            </span>
+            </div>
+          </div>
+        </footer>
+        </div>
+      </div> <!-- page -->
+    </div> <!-- containter -->
+  </body>
+    <script>
+        window.$ = window.jQuery = require('jquery');
+
+        // NOTE: Leave the order of the following requires is very important to keep everything working well
+        //       For instance jquery ui should be before popper and bootstrap to keep the tooltips working well
+        //       https://stackoverflow.com/questions/56738842/bootstrap-4-3-0-tooltip-conflicts-with-jquery-ui-1-12-1
+
+        require('../js/external_resources/jquery-ui.min.js');                     // jquery-ui: it is needed for the accordion widget
+        require('../../node_modules/popper.js/dist/umd/popper.min.js');           // umd version needed for bootstrap v4
+        require('../../node_modules/bootstrap/dist/js/bootstrap.min.js');         // dependencies: https://stackoverflow.com/a/47470007/4891717
+        // require('../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js');  // alternative to require popper an bootstrap at the same time
+
+        // code taken from here: https://github.com/bordercore/bootstrap4-tagsinput
+        require('../js/external_resources/tagsinput-bs4.js');
+
+        require('../js/renderer_modules/main_renderer.js');
+        require('../js/renderer_modules/bokeh_renderer.js');
+        require('../js/renderer_modules/updater_renderer.js');
+    </script>
+</html>

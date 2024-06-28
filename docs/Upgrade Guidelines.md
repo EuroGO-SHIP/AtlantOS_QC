@@ -9,7 +9,7 @@ There are some versions in the app json files:
 * `default_settings.json` (App Source folder) and `custom_settings.json` (`AppData` folder)
 
     * `"json_version"`: if they have different versions, the version must be updated in `custom_settings.json` file.
-    
+
         TODO: I think all the new calculated parameters created by the user should be kept. Just new calculated parameters should be added to the `custom_settings.json` file. The rest of attributes must be added as well if there is any new one, but if they already exist the value must be kept.
 
 * `shared_data.json` (`Source` and `AppData` folder)
@@ -32,11 +32,11 @@ Create the tag in that commit
 
 ## 2. Create a fresh Conda Environment
 
-To create an environment from scratch and install the `ocean-data-qc` package
+To create an environment from scratch and install the `atlantos-qc` package
 
 * Windows x64 + Conda
 
-    conda create --prefix env python=3.7.3     # same level as ocean_data_qc and ocean_data_qc_js folders
+    conda create --prefix env python=3.7.3     # same level as atlantos_qc and atlantos_qc_js folders
     activate .\env
     python -m pip install --upgrade pip
     pip install --upgrade setuptools
@@ -48,11 +48,11 @@ To create an environment from scratch and install the `ocean-data-qc` package
 
 ## 3. Install Packages
 
-    cd ocean_data_qc_js
+    cd atlantos_qc_js
     yarn install                               # create a fresh yarn install
 
-    cd ocean_data_qc
-    python setup.py install                    # run this in the ocean-data-qc folder where setup.py is stored
+    cd atlantos_qc
+    python setup.py install                    # run this in the atlantos-qc folder where setup.py is stored
 
 ## 4. Create the executable and upload it to GutHub
 
@@ -62,11 +62,11 @@ Create the installable in the current Operating System. Use yarn
 
 Rename the executable file. The appropriate name should be inside the `latest.yml` file
 
-    ocean-data-qc-setup-1.3.0.exe
+    atlantos-qc-setup-1.3.0.exe
 
 Create a new Release in GitHub using the tag you have created and upload the following files
 
-    ocean-data-qc-setup-1.3.0.exe
+    atlantos-qc-setup-1.3.0.exe
     lates.yml
 
 I think the blockmap file is not needed to make it work.

@@ -1,0 +1,39 @@
+{% extends base %}
+
+{% block preamble %}
+
+    <link href="{{ with_hash('atlantos_qc/static/css/bootstrap.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ with_hash('atlantos_qc/static/css/font_awesome_v5.3.1.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ with_hash('atlantos_qc/static/css/font_awesome_v4.7.0.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ with_hash('atlantos_qc/static/css/awesome_bootstrap_checkbox.css') }}" rel="stylesheet" type="text/css" />
+
+    <link href="{{ with_hash('atlantos_qc/static/css/bokeh_custom.css') }}" rel="stylesheet" type="text/css" />
+
+    <script src="{{ with_hash('atlantos_qc/static/js/jquery-v3.3.1.js') }}"></script>
+    <script type="text/javascript" src="{{ with_hash('atlantos_qc/static/js/custom.js') }}"></script>
+
+{% endblock %}
+
+{% block inner_body %}
+    {% block contents %}
+
+    <div class="bokeh_page">
+        <div>
+            {{ embed(roots.bridge_row) }}
+        </div>
+        <div class="wrapper">
+            <div class="content-wrapper">
+                <div class="o_tabs">
+                    {{ embed(roots.tabs_widget_col) }}
+                </div>
+            </div>
+            <div class="o_sidebar">
+                {{ embed(roots.sidebar_col) }}
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}
+    {{ plot_script | indent(8) }}
+
+{% endblock %}

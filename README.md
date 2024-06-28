@@ -13,7 +13,7 @@ Version 1.0 was released under [![DOI](https://zenodo.org/badge/DOI/10.5281/zeno
 
 Since version 1.0 to 1.4.0, the application had no specific nor continuous funding for its development, having received partial support from [H2020-COMFORT](https://comfort.w.uib.no/) project and being also a contribution to WATER:iOS Interdisciplinary Thematic Platform [@WATER_IOS_CSIC](https://twitter.com/water_ios_csic)
 
-From 1.5.0 onwards is supported by [**Euro GO-SHIP**](https://eurogo-ship.eu/) (Grant #101094690), a EU-HORIZON project for _Developing a research infraestructure concept to support european hydrography_ 
+From 1.5.0 onwards is supported by [**Euro GO-SHIP**](https://eurogo-ship.eu/) (Grant #101094690), a EU-HORIZON project for _Developing a research infraestructure concept to support european hydrography_
 
 Since v1.6.0 having Octave installed is no longer a recomendation, as internal Octave code was translated to python. Full app functionality can be provided alone with the provided installers
 
@@ -56,30 +56,31 @@ Source code:
 
 1. Download this project
 
-1. Install the python `ocean_data_qc` package and its dependencies in your python setup (if you have installed python through miniconda/anaconda and is not in PATH, you have to use Anaconda Prompt as command shell):
+1. Install the python `atlantos_qc` package and its dependencies in your python setup (if you have installed python through miniconda/anaconda and is not in PATH, you have to use Anaconda Prompt as command shell):
 
+        python -m pip install git+https://github.com/ocean-data-qc/tilecloud.git
         python -m pip install --editable .
             or :
         python -m pip install .
 
-1. Install the node dependencies in the `ocean_data_qc_js` folder
+1. Install the node dependencies in the `atlantos_qc_js` folder
 
-        yarn --cwd ocean_data_qc_js/ install
+        yarn --cwd atlantos_qc_js/ install
 
-1. Open the GUI from the `ocean_data_qc_js` folder
+1. Open the GUI from the `atlantos_qc_js` folder
 
-        yarn --cwd ocean_data_qc_js/ start
+        yarn --cwd atlantos_qc_js/ start
         (first launching time delays a bit, please wait)
 
 ## Libraries and languages Used
 
-* [**Python**](https://www.python.org/). Python version 3 is the main language in the application. Most processing on data and files are performed through Pandas and/or NumPy libraries in python, and sent to Bokeh, which is also built on python and has an own javascript library for displaying and interacting. Python source code is presented in ocean_data_qc folder in the application.
+* [**Python**](https://www.python.org/). Python version 3 is the main language in the application. Most processing on data and files are performed through Pandas and/or NumPy libraries in python, and sent to Bokeh, which is also built on python and has an own javascript library for displaying and interacting. Python source code is presented in atlantos_qc folder in the application.
 
 * [**Bokeh**](https://bokeh.pydata.org) (Python Library). Bokeh is an interactive visualization library that targets modern web browsers for presentation. Its goal is to provide elegant, concise construction of versatile graphics, and to extend this capability with high-performance interactivity over very large or streaming datasets. Bokeh is the main library for the application, as deals with graphic presentation and interaction (Bokeh Development Team (2014). Python library for interactive visualization. [http://www.bokeh.pydata.org](http://www.bokeh.pydata.org))
 
 * [**Electron**](https://electronjs.org/) (formerly known as Atom Shell). Electron is an open source library developed by GitHub for building cross-platform desktop applications with HTML, CSS, and JavaScript. Electron accomplishes this by combining Chromium and Node.js into a single runtime and apps can be packaged for Mac, Windows, and Linux. The application uses Electron to embed in an application the bokeh plots and drive the user interaction with interface, providing also all the menus and interfaces.
 
-* [**JavaScript**](https://developer.mozilla.org/es/docs/Web/JavaScript). Electron is built on node, that is built with JavaScript. All code for menus, screens, and interacting elements on the application are made with Javascript. Some of the functionality are provided directly by Electron and some other by Bokeh, but the code to merge all these things were built with JavaScript. JavaScript source code is presented in ocean_data_qc_js folder in the application.
+* [**JavaScript**](https://developer.mozilla.org/es/docs/Web/JavaScript). Electron is built on node, that is built with JavaScript. All code for menus, screens, and interacting elements on the application are made with Javascript. Some of the functionality are provided directly by Electron and some other by Bokeh, but the code to merge all these things were built with JavaScript. JavaScript source code is presented in atlantos_qc_js folder in the application.
 
 ## License
 

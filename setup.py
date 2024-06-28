@@ -23,14 +23,14 @@ def get_package_data():
         ''' @filters = ('.html')
         '''
         main_path = join(ROOT, main_path)
-        print('>> OCEAN DATA QC JS PATH: {}'.format(main_path))
+        print('>> AtlantosQC JS PATH: {}'.format(main_path))
         if not exists(main_path) or main_path is None:
             raise RuntimeError("packaging non-existent path: %s" % main_path)
 
         file_paths = []
         for path, dirs, files in os.walk(main_path):
             path = relpath(path, main_path)
-            print('>> OCEAN DATA QC JS rel PATH: {}'.format(path))
+            print('>> AtlantosQC JS rel PATH: {}'.format(path))
             for f in files:
                 if not filters or f.endswith(filters):
                     file_paths.append(join(path, f))
@@ -38,12 +38,12 @@ def get_package_data():
         return file_paths
 
     return {
-        'ocean_data_qc': [
+        'atlantos_qc': [
             'templates/*.*',
             'files/*.json',
-        ] + ['static/' + x for x in get_file_paths('ocean_data_qc/static')]
-          + ['data_models/extra/' + x for x in get_file_paths('ocean_data_qc/data_models/extra')]
-        # 'ocean_data_qc_js': get_file_paths('ocean_data_qc_js')
+        ] + ['static/' + x for x in get_file_paths('atlantos_qc/static')]
+          + ['data_models/extra/' + x for x in get_file_paths('atlantos_qc/data_models/extra')]
+        # 'atlantos_qc_js': get_file_paths('atlantos_qc_js')
     }
 
 requires = [  # TODO: sometimes, installing the latest version is not a good idea because it gives some errors.
@@ -56,7 +56,7 @@ requires = [  # TODO: sometimes, installing the latest version is not a good ide
     'seawater >=3.3.4',
     'more_itertools >=10.0.0',
     # 'oct2py >=5.6.0', removed
-    'scipy >=1.10.1', 
+    'scipy >=1.10.1',
     'tilecloud ==1.1.0',  # 'tilecloud >=1.10.0', >> latest version does not work on python 3.11.5
 
     # libraries related to export svg, png and pdf files
@@ -66,7 +66,7 @@ requires = [  # TODO: sometimes, installing the latest version is not a good ide
 ]
 
 dependency_links = [  # FIXME: this is not being used, a manual installation is needed.
-                      #        Check again because I might be using the pip cache. Use `pip cache purge` first  
+                      #        Check again because I might be using the pip cache. Use `pip cache purge` first
     'https://github.com/ocean-data-qc/tilecloud/tarball/master#egg=tilecloud'
 ]
 
@@ -74,7 +74,7 @@ if sys.platform == "win32":
     requires.append('python-magic-win64 >=0.4.13')  # depends on python-magic and adds the DLL libmagic library
 
 setup(
-    name='ocean_data_qc',
+    name='atlantos_qc',
     version='1.7.0',                                    # TODO: extract the version from package.json
     python_requires='>=3.11',                           # they are still solving bugs in python 3.12
     description='Open source application for assisted primary quality control of hydrographic cruise data focused on carbon and ancillary parameters',
@@ -88,10 +88,10 @@ setup(
     install_requires=requires,
     dependency_links=dependency_links,
     packages=[
-        'ocean_data_qc',
-        'ocean_data_qc.bokeh_models',
-        'ocean_data_qc.data_models',
-        'ocean_data_qc.data_models.extra',
+        'atlantos_qc',
+        'atlantos_qc.bokeh_models',
+        'atlantos_qc.data_models',
+        'atlantos_qc.data_models.extra',
     ],
     package_data=get_package_data(),
     zip_safe=False,

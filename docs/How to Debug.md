@@ -4,8 +4,8 @@ Electron and the Python app (Bokeh Server) are interconnected. The best way to d
 
     #!/bin/bash
 
-    LOG_NODE="/mnt/c/Users/[user_name]/AppData/Roaming/ocean-data-qc/logs/debug_js.log"
-    LOG_PYTHON="/mnt/c/Users/[user_name]/AppData/Roaming/ocean-data-qc/logs/debug_py.log"
+    LOG_NODE="/mnt/c/Users/[user_name]/AppData/Roaming/atlantos-qc/logs/debug_js.log"
+    LOG_PYTHON="/mnt/c/Users/[user_name]/AppData/Roaming/atlantos-qc/logs/debug_py.log"
 
     log='s/INFO/\o033[1;34m&\o033[0m/g'
     warn='s/WARN/\o033[1;33m&\o033[0m/g'

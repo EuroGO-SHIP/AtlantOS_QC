@@ -1,8 +1,8 @@
 .vscode
 
-# ocean data qc files
-/ocean_data_qc_js/node_modules
-/ocean_data_qc_js/dist
+# atlantos-qc files
+/atlantos_qc_js/node_modules
+/atlantos_qc_js/dist
 /bokeh
 /csv_examples
 /env
