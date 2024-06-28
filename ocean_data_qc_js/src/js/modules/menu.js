@@ -115,7 +115,7 @@ module.exports = {
                 { type: 'separator' },
 
                 { label: 'Export Action History (CSV)...', accelerator: 'CmdOrCtrl+M', click: () => { self.menu_actions.export_moves_dialog(); } },
-                { label: 'Export Plots Images as PDF...', accelerator: 'CmdOrCtrl+P', click: () => { self.web_contents.send('export-pdf-file'); } },
+                // { label: 'Export Plots Images as PDF...', accelerator: 'CmdOrCtrl+P', click: () => { self.web_contents.send('export-pdf-file'); } },
                 { type: 'separator' },
                 { label: 'Close Project', accelerator: 'CmdOrCtrl+W', click: () => { self.web_contents.send('close-embed-forms'); self.menu_actions.close_project(); } },
                 { label: "Exit", accelerator: "Command+Q", click: () => { self.menu_actions.server.close_with_exit_prompt_dialog(); } }
@@ -148,10 +148,10 @@ module.exports = {
         self.bokeh_data_menu = {
             label: 'Data',
             submenu: [
-                {
-                    label: 'Update from CSV', accelerator: 'CmdOrCtrl+U',
-                    click: () => { self.web_contents.send('close-embed-forms'); self.menu_actions.update_from_csv(); }
-                },
+                // {
+                //     label: 'Update from CSV', accelerator: 'CmdOrCtrl+U',
+                //     click: () => { self.web_contents.send('close-embed-forms'); self.menu_actions.update_from_csv(); }
+                // },
                 {
                     label: 'Calculated Parameters', accelerator: 'CmdOrCtrl+M',
                     click: function() { self.web_contents.send('close-embed-forms'); self.web_contents.send('add-computed-parameter'); }
