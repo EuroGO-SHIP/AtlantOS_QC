@@ -285,7 +285,7 @@ class BokehPlots(Environment):
         hover = self._get_hover_tool()
         self.tools = (
             pan, box_zoom, self.lasso_select, box_select,
-            crosshair, save, reset, tap, wheel_zoom
+            crosshair, reset, tap, wheel_zoom
         )
         self.plot.add_tools(*self.tools)
 
