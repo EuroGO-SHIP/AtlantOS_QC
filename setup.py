@@ -48,7 +48,7 @@ def get_package_data():
 
 requires = [  # TODO: sometimes, installing the latest version is not a good idea because it gives some errors.
               #       So I think the specific version of every package must be set here to prevent errors
-    'bokeh ==3.3.4',     # there is one issue when selecting samples with the version 3.4.1, waiting for the version 5
+    'bokeh ==3.4.2',     # there is one issue when selecting samples with the version 3.4.1, waiting for the version 5
     'pandas >=2.0.3',    # TODO: bokeh 3.0.0 requires pandas, so is this dependency needed anyway?
     'numpy == 1.26.4',   # the new version 2.0.0 does not work
     'PyCO2SYS >=1.8.0',
