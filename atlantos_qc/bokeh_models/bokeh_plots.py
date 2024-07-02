@@ -116,6 +116,8 @@ class BokehPlots(Environment):
                 nonselection_fill_alpha=1.0,
             )
             c.selection_glyph = Scatter(
+                x=self.x,
+                y=self.y,
                 marker="circle",
                 line_color=Reds3[0],
                 line_alpha=1.0,
@@ -154,9 +156,11 @@ class BokehPlots(Environment):
         # profile colors = [..., light blue, blue, dark blue, red]
         for i in range(NPROF):
             color = self.env.profile_colors[i]
+            x = '{}_{}_{}'.format(self.tab, self.x, i)
+            y = '{}_{}_{}'.format(self.tab, self.y, i)
             c = self.plot.scatter(
-                x='{}_{}_{}'.format(self.tab, self.x, i),
-                y='{}_{}_{}'.format(self.tab, self.y, i),
+                x=x,
+                y=y,
                 line_color=color,
                 fill_color=color,
                 size=4,             # this attr is common for the selection and non-selection glyph
@@ -168,6 +172,8 @@ class BokehPlots(Environment):
                 nonselection_fill_alpha=1.0
             )
             c.selection_glyph = Scatter(
+                x=x,
+                y=y,
                 marker="circle",
                 line_color=RED,
                 fill_color='yellow',
@@ -239,8 +245,8 @@ class BokehPlots(Environment):
 
             NOTE: this is run once per plot in each tab, but actually we need to run it only once
         '''
-        lg.info('-- RESET PLOT: {}'.format(self.n_plot))
         n = self.env.tabs_flags_plots[self.tab]['plots'][0]  # first plot in the current tab
+        lg.info(f'-- RESET PLOT: {self.n_plot} | FIRST PLOT  {n}')
         if self.n_plot == n:
             self.env.reset_selection = True  # this does not work anymore
             self.env.selection = []

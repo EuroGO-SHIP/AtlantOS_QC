@@ -94,6 +94,8 @@ class BokehMap(Environment):
         )
 
         self.env.wmts_map_scatter.selection_glyph = Scatter(
+            x='X_WMTS',
+            y='Y_WMTS',
             line_color=RED,
             line_alpha=1.0,
             fill_color='yellow',
