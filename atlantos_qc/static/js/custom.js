@@ -7,10 +7,13 @@ window.onunhandledrejection = function(event) {
 };
 
 window.onerror = function(message, source, lineNumber, colno, error) {
-    window.top.postMessage({
-        signal: 'unhandled-exception',
-        message: error.stack
-    }, '*');
+    // https://github.com/bokeh/bokeh/issues/13959
+    if (error.name !== 'TypeError' && error.message !== 'this.plot_view.reset is not a function') {
+        window.top.postMessage({
+            signal: 'unhandled-exception',
+            message: error.stack
+        }, '*');
+    }
 };
 
 function get_input_bridge_text() {
