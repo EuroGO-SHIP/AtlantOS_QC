@@ -55,7 +55,6 @@ requires = [  # TODO: sometimes, installing the latest version is not a good ide
     'shapely >=2.0.1',
     'seawater >=3.3.4',
     'more_itertools >=10.0.0',
-    # 'oct2py >=5.6.0', removed
     'scipy >=1.10.1',
     'tilecloud ==1.1.0',  # 'tilecloud >=1.10.0', >> latest version does not work on python 3.11.5
 
