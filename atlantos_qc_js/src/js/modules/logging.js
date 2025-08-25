@@ -6,10 +6,9 @@
 "use strict";
 
 const loc = require('locations');
-const winston = require('winston');
 
 const { createLogger, format, transports } = require('winston');
-const { combine, timestamp, printf } = format;
+const { combine, printf } = format;
 
 const lg_format = printf(({ level, message, timestamp }) => {
     return `${timestamp} NODE - ${level.toUpperCase()}: ${message}`;

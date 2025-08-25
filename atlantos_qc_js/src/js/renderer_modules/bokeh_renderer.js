@@ -33,7 +33,6 @@ require('json_project').init();
 require('json_app').init();
 require('add_computed_parameter').init();
 require('show_data').init();
-require('show_help_form').init();
 require('edit_metadata').init();
 
 // ------------------------------- IPC SIGNAL RECEIVERS ----------------------------------------- //

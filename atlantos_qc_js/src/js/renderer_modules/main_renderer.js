@@ -41,7 +41,6 @@ server_renderer.init();
 data_renderer.ipc_renderer = ipcRenderer;
 
 $('body').data('bokeh_state', 'not-ready');  // bokeh server state: 'not-ready', 'ready'
-$('body').data('ts_state', 'checking');      // tile server state: 'checking', 'offline', 'online'
 
 tools.multi_modal_fix();
 tools.popover_fix();
@@ -81,9 +80,6 @@ window.onmessage = function(e){
         $('#bokeh_state').text(bokeh_iframe.contentWindow.Bokeh.version + ' (loaded)');
         $('#bokeh_state_loader').attr('hidden', '');
         $('body').data('bokeh_state','ready');
-
-        // NOTE: be careful here, only one call to bokeh at the same time is possible
-        server_renderer.check_tile_server_state();
     }
 
     if (typeof(e.data.signal) !== 'undefined') {

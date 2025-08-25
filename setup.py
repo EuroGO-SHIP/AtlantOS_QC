@@ -48,25 +48,21 @@ def get_package_data():
 
 requires = [  # TODO: sometimes, installing the latest version is not a good idea because it gives some errors.
               #       So I think the specific version of every package must be set here to prevent errors
-    'bokeh ==3.4.2',     # there is one issue when selecting samples with the version 3.4.1, waiting for the version 5
-    'pandas >=2.0.3',    # TODO: bokeh 3.0.0 requires pandas, so is this dependency needed anyway?
-    'numpy == 1.26.4',   # the new version 2.0.0 does not work
-    'PyCO2SYS >=1.8.0',
-    'shapely >=2.0.1',
-    'seawater >=3.3.4',
-    'more_itertools >=10.0.0',
-    'scipy >=1.10.1',
-    'tilecloud ==1.1.0',  # 'tilecloud >=1.10.0', >> latest version does not work on python 3.11.5
+    'bokeh ==3.7.3',     # there is one issue when selecting samples with the version 3.4.1, waiting for the version 5
+    'PyCO2SYS ==1.8.3.4',
+    'shapely ==2.1.1',
+    'seawater ==3.3.5',
+    'more_itertools ==10.7.0',
+    'tilecloud ==1.13.2',  # 'tilecloud >=1.10.0', >> latest version does not work on python 3.11.5
 
     # libraries related to export svg, png and pdf files
     # 'svglib >=0.9.2',
-    'reportlab >=4.0.4',
+    'reportlab ==4.4.3',
     # 'selenium >=3.141.0',
-]
 
-dependency_links = [  # FIXME: this is not being used, a manual installation is needed.
-                      #        Check again because I might be using the pip cache. Use `pip cache purge` first
-    'https://github.com/ocean-data-qc/tilecloud/tarball/master#egg=tilecloud'
+    'cachetools ==6.1.0',
+    'Flask ==3.1.2',
+    'flask-cors ==6.0.1',
 ]
 
 if sys.platform == "win32":
@@ -85,7 +81,6 @@ setup(
     author_email='avelo@iim.csic.es',
     license='GPL-3.0-or-later',
     install_requires=requires,
-    dependency_links=dependency_links,
     packages=[
         'atlantos_qc',
         'atlantos_qc.bokeh_models',

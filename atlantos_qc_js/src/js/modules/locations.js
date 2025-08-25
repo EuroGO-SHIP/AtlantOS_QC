@@ -36,16 +36,10 @@ const locations = {
     'html': path.join(__atlantos_qc_js, 'src/html'),
     'img': path.join(__atlantos_qc_js, 'src/img'),
     'scripts': path.join(__atlantos_qc_js, 'src/scripts'),
-    'help': path.join(__atlantos_qc_js, 'src/html/help/help.html'),
 
     // SETTINGS FILES IN SRC FOLDER
     'shared_data_src': path.join(__atlantos_qc_js, 'src/files/shared_data.json'),
     'default_settings': path.join(__atlantos_qc_js, 'src/files/default_settings.json'),
-
-    // TILE SERVICES
-    //'basemap_offile_tile': path.join(__atlantos_qc_js, 'src/tiles/world_ocean_base_z4.zip'),
-    'basemap_offile_tile': path.join(__atlantos_qc_js, 'src/tiles/etopo1_z5.zip'),
-    //'basemap_offile_tile': path.join(__atlantos_qc_js, 'src/tiles/world_ocean_base_z5.zip'),
 
     // LOGGERS
     'logs_folder': path.join(__user_data, 'logs'),

@@ -87,14 +87,16 @@ module.exports = {
             role: 'help',
             submenu: [
                 {
-                    label: 'Learn More About EuroGo-SHIP',
+                    label: 'EuroGo-SHIP Website',
                     click: function () {
                         electron.shell.openExternal('https://eurogo-ship.eu/')
                     }
                 },
                 {
-                    label: 'Guide to Best Practices for QC', accelerator: 'CmdOrCtrl+H',
-                    click: function() { self.web_contents.send('show-help-form'); }
+                    label: 'Webinar',
+                    click: function() {
+                        electron.shell.openExternal('https://oceano.iim.csic.es/EuroGO-SHIP/2025_AtlantOS_QC_webinar/')
+                    }
                 }
             ]
         };

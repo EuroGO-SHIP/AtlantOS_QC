@@ -4,19 +4,40 @@
 #    AUTHORS and LICENSE files at the root folder of this application   #
 #########################################################################
 
-from bokeh.models import Range1d, Scatter, CustomJSHover
-from bokeh.models.tiles import WMTSTileSource
+import zipfile, io, threading, math
+from os import path
+from flask import Flask, send_file, abort
+from flask_cors import CORS
+from cachetools import LRUCache, cachedmethod
+from operator import attrgetter
+from bokeh.models import Range1d, Scatter, WMTSTileSource, DataRange1d, ColumnDataSource, HoverTool
 from bokeh.plotting import figure
 from bokeh.models.tools import (
     PanTool, BoxZoomTool, BoxSelectTool, WheelZoomTool,
-    LassoSelectTool, CrosshairTool, TapTool, SaveTool,
-    HoverTool
+    LassoSelectTool, CrosshairTool, TapTool, SaveTool
 )
-from bokeh.models.ranges import DataRange1d
-
 from bokeh.util.logconfig import bokeh_logger as lg
 from atlantos_qc.env import Environment
 from atlantos_qc.constants import *
+
+ARGIS_TS = "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{Z}/{Y}/{X}/"
+LOCAL_TS = "http://127.0.0.1:5000/tiles/{Z}/{X}/{Y}.png"
+
+ETOPO1_Z5 = path.join(TILES, 'etopo1_z5.zip')
+WORLD_OCEAN_BASE_Z5 = path.join(TILES, 'world_ocean_base_z5.zip')
+
+
+def deg2dms(deg, is_lon=True):
+    """Convert decimal degrees to DMS string"""
+    d = int(abs(deg))
+    m = int((abs(deg) - d) * 60)
+    s = (abs(deg) - d - m/60) * 3600
+    hemi = ''
+    if is_lon:
+        hemi = 'E' if deg >= 0 else 'W'
+    else:
+        hemi = 'N' if deg >= 0 else 'S'
+    return f"{d}°{m}'{s:.1f} {hemi}"
 
 
 class BokehMap(Environment):
@@ -27,35 +48,98 @@ class BokehMap(Environment):
         lg.info('-- INIT BOKEH MAP')
         self.env.bk_map = self
 
+        self.zip_path = ETOPO1_Z5  # TODO: get map name from ini file
+                                   # TODO: download more levels
+        self.tile_cache_size = 200
+        self.tile_cache = LRUCache(maxsize=self.tile_cache_size)
+        self.zip_file = None
+        self.min_zoom = 0
+        self.max_zoom = 0
+
+        self._init_local_tile_server()
         self._init_bokeh_map()
         self._set_tools()
 
+        # --- Add DMS columns to ColumnDataSource
+        self._compute_dms_columns()
+
+    def _init_local_tile_server(self):
+        """Initialize Flask tile server and load ZIP"""
+        self.zip_file = zipfile.ZipFile(self.zip_path)
+        self._compute_zoom_levels()
+        self._start_flask_server()
+
+    def _compute_zoom_levels(self):
+        """Compute min and max zoom from ZIP"""
+        tiles = self.zip_file.namelist()
+        zoom_levels = [int(t.split("/")[0]) for t in tiles]
+        self.min_zoom = min(zoom_levels)
+        self.max_zoom = max(zoom_levels)
+        lg.info(f"Local tiles loaded: min_zoom={self.min_zoom}, max_zoom={self.max_zoom}")
+
+    @cachedmethod(attrgetter('tile_cache'))
+    def _read_tile(self, z, x, y):
+        """Read a tile from ZIP"""
+        key = f"{z}/{x}/{y}"
+        return self.zip_file.read(key)
+
+    def _serve_tile(self, z, x, y):
+        """Serve a tile with overzoom handling"""
+        current_z, current_x, current_y = z, x, y
+
+        if current_z > self.max_zoom:
+            # overzoom: calculate parent tile
+            zoom_diff = current_z - self.max_zoom
+            scale_factor = 2 ** zoom_diff
+            current_x = math.floor(x / scale_factor)
+            current_y = math.floor(y / scale_factor)
+            current_z = self.max_zoom
+
+        try:
+            data = self._read_tile(current_z, current_x, current_y)
+        except KeyError:
+            abort(404)
+        return send_file(io.BytesIO(data), mimetype="image/png")
+
+    def _start_flask_server(self):
+        """Start Flask tile server in a background thread"""
+        app = Flask(__name__)
+        CORS(app)
+
+        @app.route("/tiles/<int:z>/<int:x>/<int:y>.png")
+        def serve_tile(z, x, y):
+            return self._serve_tile(z, x, y)
+
+        def run_flask():
+            app.run(port=5000, debug=False, use_reloader=False)
+
+        threading.Thread(target=run_flask, daemon=True).start()
+        lg.info("Flask tile server started at http://localhost:5000")
+
     def _init_bokeh_map(self):
         lg.info('>> TS STATE: {}'.format(self.env.ts_state))
-        if self.env.ts_state is None:     # this should not happen, I add it here just in case
-            self.env.ts_state = 'online'  # I set online because I cannot run tile server from here
-        if self.env.ts_state == 'online':
-            tile_options = dict(url=ARGIS_TS)
+        if self.env.ts_state is None:
+            self.env.ts_state = 'online'
+        if self.env.ts_state == 'online' or self.zip_path is None:
+            tile_url = ARGIS_TS
         else:
-            tile_options = dict(url=LOCAL_TS)
-        tile_source = WMTSTileSource(**tile_options)
+            tile_url = LOCAL_TS
 
+        tile_source = WMTSTileSource(
+            url=tile_url,
+            min_zoom=self.min_zoom,
+            max_zoom=self.max_zoom
+        )
+
+        # Use bounds from original script to avoid overzoom requests
         range_padding = 0.30
-        #max_zoom = 50000000
-        #min_zoom = 10000
-
-        # TODO: when a profile is selected, the range size is changed??
         x_range = DataRange1d(
             range_padding=range_padding,
-            # range_padding_units='absolute',
-            #max_interval = max_zoom, min_interval = min_zoom
-            bounds=(-20026376.39, 20026376.39)  # longitude bounds for mercator
+            bounds=(-20026376.39, 20026376.39)
         )
         y_range = DataRange1d(
             range_padding=range_padding,
-            # range_padding_units='absolute',
-            #max_interval = max_zoom, min_interval = min_zoom
-            bounds=(-20048966.10, 20048966.10) # latitude bounds for mercator
+            bounds=(-20048966.10, 20048966.10)
         )
 
         self.env.wmts_map = figure(
@@ -64,16 +148,16 @@ class BokehMap(Environment):
             output_backend=OUTPUT_BACKEND,
             tools='',
             toolbar_location='right',
-
-            x_axis_type='mercator',         # to avoid weird axis numbers
+            logo=None,
+            x_axis_type='mercator',
             y_axis_type='mercator',
             y_axis_location='left',
             x_range=x_range,
             y_range=y_range,
-
-            border_fill_color = 'whitesmoke',       # TODO: this should be declared on the yaml file
-            background_fill_color = 'whitesmoke'
+            border_fill_color='whitesmoke',
+            background_fill_color='whitesmoke'
         )
+
         self.env.wmts_map.axis.visible = True
         self.env.wmts_map.add_tile(tile_source)
 
@@ -86,7 +170,6 @@ class BokehMap(Environment):
             fill_color='#5bc0de',
             fill_alpha=1.0,
             line_alpha=1.0,
-
             nonselection_line_color='#00004c',
             nonselection_fill_color='#5bc0de',
             nonselection_fill_alpha=1.0,
@@ -109,50 +192,24 @@ class BokehMap(Environment):
         crosshair = CrosshairTool()
         tap = TapTool()
         save = SaveTool()
+        lasso_select = LassoSelectTool(continuous=False)
 
-        lasso_select = LassoSelectTool(
-            continuous=False,            # enhance performance
-        )
-
-        code = """
-            var projections = require("core/util/projections");
-            var x = special_vars.data_x
-            var y = special_vars.data_y
-            var coords = projections.wgs84_mercator.inverse([x, y])
-            return coords[%d].toFixed(2)
+        tooltips = """
+            <div style="padding:5px; background-color:#f2f2f2;">
+                <b>STATION(S):</b> @{STNNBR} <br>
+                <b>LON: </b> @LON_DMS <br>
+                <b>LAT: </b> @LAT_DMS <br>
+            </div>
         """
-
-        tooltips = '''
-            <style>
-                .bk-tooltip>div:not(:nth-child(-n+5)) {{
-                    display:none;
-                }}
-
-                .bk-tooltip>div {{
-                    background-color: #dff0d8;
-                    padding: 5px;
-                }}
-            </style>
-
-            <b>STATION: </b> @{STNNBR} <br />
-            <b>LON: </b> @X_WMTS{custom} <br />
-            <b>LAT: </b> @Y_WMTS{custom} <br />
-        '''
 
         hover = HoverTool(
             mode='mouse',
+            point_policy='snap_to_data',
             tooltips=tooltips,
-            renderers=[self.env.wmts_map_scatter],
-            formatters={
-                'X_WMTS' : CustomJSHover(code=code % 0),
-                'Y_WMTS' : CustomJSHover(code=code % 1),
-            }
+            renderers=[self.env.wmts_map_scatter]
         )
 
-        tools = (
-            pan, box_zoom, lasso_select, hover,
-            crosshair, tap, wheel_zoom
-        )
+        tools = (pan, box_zoom, lasso_select, hover, crosshair, tap, wheel_zoom)
         self.env.wmts_map.add_tools(*tools)
 
         # set defaults
@@ -161,5 +218,20 @@ class BokehMap(Environment):
         self.env.wmts_map.toolbar.active_scroll = wheel_zoom
         self.env.wmts_map.toolbar.active_tap = tap
 
+    def _compute_dms_columns(self):
+        """Compute LAT_DMS and LON_DMS columns for tooltips"""
+        def lon_dms(x):
+            # Convert Web Mercator x to degrees and then to DMS
+            deg = x / 6378137.0 * 180 / math.pi
+            return deg2dms(deg, True)
 
+        def lat_dms(y):
+            # Convert Web Mercator y to degrees and then to DMS
+            deg = (2 * math.atan(math.exp(y / 6378137.0)) - math.pi / 2) * 180 / math.pi
+            return deg2dms(deg, False)
 
+        x_vals = self.env.wmts_map_source.data['X_WMTS']
+        y_vals = self.env.wmts_map_source.data['Y_WMTS']
+
+        self.env.wmts_map_source.data['LON_DMS'] = [lon_dms(x) for x in x_vals]
+        self.env.wmts_map_source.data['LAT_DMS'] = [lat_dms(y) for y in y_vals]

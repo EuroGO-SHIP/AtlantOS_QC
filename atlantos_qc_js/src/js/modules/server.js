@@ -572,43 +572,6 @@ module.exports = {
         }
     },
 
-    /**
-     * Runs tile server application.
-     */
-    run_tile_server: function() {
-        var self = this;
-        lg.info('-- RUN TILE SERVER');
-        if (self.ts_shell != null) {
-            lg.warn('>> TILE SERVER ALREADY RUNNING');
-            return;
-        }
-        var _checkScriptEnvPathSet = setInterval(function() {
-            if (self.script_env_path != '') {
-                clearInterval(_checkScriptEnvPathSet);
-                var py_options = {
-                    mode: 'text',                            // actually I do not need to return anything,
-                    pythonPath: self.python_path,
-                    args: [loc.basemap_offile_tile],
-                    scriptPath: self.script_env_path
-                };
-                lg.info('>> TILE SERVER OFFLINE FILE: ' + path.parse(loc.basemap_offile_tile).base);
-                if (self.atlantos_qc_path != '') {
-                    self.ts_shell = python_shell.run(
-                        'tc-viewer', py_options, (err, results) => {
-                            if (err || typeof(results) !== 'undefined') {
-                                lg.error(`>> ERROR RUNNING TILE SERVER: ${err}`);
-                            }
-                            if (typeof(results) !== 'undefined') {  // actually nothing is returned? >> divert info
-                                lg.info('>> TILE SERVER RETURNS: ' + results[0]);
-                            }
-                        }
-                    );
-                }
-            }
-        }, 100);
-
-    },
-
     set_file_to_open: function() {
         lg.info('-- SET FILE TO OPEN')
         if (!app.isPackaged) {

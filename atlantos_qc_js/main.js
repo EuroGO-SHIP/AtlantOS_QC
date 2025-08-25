@@ -11,8 +11,22 @@ const app_module_path = require('app-module-path');
 app_module_path.addPath(path.join(__dirname, 'src/js/modules'));  // change folder name to "node_modules" to avoid this?
 app_module_path.addPath(path.join(__dirname, 'src/js/renderer_modules'));
 
-const lg = require('logging');
 const loc = require('locations');
+const { split_log_file } = require('split_log_file');
+
+
+
+// async function main() {
+    // try {
+    //     await split_log_file(loc.log_js);
+    // } catch (error) {
+    //     console.log('Error in split_log_file: ' + error)
+    // }
+    // console.log('END SPLIT LOG FILE')
+    // await split_log_file(loc.log_python);
+
+const lg = require('logging');
+
 const {app} = require('electron');
 if (app.isPackaged) {
     // this is needed to load the .env file correctly with the dotenv library
@@ -56,7 +70,7 @@ if (process.platform == 'win32' && app.isPackaged) {
 }
 
 var main_window = null;      // global reference of the window object
-                             // if this is not set, the window will be closed automatically
+                                // if this is not set, the window will be closed automatically
 
 // ----------------------- APP EVENTS -------------------------- //
 
@@ -64,7 +78,6 @@ var main_window = null;      // global reference of the window object
 // GH issue: https://github.com/electron/electron/issues/18214
 // SO solution: https://stackoverflow.com/a/57288472/4891717
 app.commandLine.appendSwitch('disable-site-isolation-trials');
-
 if (!app.isPackaged) {
     // NOTE: I need to use the hashes to the url files for the final app
     //       because if an update is made it should use cache and reload
@@ -239,10 +252,6 @@ ipcMain.on('disable-watcher', function(event, args){
     web_contents.send('disable-watcher');
 })
 
-ipcMain.on('run-tile-server', function(event, args){
-    server.run_tile_server();
-})
-
 ipcMain.on('json-template-restore-to-default', function(event, args){
     server.json_template_restore_to_default();
 })
@@ -267,3 +276,7 @@ ipcMain.on('get-main-paths', (event) => {
 ipcMain.on('will-quit', (event) => {
     server.close_app();
 })
+// }
+
+// main();
+

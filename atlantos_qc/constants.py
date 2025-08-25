@@ -26,11 +26,6 @@ FLAG_END = '_FLAG_W'        # Flag distinctive
 NA_REGEX_LIST = [r'^-999[9]?[\.0]*?$']
 NA_REGEX = '^-999[9]?[\.0]*?$'
 
-# ---------------------- URLS ----------------------------- #
-
-ARGIS_TS = "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{Z}/{Y}/{X}/"
-LOCAL_TS = "http://127.0.0.1:8080/tiles/0/tiles/{Z}/{X}/{Y}/"
-
 # --------------------- COLORS ---------------------------- #
 
 BLUES = Blues8[1:-1]  # len = 6, from dark to light blue
@@ -81,6 +76,7 @@ TMP = path.join(APPDATA_AQC, 'files', 'tmp')
 UPD = path.join(APPDATA_AQC, 'files', 'tmp', 'update')
 EXPORT = path.join(APPDATA_AQC, 'files', 'tmp', 'export')
 IMG = path.join(ATLANTOS_QC_PY, 'static', 'img')
+TILES = path.join(ATLANTOS_QC_PY, 'static', 'tiles')
 
 PROJ_SETTINGS = path.join(TMP, 'settings.json')
 CUSTOM_SETTINGS = path.join(FILES, 'custom_settings.json')

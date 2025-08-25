@@ -423,11 +423,6 @@ module.exports = {
         if ($('#close_df_data').length > 0) {
             $('#close_df_data').click();
         }
-
-        // close guide if it is open
-        if ($('#close_help_form_bt').length > 0) {
-            $('#close_help_form_bt').click();
-        }
     },
 
     load_popover: function() {
