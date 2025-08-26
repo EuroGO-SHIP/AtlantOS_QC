@@ -148,7 +148,6 @@ class BokehMap(Environment):
             output_backend=OUTPUT_BACKEND,
             tools='',
             toolbar_location='right',
-            logo=None,
             x_axis_type='mercator',
             y_axis_type='mercator',
             y_axis_location='left',
@@ -217,6 +216,8 @@ class BokehMap(Environment):
         self.env.wmts_map.toolbar.active_inspect = [crosshair, hover]
         self.env.wmts_map.toolbar.active_scroll = wheel_zoom
         self.env.wmts_map.toolbar.active_tap = tap
+
+        self.env.wmts_map.toolbar.logo = None
 
     def _compute_dms_columns(self):
         """Compute LAT_DMS and LON_DMS columns for tooltips"""
