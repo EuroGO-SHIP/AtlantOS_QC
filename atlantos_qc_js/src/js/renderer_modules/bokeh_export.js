@@ -112,28 +112,9 @@ module.exports = {
 
         $('#bokeh_iframe').fadeOut('slow', function() {
             $('.loader_container').fadeIn('slow', function() {
-                self.prep_bigger_plots();
-            });
-        });
-    },
-
-    prep_bigger_plots: function() {
-        var self = this;
-        var params = {
-            'object': 'bokeh.export',
-            'method': 'prep_bigger_plots',
-        }
-        tools.call_promise(params).then((result) => {
-            if (result != null && typeof(result['success']) !== 'undefined') {
-                lg.info('prep_bigger_plots SUCCESS VALUE: ' + result['success']);
-                self.get_tab_images();
                 var params = {
                     'object': 'bokeh.export',
                     'method': 'export_pdf',
-                    'args': {
-                        'tabs_images': self.tabs_images,
-                        'tabs_order': self.tabs_order
-                    }
                 }
                 tools.call_promise(params).then((result) => {
                     if (result != null && typeof(result['success']) !== 'undefined') {
@@ -141,7 +122,47 @@ module.exports = {
                         self.save_pdf_dialog();
                     }
                 });
-            }
+            });
+        });
+    },
+
+    export_svg: function() {
+        var self = this;
+        lg.info('-- EXPORT PDF FILE (server_renderer.js)');
+
+        $('#bokeh_iframe').fadeOut('slow', function() {
+            $('.loader_container').fadeIn('slow', function() {
+                var params = {
+                    'object': 'bokeh.export',
+                    'method': 'export_svg_as_zip',
+                }
+                tools.call_promise(params).then((result) => {
+                    if (result != null && typeof(result['success']) !== 'undefined') {
+                        lg.info('SUCCESS VALUE: ' + result['success']);
+                        self.save_zip_dialog('svg');
+                    }
+                });
+            });
+        });
+    },
+
+    export_png: function() {
+        var self = this;
+        lg.info('-- EXPORT PDF FILE (server_renderer.js)');
+
+        $('#bokeh_iframe').fadeOut('slow', function() {
+            $('.loader_container').fadeIn('slow', function() {
+                var params = {
+                    'object': 'bokeh.export',
+                    'method': 'export_png_as_zip',
+                }
+                tools.call_promise(params).then((result) => {
+                    if (result != null && typeof(result['success']) !== 'undefined') {
+                        lg.info('SUCCESS VALUE: ' + result['success']);
+                        self.save_zip_dialog('png');
+                    }
+                });
+            });
         });
     },
 
@@ -186,6 +207,31 @@ module.exports = {
         }).then((results) => {
             if (results['canceled'] === false) {
                 self.save_pdf(results);
+            } else {
+                tools.hide_loader();
+            }
+        });
+    },
+
+    save_zip_dialog: function(img_type='svg') {
+        lg.warn('-- SAVE PDF')
+        var self = this;
+        var project_name = data.get('project_name', loc.proj_settings);
+        var moves_name = '';
+        if (project_name === false) {
+            moves_name = `plot_${img_type}.zip`;
+        } else {
+            moves_name = project_name + `_plot_${img_type}.zip`;
+        }
+        dialog.showSaveDialog({
+            title: 'Export plots in zip',
+            defaultPath: '~/' + moves_name,
+            filters: [{ extensions: ['zip'] }]
+        }).then((results) => {
+            if (results['canceled'] === false) {
+                self.save_zip(results, img_type);
+            } else {
+                tools.hide_loader();
             }
         });
     },
@@ -194,7 +240,7 @@ module.exports = {
         var self = this;
         var fileLocation = results['filePath'];
         if (typeof(fileLocation) !== 'undefined') {
-            var exported_pdf_path = path.join(loc.proj_export, 'plot_images.pdf')
+            var exported_pdf_path = path.join(loc.proj_export, 'plots.pdf')
 
             var read = fs.createReadStream(exported_pdf_path);
             read.on("error", function(err) {
@@ -202,6 +248,7 @@ module.exports = {
                     'type': 'ERROR',
                     'msg': 'The file could not be saved!'
                 });
+                tools.hide_loader();
             });
 
             var write = fs.createWriteStream(fileLocation);
@@ -210,30 +257,44 @@ module.exports = {
                     'type': 'ERROR',
                     'msg': 'The file could not be saved!'
                 });
+                tools.hide_loader();
             });
             write.on("close", function(ex) {
-                tools.show_snackbar('File saved!')
+                tools.show_snackbar('File saved!<br />' + exported_pdf_path);
+                tools.hide_loader();
             });
             read.pipe(write);
-
-            self.restore_plot_sizes();
         }
     },
 
-    restore_plot_sizes: function() {
-        lg.info('-- RESTORE PLOT SIZES');
+    save_zip: function (results, img_type='svg') {
         var self = this;
-        var params = {
-            'object': 'bokeh.export',
-            'method': 'restore_plot_sizes',
-        }
-        tools.call_promise(params).then((result) => {
-            if (result != null && typeof(result['success']) !== 'undefined') {
-                lg.info('restore_plot_sizes SUCCESS VALUE: ' + result['success']);
+        var fileLocation = results['filePath'];
+        if (typeof(fileLocation) !== 'undefined') {
+            var exported_zip_path = path.join(loc.proj_export, `plots_${img_type}.zip`)
 
+            var read = fs.createReadStream(exported_zip_path);
+            read.on("error", function(err) {
+                tools.show_modal({
+                    'type': 'ERROR',
+                    'msg': 'The file could not be saved!'
+                });
                 tools.hide_loader();
-                // tools.show_default_cursor();
-            }
-        });
+            });
+
+            var write = fs.createWriteStream(fileLocation);
+            write.on("error", function(err) {
+                tools.show_modal({
+                    'type': 'ERROR',
+                    'msg': 'The file could not be saved!'
+                });
+                tools.hide_loader();
+            });
+            write.on("close", function(ex) {
+                tools.show_snackbar('File saved!<br />' + exported_zip_path);
+                tools.hide_loader();
+            });
+            read.pipe(write);
+        }
     }
 }

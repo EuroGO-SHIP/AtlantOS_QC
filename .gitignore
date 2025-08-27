@@ -3,6 +3,10 @@
 # atlantos-qc files
 /atlantos_qc_js/node_modules
 /atlantos_qc_js/dist
+/atlantos_qc_js/src/browser
+/atlantos_qc_js/.yarn
+/atlantos_qc_js/.pnp*
+/atlantos_qc_js/.yarn*
 /bokeh
 /csv_examples
 /env

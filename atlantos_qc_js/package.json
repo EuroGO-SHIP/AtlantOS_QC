@@ -13,7 +13,9 @@
         "pack": "electron-builder --dir",
         "dist_mac": "electron-builder --macos",
         "dist_win": "electron-builder --win --x64",
-        "dist_linux": "electron-builder --linux --x64"
+        "dist_linux": "electron-builder --linux --x64",
+        "install_chrome": "node ./src/scripts/install_chrome.js",
+        "postinstall": "node ./src/scripts/install_chrome.js"
     },
     "repository": {
         "type": "git",
@@ -25,7 +27,7 @@
     "engines": {
         "node": ">=18.17.0",
         "npm": ">=10.3.0",
-        "yarn": ">=1.22.19"
+        "yarn": ">=4.9.4"
     },
     "keywords": [
         "atlantos",
@@ -102,6 +104,20 @@
                     "!*.pyc",
                     "!conda-meta${/*}"
                 ]
+            },
+            {
+                "from": "src/browser/chrome",
+                "to": "src/browser/chrome",
+                "filter": [
+                    "**/*"
+                ]
+            },
+            {
+                "from": "src/browser/chromedriver",
+                "to": "src/browser/chromedriver",
+                "filter": [
+                    "**/*"
+                ]
             }
         ],
         "asar": false,
@@ -141,5 +157,6 @@
                 }
             ]
         }
-    }
+    },
+    "packageManager": "yarn@4.9.4"
 }

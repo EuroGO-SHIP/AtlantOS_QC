@@ -200,6 +200,14 @@ ipcRenderer.on('export-pdf-file', (event, arg) => {
     bokeh_export.export_pdf_file();
 });
 
+ipcRenderer.on('export-svg', (event, arg) => {
+    bokeh_export.export_svg();
+});
+
+ipcRenderer.on('export-png', (event, arg) => {
+    bokeh_export.export_png();
+});
+
 ipcRenderer.on('show-custom-settings-replace', (event, arg) => {
     lg.info('-- SHOW-CUSTOM-SETTINGS-REPLACEMENT, args: ' + JSON.stringify(arg));
     if (arg['result'] == 'should_update') {  // ask question to the user, replace or keep file?

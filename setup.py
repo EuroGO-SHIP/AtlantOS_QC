@@ -46,20 +46,23 @@ def get_package_data():
         # 'atlantos_qc_js': get_file_paths('atlantos_qc_js')
     }
 
-requires = [  # TODO: sometimes, installing the latest version is not a good idea because it gives some errors.
-              #       So I think the specific version of every package must be set here to prevent errors
-    'bokeh ==3.7.3',     # there is one issue when selecting samples with the version 3.4.1, waiting for the version 5
+requires = [
+    'bokeh ==3.7.3',     # TODO: there was one issue when selecting samples with the version 3.4.1, waiting for the version 5
     'PyCO2SYS ==1.8.3.4',
     'shapely ==2.1.1',
     'seawater ==3.3.5',
     'more_itertools ==10.7.0',
-    'tilecloud ==1.13.2',  # 'tilecloud >=1.10.0', >> latest version does not work on python 3.11.5
 
-    # libraries related to export svg, png and pdf files
-    # 'svglib >=0.9.2',
+    # export to SVG
+    'selenium ==4.35.0',
+    'get-chrome-driver ==1.3.20',
+
+    # export to pdf
+    'svglib ==1.5.1',
     'reportlab ==4.4.3',
-    # 'selenium >=3.141.0',
 
+    # world tile map
+    'tilecloud ==1.13.2',
     'cachetools ==6.1.0',
     'Flask ==3.1.2',
     'flask-cors ==6.0.1',

@@ -117,7 +117,10 @@ module.exports = {
                 { type: 'separator' },
 
                 { label: 'Export Action History (CSV)...', accelerator: 'CmdOrCtrl+M', click: () => { self.menu_actions.export_moves_dialog(); } },
-                // { label: 'Export Plots Images as PDF...', accelerator: 'CmdOrCtrl+P', click: () => { self.web_contents.send('export-pdf-file'); } },
+                { type: 'separator' },
+                { label: 'Export Plots as PDF...', click: () => { self.web_contents.send('export-pdf-file'); } },
+                { label: 'Export Plots as SVG (ZIP)...', click: () => { self.web_contents.send('export-svg'); } },
+                { label: 'Export Plots as PNG (ZIP)...', click: () => { self.web_contents.send('export-png'); } },
                 { type: 'separator' },
                 { label: 'Close Project', accelerator: 'CmdOrCtrl+W', click: () => { self.web_contents.send('close-embed-forms'); self.menu_actions.close_project(); } },
                 { label: "Exit", accelerator: "Command+Q", click: () => { self.menu_actions.server.close_with_exit_prompt_dialog(); } }
