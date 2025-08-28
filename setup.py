@@ -53,11 +53,8 @@ requires = [
     'seawater ==3.3.5',
     'more_itertools ==10.7.0',
 
-    # export to SVG
+    # export to SVG, PNG and PDF
     'selenium ==4.35.0',
-    'get-chrome-driver ==1.3.20',
-
-    # export to pdf
     'svglib ==1.5.1',
     'reportlab ==4.4.3',
 

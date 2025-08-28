@@ -23,8 +23,6 @@ from atlantos_qc.env import Environment
 from atlantos_qc.constants import *
 from bokeh.util.logconfig import bokeh_logger as lg
 
-from get_chrome_driver import GetChromeDriver
-
 
 class BokehExport(Environment):
     ''' Export plots in PNG, SVG. All files will be gathered in a ZIP file or PDF
