@@ -1,6 +1,7 @@
 .vscode
 
 # atlantos-qc files
+/atlantos_qc/_version.py
 /atlantos_qc_js/node_modules
 /atlantos_qc_js/dist
 /atlantos_qc_js/src/browser
@@ -17,7 +18,6 @@
 /releases
 
 /pack_old
-/scripts
 /tests
 
 !/.gitignore

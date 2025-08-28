@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools-scm[toml]>=8", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlantos_qc"
+dynamic = ["version"]
+description = "Open source application for assisted primary quality control of hydrographic cruise data focused on carbon and ancillary parameters"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.11"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE", "AUTHORS"]
+keywords = ["ocean", "data", "quality", "control", "seawater", "csv", "whp"]
+authors = [
+    { name = "Anton Velo", email = "avelo@iim.csic.es" },
+    { name = "Jesus Cacabelos", email = "jcacabelos@iim.csic.es" }
+]
+urls = { Homepage = "https://github.com/EuroGO-SHIP/AtlantOS_QC" }
+
+dependencies = [
+    "bokeh ==3.7.3",
+    "PyCO2SYS ==1.8.3.4",
+    "shapely ==2.1.1",
+    "seawater ==3.3.5",
+    "more_itertools ==10.7.0",
+    "selenium ==4.35.0",
+    "svglib ==1.5.1",
+    "reportlab ==4.4.3",
+    "tilecloud ==1.13.2",
+    "cachetools ==6.1.0",
+    "Flask ==3.1.2",
+    "flask-cors ==6.0.1",
+    "python-magic-win64 >=0.4.13; sys_platform == 'win32'"
+]
+
+[project.scripts]
+build-installer = "scripts.fix_shebangs:main"
+
+[tool.setuptools.packages.find]
+include = ["atlantos_qc*"]
+
+[tool.setuptools.package-data]
+atlantos_qc = [
+    "templates/*.*",
+    "files/*.json",
+    "static/**/*",
+    "data_models/extra/**/*"
+]
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+
+[tool.setuptools_scm]
+write_to = "atlantos_qc/_version.py"

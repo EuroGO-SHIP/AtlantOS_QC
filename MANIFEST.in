@@ -1,0 +1,15 @@
+# Include templates and JSON files
+recursive-include atlantos_qc/templates *
+recursive-include atlantos_qc/files *.json
+
+# Include everything under static and data_models/extra
+recursive-include atlantos_qc/static *
+recursive-include atlantos_qc/data_models/extra *
+
+# Include package.json from the JS part
+include atlantos_qc_js/package.json
+
+# Don’t ship Python cache dirs and egg-info folders
+prune **/__pycache__
+prune *.egg-info
+prune atlantos_qc_js/node_modules
