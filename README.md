@@ -48,26 +48,33 @@ Source code:
 1. Download and install base dependencies:
     1. Download and install [Python](https://www.python.org/download/releases/3.0/) >=3.11. Recommended downloader and instructions: [https://conda.io/miniconda.html](https://conda.io/miniconda.html)
 
-    2. Download and install [yarn](https://yarnpkg.com/). Follow instructions from: https://yarnpkg.com/ (Alternatively  you can use [npm](https://www.npmjs.com/))
+    2. Download and install [yarn](https://yarnpkg.com/). Follow instructions from: https://yarnpkg.com/ (Alternatively you can use [npm](https://www.npmjs.com/)). The recommemded version for this proyect is "berry". The last one used was the version 4.9.4. To update it:
 
-    3. OPTIONAL, not needed anymore, just in case you want to include own code: GNU Octave
+            npm install -g yarn
+            sudo corepack enable             # I had to this once, other time I didn't need to do it
+            yarn set version latest          # or "berry" instead of "latest"
 
-        * Download and install GNU Octave. Follow instructions from: [https://www.gnu.org/software/octave/#install](https://www.gnu.org/software/octave/#install)
+    3. Newer versions of Yarn (2.x and above) don't create a node_modules folder by default. Instead, they store dependencies in a global cache (like in the `AppData` folder). However, this can cause issues with native modules, which often expect the traditional `node_modules` folder.
 
-1. Download this project
+        To fix this for your project, you need to go back to the old behavior of using a node_modules folder. To do that:
 
-1. Install the python `atlantos_qc` package and its dependencies in your python setup (if you have installed python through miniconda/anaconda and is not in PATH, you have to use Anaconda Prompt as command shell):
+        1. Create a file called `.yarnrc.yml` in the root of your project.
+        2. Add the following line to that file: `nodeLinker: node-modules`
+
+2. Download this project
+
+3. Install the python `atlantos_qc` package and its dependencies in your python setup (if you have installed python through miniconda/anaconda and is not in PATH, you have to use Anaconda Prompt as command shell):
 
         python -m pip install git+https://github.com/ocean-data-qc/tilecloud.git
         python -m pip install --editable .
             or :
         python -m pip install .
 
-1. Install the node dependencies in the `atlantos_qc_js` folder
+4. Install the node dependencies in the `atlantos_qc_js` folder
 
         yarn --cwd atlantos_qc_js/ install
 
-1. Open the GUI from the `atlantos_qc_js` folder
+5. Open the GUI from the `atlantos_qc_js` folder
 
         yarn --cwd atlantos_qc_js/ start
         (first launching time delays a bit, please wait)
