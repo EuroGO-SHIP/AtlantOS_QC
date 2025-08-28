@@ -10,7 +10,7 @@ from flask import Flask, send_file, abort
 from flask_cors import CORS
 from cachetools import LRUCache, cachedmethod
 from operator import attrgetter
-from bokeh.models import Range1d, Scatter, WMTSTileSource, DataRange1d, ColumnDataSource, HoverTool
+from bokeh.models import Scatter, WMTSTileSource, DataRange1d, HoverTool, CustomJSHover
 from bokeh.plotting import figure
 from bokeh.models.tools import (
     PanTool, BoxZoomTool, BoxSelectTool, WheelZoomTool,
@@ -59,8 +59,6 @@ class BokehMap(Environment):
         self._init_local_tile_server()
         self._init_bokeh_map()
         self._set_tools()
-
-        # --- Add DMS columns to ColumnDataSource
         self._compute_dms_columns()
 
     def _init_local_tile_server(self):
@@ -193,8 +191,14 @@ class BokehMap(Environment):
         save = SaveTool()
         lasso_select = LassoSelectTool(continuous=False)
 
+        # Formatter JS to limit just to 1 tooltip visible
+        f = CustomJSHover(code="""
+            special_vars.indices = special_vars.indices.slice(0, 1);
+            return special_vars.indices.includes(special_vars.index) ? '' : 'hidden';
+        """)
+
         tooltips = """
-            <div style="padding:5px; background-color:#f2f2f2;">
+            <div @STNNBR{custom} style="padding:5px; background-color:#f2f2f2;">
                 <b>STATION(S):</b> @{STNNBR} <br>
                 <b>LON: </b> @LON_DMS <br>
                 <b>LAT: </b> @LAT_DMS <br>
@@ -205,6 +209,7 @@ class BokehMap(Environment):
             mode='mouse',
             point_policy='snap_to_data',
             tooltips=tooltips,
+            formatters={'@STNNBR': f},
             renderers=[self.env.wmts_map_scatter]
         )
 
