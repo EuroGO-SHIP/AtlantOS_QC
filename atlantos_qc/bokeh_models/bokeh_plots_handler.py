@@ -85,12 +85,6 @@ class BokehPlotsHandler(Environment):
                     n_plot=graph.pos, tab=tab,   # TODO: guess the flag with the tab?
                 )
 
-                # NOTE: this is to avoid the ranges warning, the profiles sources have no data
-                #       at the begining and the ranges cannot be initiated
-                # https://github.com/bokeh/bokeh/issues/6639
-                bp.plot.x_range.renderers = bp.circles
-                bp.plot.y_range.renderers = bp.circles
-
                 self.env.bk_plots.append(bp)
                 self.env.tabs_flags_plots[tab]['plots'].append(graph.pos)
 
