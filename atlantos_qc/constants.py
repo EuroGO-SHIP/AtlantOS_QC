@@ -17,14 +17,15 @@ NPROF = 2 # 6       # Number of profiles
 
 # ----------------- STRING LITERALS ----------------------- #
 
-OUTPUT_BACKEND = 'canvas'    # Even if I change this to 'canvas',
-                            # 'webgl' is activated for some other reason automatically
+OUTPUT_BACKEND = 'webgl'    # 'canvas' > more compatibiliry and quality
+                            # 'webgl'  > more efficiently
+
 STNNBR = 'STNNBR'           # Stations column
 CTDPRS = 'CTDPRS'           # Pressure
 FLAG_END = '_FLAG_W'        # Flag distinctive
 
-NA_REGEX_LIST = [r'^-999[9]?[\.0]*?$']
-NA_REGEX = '^-999[9]?[\.0]*?$'
+NA_REGEX_LIST = [r'^-999[9]?(\.0*)?$']
+NA_REGEX = r'^-999[9]?(\.0*)?$'
 
 # --------------------- COLORS ---------------------------- #
 
