@@ -28,7 +28,7 @@ module.exports = {
             self.init_form();
         });
         ipcRenderer.on('update-tab-app', (event, args) => {
-            self.reset_tabs();
+            self.reload_tabs();
         });
     },
 
@@ -212,8 +212,15 @@ module.exports = {
     load_column_app_button: function() {
         var self = this;
         $('.column_app').on('click', function() {
-            column_app.load();
+            column_app.load(self);
         });
+    },
+
+    reload_cols: function() {
+        lg.warn('-- RELOAD COLUMNS')
+
+        // get all the select elements, refill with the columns again
+
     },
 
     create_qc_tab_tables: function(qc_plot_tabs={}) {
@@ -321,7 +328,7 @@ module.exports = {
         tools.load_popover();
     },
 
-    reset_tabs: function() {
+    reload_tabs: function() {
         lg.warn('>> RESET TABS');
         var self = this;
         $('#qc_tabs_container fieldset').not(

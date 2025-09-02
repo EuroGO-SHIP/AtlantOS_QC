@@ -24,9 +24,10 @@ const tools = require('tools');
 
 
 module.exports = {
-    load: function() {
+    load: function(tab_app_module) {
         lg.info('-- LOAD DATA COL SETTINGS')
         var self = this;
+        self.tab_app_module = tab_app_module;
         self.tmp_record = {}
         self.cs_cols = data.get('columns', loc.custom_settings);
         self.cps = data.get('computed_params', loc.custom_settings);
@@ -642,7 +643,8 @@ module.exports = {
             tools.show_modal({
                 'msg_type': 'text',
                 'type': 'VALIDATION ERROR',
-                'msg': 'The current row column name cannot be in the external names as well.',
+                'msg': 'A column name cannot be used in both "Name in app" and "Name in file". ' +
+                       'If the names are the same, please use only the "Name in app" field.',
             });
             return false;
         }
@@ -707,6 +709,7 @@ module.exports = {
                 // discard new_row
                 var data_table = $('#table_column_app').DataTable();
                 data_table.row(tr).remove().draw();
+                $('#div_column_app tr').find('button.edit_col, button.rmv_col').removeAttr('disabled');
                 return;
             }
             tr.find('input[name="txt_col_name"]').val(self.tmp_record.col_name);
@@ -776,10 +779,8 @@ module.exports = {
             tr.addClass('edit_row');
             tools.enable_tags_input(tr);
             $('#div_column_app tr').find('button.edit_col, button.rmv_col').attr('disabled', true);
-            self.set_prec_state(
-                tr.find('select[name="sel_cur_prec"]'),
-                tr.find('select[name="sel_cur_data_type"]').val()
-            )
+            $('button#add_column').attr('disabled', true);
+
         });
 
         tbody.on('change', 'select[name="sel_cur_data_type"]',function() {
@@ -798,6 +799,10 @@ module.exports = {
         tbody.on('change', 'input[name="txt_col_name"]', function() {
             var td = $(this).parent('td');
             $('#table_column_app').DataTable().cell(td).data($(this).val().toUpperCase());
+        });
+
+        $('button#close_bt').on('click', function() {
+            self.tab_app_module.reload_tabs()
         });
     },
 
@@ -964,16 +969,5 @@ module.exports = {
         tr.find('.rmv_col, .edit_col').css('display', 'none');
 
         tools.enable_tags_input(tr);
-    },
-
-    reset_tab_app: function() {
-        var self = this;
-        // tab_app.reset_tabs();
-
-        // $('#qc_tabs_container fieldset').not(
-        //     $('#qc_tabs_container fieldset').eq(0)
-        // ).remove();
-        // tab_app.load_columns();   // we can have the refences to the objects (columns)
-        // tab_app.load_tabs();
     }
 }

@@ -352,7 +352,7 @@ module.exports = {
 
     get_unit: function(col_name=false, unit=false, attrs=false) {
         var self = this;
-        lg.warn('>> ATTRS: ' + JSON.stringify(attrs, null, 4));
+        // lg.warn('>> ATTRS: ' + JSON.stringify(attrs, null, 4));
         var attrs = attrs.split(', ');
         var u = unit;
         if (unit === false) {
