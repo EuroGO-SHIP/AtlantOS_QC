@@ -7,6 +7,7 @@
     "scripts": {
         "start": "electron .",
         "start_offline": "electron --offline .",
+        "start:debug": "electron --remote-debugging-port=9223 .",
         "trace_deprecation": "electron --trace-deprecation .",
         "debug": "electron --inspect-brk=9229 .",
         "clean": "node ./src/scripts/clean.js",
@@ -71,7 +72,6 @@
         "xlsx": "^0.18.5"
     },
     "devDependencies": {
-        "devtron": "^1.4.0",
         "electron": "^31.0.2",
         "electron-builder": "^24.13.3",
         "electron-debug": "^2.2.0"

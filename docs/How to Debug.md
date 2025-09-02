@@ -19,31 +19,35 @@ Electron and the Python app (Bokeh Server) are interconnected. The best way to d
 
 # VSCode
 
-Add this to your workspace settings to prevent [similar errors](https://stackoverflow.com/questions/74660176/using-visualstudio-python-how-to-handle-overriding-stdlib-module-pylancer) to `env\Lib\glob.py" is overriding the stdlib "glob" modulePylance(reportShadowedImports)`:
+`launch.json` file:
 
     {
-        "folders": [
+        "version": "0.2.0",
+        "configurations": [
             {
-                "path": "AtlantOS_QC"
+                "name": "Electron: Main",
+                "type": "node",
+                "request": "launch",
+                "runtimeExecutable": "${workspaceFolder}/atlantos_qc_js/node_modules/.bin/electron",
+                "program": "${workspaceFolder}/atlantos_qc_js/main.js"
+            },
+            {
+                "name": "Electron: Renderer",
+                "type": "chrome",
+                "request": "attach",
+                "port": 9223,
+                "webRoot": "${workspaceFolder}/atlantos_qc_js",
+                "timeout": 30000
             }
         ],
-        "settings": {
-            "python.analysis.diagnosticSeverityOverrides": {
-                "reportShadowedImports": "none"
+        "compounds": [
+            {
+                "name": "Electron: All",
+                "configurations": ["Electron: Main", "Electron: Renderer"]
             }
-        }
+        ]
     }
 
-This is just a workaround: "Disabling all override warnings has the unwanted side-effect of removing useful warnings."
+Set some breakpoint on the server side of electron and select "Electron: Main" on the debug menu.
 
-# Electron
-
-1. Run the application with this to stop on the first instruction. That is needed in order to have time to open de devtools
-
-    electron --inspect-brk=9229 .
-
-2. Go to `chrome://inspect/#devices` and press `inspect` on the electron app
-
-3. Press "play" in order to go to the next stop. You can add breakpoints manually in the code with the function: `debugger;`. You can add them manually with the interface as well.
-
-You need to repeat the process every time you want to debug. I didn't find a way to keep the devtools open and make it work.
+To debug something on the renderer process run the app with `yarn start:debug`, set some breakpoints and select "Electron: Renderer" on the debug section of VSCode to run the debugger.
