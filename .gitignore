@@ -1,4 +1,5 @@
 .vscode
+.geminiignore
 
 # atlantos-qc files
 /atlantos_qc/_version.py
