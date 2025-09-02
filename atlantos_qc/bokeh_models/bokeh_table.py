@@ -112,7 +112,7 @@ class BokehDataTable(Environment):
             value=[''] * len(self.params),
             flag=[''] * len(self.params),
         ))
-        lg.info(f'TABLE DF: {self.table_df}')
+        lg.debug(f'TABLE DF: {self.table_df}')
 
         table_cds = ColumnDataSource(self.table_df)
         self.data_table = DataTable(
