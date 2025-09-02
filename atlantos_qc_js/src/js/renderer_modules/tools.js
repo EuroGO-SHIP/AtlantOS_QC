@@ -11,10 +11,10 @@ const app_module_path = require('app-module-path');
 const bokeh_calls = require('./bokeh_calls');
 const popper = require('popper.js');
 const { clipboard } = require('electron');
-
 const tail_file = require('@logdna/tail-file')
 const split2 = require('split2') // A common and efficient line splitter
 const fs = require('fs');
+const { PythonShell } = require('python-shell');
 
 const lg = require('logging');
 const loc = require('locations');
@@ -552,6 +552,7 @@ module.exports = {
     },
 
     set_python_path: function(obj, caller) {
+        var self = this;
         lg.info('-- SET PYTHON PATH')
         if (process.platform === 'win32' && fs.existsSync(loc.python_win)) {
             obj.python_path = loc.python_win;
@@ -569,7 +570,7 @@ module.exports = {
             return;
         }
         if (obj.python_path != '' && obj.script_env_path != '') {
-            obj.check_python_version().then(() => {
+            self.check_python_version().then(() => {
                 if (caller == 'server') {
                     obj.set_atlantos_qc_path();
                 } else { // 'server_renderer'
@@ -585,5 +586,34 @@ module.exports = {
                 obj.show_python_path_dg_err()
             }
         }
+    },
+
+    check_python_version: function() {
+        const self = this;
+        const py_options = {
+            mode: 'text',
+            pythonPath: self.python_path,
+            scriptPath: loc.scripts
+        };
+
+        return PythonShell.run('get_python_version.py', py_options).then(results => {
+            if (!results || results.length === 0) {
+                throw new Error('Python version script returned no output.');
+            }
+
+            try {
+                const v = parseInt(results[0].split('.')[0]);
+                if (v === 3) {
+                    return true;
+                } else {
+                    throw new Error('Wrong python version: ' + results[0]);
+                }
+            } catch (err) {
+                throw new Error('Version could not be parsed: ' + results[0]);
+            }
+        }).catch(err => {
+            console.error('>> Error checking python version:', err.message);
+            throw new Error('>> Error running script: ' + err.message);
+        });
     },
 }

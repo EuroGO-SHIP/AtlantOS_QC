@@ -7,7 +7,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const python_shell = require('python-shell');
+const { PythonShell } = require('python-shell');
 const port_scanner = require('portscanner');
 const url = require('url');
 
@@ -333,40 +333,11 @@ module.exports = {
         tools.set_python_path(self, 'server');
     },
 
-    check_python_version: function() {
-        var self = this;
-        return new Promise((resolve, reject) => {
-            var py_options = {
-                mode: 'text',
-                pythonPath: self.python_path,
-                scriptPath: loc.scripts
-            };
-            python_shell.run('get_python_version.py', py_options, function (err, results) {
-                if (err) {
-                    reject('>> Error running script: ' + err);
-                } else {
-                    if (typeof(results) !== 'undefined') {
-                        try {
-                            var v = parseInt(results[0].split('.')[0])
-                        } catch(err) {
-                            reject('Version could not be parsed');
-                        }
-                        if (v == 3) {
-                            resolve(true)
-                        } else {
-                            reject('Wrong python version: ' + results[0]);
-                        }
-                    }
-                }
-            });
-        });
-    },
-
     show_python_path_dg_err: function(error='') {
         var self = this;
         dialog.showMessageBox({
             type: 'error',
-            buttons: ['Ok' ],
+            buttons: ['Ok'],
             title: 'Critical Error',
             message: 'Python path or version error. Is the python path correct?'
                      + `\n\nPython path: "${self.python_path}"`
@@ -374,7 +345,7 @@ module.exports = {
                      + `\nError description: "${error}"`
         }).then(() => {
             self.close_app();
-        })
+        });
     },
 
     set_atlantos_qc_path: function() {
@@ -384,30 +355,41 @@ module.exports = {
             pythonPath: self.python_path,
             scriptPath: loc.scripts
         };
-        self.shell = python_shell.run('get_module_path.py', py_options, function (err, results) {
-            if (err || typeof(results) == 'undefined') {  // The script get_module_path.py did not return the correct path
-                lg.error(
-                    'Error running get_module_path.py. ' +
-                    'Make sure you have installed the atlantos_package: ' + err
-                );
+        PythonShell.run('get_module_path.py', py_options).then(results => {
+            if (results && results.length > 0) {
+                // TODO: what is the returned value if it is not found without any error?
 
+                var p = results[0].replace(/[\n\r]+/g, '');
+                self.atlantos_qc_path = tools.file_to_path(p);
+                self.set_python_shell_options();
+                self.run_bokeh();
+            } else {
+                lg.error('get_module_path.py did not return a path. Trying development path as fallback.');
                 // NOTE: If an ImportError (or any other error) is got >>
                 //       atlantos_module is posibly not installed.
                 //       Then look for the sibling folder of atlantos_qc_js
                 //       to make this work the environment should exists
                 //       its dependencies should be installed as well
-
                 if (fs.existsSync(loc.atlantos_qc_dev)) {
                     self.atlantos_qc_path = loc.atlantos_qc_dev;
                     self.set_python_shell_options();
                     self.run_bokeh();
                 }
             }
-            if (typeof(results) !== 'undefined') {
-                // TODO: what is the returned value if it is not found without any error?
+        }).catch(err => {
+            lg.error(
+                'Error running get_module_path.py. ' +
+                'Make sure you have installed the atlantosqc package: ' + err
+            );
 
-                var p = results[0].replace(/[\n\r]+/g, '');
-                self.atlantos_qc_path = tools.file_to_path(p);
+            // NOTE: If an ImportError (or any other error) is got >>
+            //       atlantos_module is posibly not installed.
+            //       Then look for the sibling folder of atlantos_qc_js
+            //       to make this work the environment should exists
+            //       its dependencies should be installed as well
+
+            if (fs.existsSync(loc.atlantos_qc_dev)) {
+                self.atlantos_qc_path = loc.atlantos_qc_dev;
                 self.set_python_shell_options();
                 self.run_bokeh();
             }
@@ -424,19 +406,18 @@ module.exports = {
             '--port', self.bokeh_port
         ]
         var dev_options = [
-            '--log-format', '"%(asctime)s %(levelname)s %(message)s"',       // not working??
+            '--log-format', '"%(asctime)s %(levelname)s %(message)s"',  // not working?
             '--log-file', loc.log_python
         ]
-        lg.warn('>> PYTHON PATH: ' + self.python_path)
+        lg.info('>> PYTHON PATH: ' + self.python_path)
         var aux_options = user_options;
         if (dev_mode) {
             aux_options = user_options.concat(dev_options);
         }
         self.python_options = {
-            mode: 'text',               // actually I do not need to return anything,
+            mode: 'text',
             pythonPath: self.python_path,
-            pythonOptions: aux_options,
-            scriptPath: self.atlantos_qc_path
+            pythonOptions: aux_options
         };
     },
 
@@ -449,20 +430,17 @@ module.exports = {
         lg.info('-- RUN BOKEH')
         // lg.warn('>> PYTHON SHELL OPTIONS: ' + JSON.stringify(self.python_options, null, 4));
         if (self.atlantos_qc_path != '') {
-            self.shell = python_shell.run(
-                '', self.python_options, (err, results) => {
-                    if (err || typeof(results) == 'undefined') {
-                        lg.error(`>> BOKEH SERVER COULD NOT BE LAUNCHED: ${err}`);
-                        if (self.dom_ready) {
-                            self.web_contents.send('bokeh-error-loading');
-                        } else {
-                            self.web_contents.on('dom-ready', () => {
-                                self.web_contents.send('bokeh-error-loading');
-                            });
-                        }
-                    }
+            self.shell = PythonShell.run(self.atlantos_qc_path, self.python_options);
+            self.shell.catch((err) => {
+                lg.error(`>> BOKEH SERVER COULD NOT BE LAUNCHED OR CRASHED: ${err}`);
+                if (self.dom_ready) {
+                    self.web_contents.send('bokeh-error-loading');
+                } else {
+                    self.web_contents.on('dom-ready', () => {
+                        self.web_contents.send('bokeh-error-loading');
+                    });
                 }
-            );
+            });
         }
     },
 

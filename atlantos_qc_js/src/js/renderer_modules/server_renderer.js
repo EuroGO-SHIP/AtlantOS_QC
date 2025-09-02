@@ -12,10 +12,8 @@ app_module_path.addPath(path.join(__dirname, '../modals_renderer'));
 app_module_path.addPath(__dirname);
 
 const { ipcRenderer } = require('electron');
-const url_exist = require('url-exist');
 const fs = require('fs');
-const { spawn } = require('child_process');
-const python_shell = require('python-shell');
+const { PythonShell } = require('python-shell');
 
 const lg = require('logging');
 const loc = require('locations');
@@ -193,37 +191,6 @@ module.exports = {
         }
     },
 
-    check_python_version: function() {
-        // TODO: repeated method, move to tools.js or somewhere else
-
-        var self = this;
-        return new Promise((resolve, reject) => {
-            var py_options = {
-                mode: 'text',
-                pythonPath: self.python_path,
-                scriptPath: loc.scripts
-            };
-            python_shell.run('get_python_version.py', py_options, function (err, results) {
-                if (err) {
-                    reject('>> Error running script: ' + err);
-                } else {
-                    if (typeof(results) !== 'undefined') {
-                        try {
-                            var v = parseInt(results[0].split('.')[0])
-                        } catch(err) {
-                            reject('Version could not be parsed');
-                        }
-                        if (v == 3) {
-                            resolve(true)
-                        } else {
-                            reject('Wrong python version: ' + results[0]);
-                        }
-                    }
-                }
-            });
-        });
-    },
-
     show_python_path_dg_err: function(error='') {
         var self = this;
         tools.show_modal({
@@ -253,28 +220,31 @@ module.exports = {
             pythonPath: self.python_path,
             scriptPath: loc.scripts,
         };
-        self.shell = python_shell.run('get_css_checksums.py', py_options, function (err, results) {
-            if (err || typeof(results) == 'undefined') {  // The script get_module_path.py did not return the correct path
-                lg.error('Error running get_css_checksums.py: ' + err);
-            } else {
-                results = results[0]
-                results = results.replace(/'/g,'"');
-                results = results.replace('\r','');
-                results = JSON.parse(results);  // try catch ??
-                // lg.warn('>> CHECKSUM RESULTS: ' + JSON.stringify(results, null, 4));
-                $.each(results, function(key, value) {
-                    if (key == 'electron_css_path') {  // TODO: How to run this before the window is shown?
-                        $.each(results[key], function(file_name, hash) {
-                            var css = $("link[href$='" + file_name + "']");
-                            css.attr('href', css.attr('href') + '?v=' + hash);
-                        });
-                        $('.welcome_container').fadeIn(500);
-                    }
-                });
+        PythonShell.run('get_css_checksums.py', py_options).then(results => {
+            if (results && results.length > 0) {
+                let result_str = results[0];
+                result_str = result_str.replace(/'/g, '"');
+                result_str = result_str.replace(/\r/g, '');
+                try {
+                    const checksums = JSON.parse(result_str);
+                    // lg.warn('>> CHECKSUM RESULTS: ' + JSON.stringify(checksums, null, 4));
+                    $.each(checksums, function(key, value) {
+                        if (key == 'electron_css_path') {  // TODO: How to run this before the window is shown?
+                            $.each(checksums[key], function(file_name, hash) {
+                                var css = $("link[href$='" + file_name + "']");
+                                css.attr('href', css.attr('href') + '?v=' + hash);
+                            });
+                            $('.welcome_container').fadeIn(500);
+                        }
+                    });
+                } catch (e) {
+                    lg.error('Error parsing checksums JSON: ' + e);
+                }
             }
+        }).catch(err => {
+            lg.error('Error running get_css_checksums.py: ' + err);
         });
     },
-
     json_template_restore_to_default: function() {
         var self = this;
         tools.modal_question({
